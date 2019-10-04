@@ -1,0 +1,48 @@
+package zkstrata.compiler;
+
+import zkstrata.domain.data.accessors.ValueAccessor;
+import zkstrata.domain.data.schemas.Schema;
+
+import java.util.Map;
+
+public class Arguments {
+    private String name;
+    private String statement;
+    private Map<String, ValueAccessor> witnessData;
+    private Map<String, ValueAccessor> instanceData;
+    private Map<String, Schema> schemas;
+
+    public Arguments(
+            String name,
+            String statement,
+            Map<String, ValueAccessor> witnessData,
+            Map<String, ValueAccessor> instanceData,
+            Map<String, Schema> schemas
+    ) {
+        this.name = name;
+        this.statement = statement;
+        this.witnessData = witnessData;
+        this.instanceData = instanceData;
+        this.schemas = schemas;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getStatement() {
+        return statement;
+    }
+
+    public Map<String, ValueAccessor> getWitnessData() {
+        return witnessData;
+    }
+
+    public Map<String, ValueAccessor> getInstanceData() {
+        return instanceData;
+    }
+
+    public Map<String, Schema> getSchemas() {
+        return schemas;
+    }
+}
