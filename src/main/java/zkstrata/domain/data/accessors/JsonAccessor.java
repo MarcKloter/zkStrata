@@ -1,7 +1,9 @@
 package zkstrata.domain.data.accessors;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import zkstrata.domain.data.Selector;
+import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.Value;
 
 import java.io.IOException;
@@ -31,12 +33,20 @@ public class JsonAccessor implements ValueAccessor {
 
     @Override
     public Value getValue(Selector selector) {
-        // TODO: access object
+        Object object = this.object;
         for (String key : selector.getSelectors()) {
-            Object value = object.get(key);
-            // TODO: check whether we can continue to call .get() on this (or replace for loop with something else)!
-            // TODO: check type (JSON has limited types)
+            if (object instanceof JSONObject)
+                object = ((JSONObject) object).get(key);
+            else
+                return null;
         }
-        return null;
+
+        if (object instanceof JSONObject)
+            return null;
+
+        if (object instanceof JSONArray)
+            object = ((JSONArray) object).toList();
+
+        return new Literal(object);
     }
 }
