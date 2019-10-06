@@ -17,7 +17,7 @@ public interface StructuredData<T extends Variable> {
         Value value = accessor.getValue(selector);
 
         if (value == null) {
-            String msg = String.format("Subject %s is missing the entry %s.", getAlias(), selector);
+            String msg = String.format("Subject %s is missing the entry '%s'.", getAlias(), selector);
             throw new IllegalArgumentException(msg);
         }
 
