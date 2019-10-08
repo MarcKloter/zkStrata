@@ -35,7 +35,7 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
                 Map.entry("leftHand", leftHand),
                 Map.entry("rightHand", rightHand)
         );
-        return new TargetFormat("EQUAL %(leftHand) %(rightHand)", args);
+        return new TargetFormat("EQUALS %(leftHand) %(rightHand)", args);
     }
 
     @LocalOptimizationRule
