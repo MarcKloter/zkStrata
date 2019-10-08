@@ -1,5 +1,7 @@
 package zkstrata.domain.visitor;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.accessors.SchemaAccessor;
 import zkstrata.domain.data.accessors.ValueAccessor;
@@ -31,9 +33,11 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ASTVisitorImpl implements ASTVisitor {
+    private static final Logger LOGGER = LogManager.getLogger(ASTVisitorImpl.class);
+
     private String statement;
     private Map<String, Schema> schemas;
-    private Map<String, StructuredData> subjects;
+    private MapListener<String, StructuredData> subjects;
     private Map<String, ValueAccessor> witnessData;
     private Map<String, ValueAccessor> instanceData;
 
@@ -43,7 +47,7 @@ public class ASTVisitorImpl implements ASTVisitor {
             Map<String, ValueAccessor> instanceData
     ) {
         this.schemas = schemas;
-        this.subjects = new HashMap<>();
+        this.subjects = new MapListener<>(new HashMap<>());
         this.witnessData = witnessData;
         this.instanceData = instanceData;
     }
@@ -62,9 +66,13 @@ public class ASTVisitorImpl implements ASTVisitor {
             this.subjects.put(alias, visitSubject(subject));
         }
 
-        return statement.getPredicates().stream()
+        List<Gadget> result = statement.getPredicates().stream()
                 .map(this::visitPredicate)
                 .collect(Collectors.toList());
+
+        this.checkUnusedSubjects();
+
+        return result;
     }
 
     private StructuredData visitSubject(Subject subject) {
@@ -181,8 +189,9 @@ public class ASTVisitorImpl implements ASTVisitor {
         }
     }
 
-    private String underlineError(int length, Position position) {
-        int start = position.getCharPositionInLine();
-        return ErrorUtils.underlineError(statement, start, start + length - 1, position.getLine(), start);
+    private void checkUnusedSubjects() {
+        for (String alias : subjects.getUnusedKeySet()) {
+            LOGGER.warn("Unused subject '{}'", alias);
+        }
     }
 }
