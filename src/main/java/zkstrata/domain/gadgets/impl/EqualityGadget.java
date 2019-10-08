@@ -21,7 +21,7 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
     private Variable rightHand;
 
     @Override
-    public void onInit() {
+    public void checkSemantics() {
     }
 
     @Override

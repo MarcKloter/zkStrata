@@ -26,5 +26,5 @@ public interface Gadget<T extends Gadget> {
     /**
      * Hook method that will be called after @Type annotated fields were wired.
      */
-    void onInit();
+    void checkSemantics();
 }

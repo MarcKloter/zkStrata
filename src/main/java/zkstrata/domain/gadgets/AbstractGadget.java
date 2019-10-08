@@ -30,7 +30,7 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
             }
         }
 
-        this.onInit();
+        this.checkSemantics();
     }
 
     private void checkType(Field field, Variable variable) {
@@ -55,7 +55,7 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
      * Empty default implementation to override by gadgets on demand.
      */
     @Override
-    public void onInit() {
+    public void checkSemantics() {
     }
 
     @LocalOptimizationRule(context = {AbstractGadget.class})
