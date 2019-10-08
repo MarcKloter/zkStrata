@@ -1,5 +1,6 @@
 package zkstrata.exceptions;
 
+import org.antlr.v4.runtime.misc.Utils;
 import zkstrata.parser.ast.Position;
 import zkstrata.utils.ErrorUtils;
 
@@ -14,7 +15,7 @@ public class CompileException extends RuntimeException {
 
     private static String context(String input, int offendingInputLength, Position position) {
         int start = position.getCharPositionInLine();
-        return ErrorUtils.underlineError(input, start, start + offendingInputLength - 1, position.getLine(), start);
+        return ErrorUtils.underlineError(ErrorUtils.sanitize(input), start, start + offendingInputLength - 1, position.getLine(), start);
     }
 
     public int getLine() {

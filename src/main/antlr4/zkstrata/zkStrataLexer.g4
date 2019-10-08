@@ -36,7 +36,7 @@ SCOL    : ';' ;
 IDENTIFIER          : [a-zA-Z]([a-zA-Z0-9_])* ;
 
 NEWLINES            : ('\r'? '\n' | '\r')+ -> skip ;
-SPACES              : [ \u000B\t\r\n]      -> channel(HIDDEN) ;
+SPACES              : [ \u000B\t]          -> channel(HIDDEN) ;
 COMMENTS            : '/*' .*? '*/'        -> skip ;
 LINE_COMMENTS       : '//' ~[\r\n]*        -> skip ;
 

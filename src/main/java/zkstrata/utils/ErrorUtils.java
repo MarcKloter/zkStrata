@@ -3,6 +3,16 @@ package zkstrata.utils;
 import org.apache.commons.text.TextStringBuilder;
 
 public class ErrorUtils {
+    public static String sanitize(String s) {
+        StringBuilder buf = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            if (c == '\t') buf.append(" ");
+            else if (c == '\u000B') buf.append(" ");
+            else buf.append(c);
+        }
+        return buf.toString();
+    }
+
     /**
      * Partially from 'The Definitive ANTLR 4 Reference' page 156.
      */
