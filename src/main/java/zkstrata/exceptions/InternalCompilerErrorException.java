@@ -9,4 +9,8 @@ public class InternalCompilerErrorException extends RuntimeException {
     public InternalCompilerErrorException(String message) {
         super(message);
     }
+
+    public InternalCompilerErrorException(String message, Object... params) {
+        super(String.format(message, params));
+    }
 }

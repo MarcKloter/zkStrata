@@ -9,7 +9,6 @@ import zkstrata.exceptions.CompileException;
 import zkstrata.exceptions.InternalCompilerErrorException;
 import zkstrata.parser.ast.Position;
 import zkstrata.parser.ast.types.*;
-import zkstrata.utils.ErrorUtils;
 import zkstrata.utils.ReflectionHelper;
 import zkstrata.utils.SchemaHelper;
 import zkstrata.domain.data.types.wrapper.Nullable;
@@ -114,7 +113,7 @@ public class ASTVisitorImpl implements ASTVisitor {
             AstElement from = gadget.getAnnotation(AstElement.class);
 
             if (from == null)
-                throw new InternalCompilerErrorException(String.format("Missing @AstElement annotation in %s.", gadget));
+                throw new InternalCompilerErrorException("Missing @AstElement annotation in %s.", gadget);
 
             if (from.value() == predicate.getClass()) {
                 try {
@@ -133,17 +132,14 @@ public class ASTVisitorImpl implements ASTVisitor {
 
                     return instance;
                 } catch (NoSuchMethodException e) {
-                    String msg = String.format("Gadget %s is missing a default constructor.", gadget);
-                    throw new InternalCompilerErrorException(msg);
+                    throw new InternalCompilerErrorException("Gadget %s is missing a default constructor.", gadget);
                 } catch (ReflectiveOperationException e) {
-                    String msg = String.format("Invalid implementation of gadget %s.", gadget);
-                    throw new InternalCompilerErrorException(msg);
+                    throw new InternalCompilerErrorException("Invalid implementation of gadget %s.", gadget);
                 }
             }
         }
 
-        String msg = String.format("Missing gadget implementation for predicate: %s", predicate.getClass());
-        throw new InternalCompilerErrorException(msg);
+        throw new InternalCompilerErrorException("Missing gadget implementation for predicate: %s", predicate.getClass());
     }
 
     private Variable visitType(Value type) {
@@ -156,7 +152,7 @@ public class ASTVisitorImpl implements ASTVisitor {
                 return visitIdentifier((Identifier) type);
         }
 
-        throw new InternalCompilerErrorException(String.format("Unimplemented type %s in AST.", type.getClass()));
+        throw new InternalCompilerErrorException("Unimplemented type %s in AST.", type.getClass());
     }
 
     /**

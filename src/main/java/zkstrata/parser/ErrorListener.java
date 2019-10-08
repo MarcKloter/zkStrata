@@ -13,7 +13,7 @@ public class ErrorListener extends BaseErrorListener {
     @Override
     public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine, String msg, RecognitionException e) {
         if (e instanceof LexerNoViableAltException)
-            unexpectedSymbol(recognizer, line, charPositionInLine);
+            unexpectedSymbol(recognizer, ((LexerNoViableAltException) e).getStartIndex(), line, charPositionInLine);
         else if (e instanceof NoViableAltException)
             unexpectedToken(recognizer, (Token) offendingSymbol, line, charPositionInLine);
         else if (e instanceof MissingTokenException)
@@ -23,13 +23,13 @@ public class ErrorListener extends BaseErrorListener {
         else if (e instanceof UnwantedTokenException)
             unexpectedToken(recognizer, (Token) offendingSymbol, line, charPositionInLine);
         else
-            throw new InternalCompilerErrorException("Unknown RecognitionException");
+            throw new InternalCompilerErrorException("Unknown RecognitionException %s", e.getClass());
     }
 
-    private void unexpectedSymbol(Recognizer<?, ?> recognizer, int line, int position) {
+    private void unexpectedSymbol(Recognizer<?, ?> recognizer, int symbol, int line, int position) {
         CharStream charStream = (CharStream) recognizer.getInputStream();
         String input = charStream.toString();
-        String message = String.format("Unexpected symbol %s.", charStream.getText(Interval.of(position, position)));
+        String message = String.format("Unexpected symbol %s.", charStream.getText(Interval.of(symbol, symbol)));
         throw new CompileException(message, input, 1, new Position(line, position));
     }
 

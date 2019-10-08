@@ -51,7 +51,7 @@ public class ParseTreeVisitor {
         @Override
         public Value visitWitness_var(zkStrata.Witness_varContext ctx) {
             if (ctx.getChildCount() != 1)
-                throw new InternalCompilerErrorException(String.format("Expected a single witness variable, found %d.", ctx.getChildCount()));
+                throw new InternalCompilerErrorException("Expected a single witness variable, found %d.", ctx.getChildCount());
 
             return ctx.getChild(0).accept(new TypeVisitor());
         }
@@ -59,7 +59,7 @@ public class ParseTreeVisitor {
         @Override
         public Value visitInstance_var(zkStrata.Instance_varContext ctx) {
             if (ctx.getChildCount() != 1)
-                throw new InternalCompilerErrorException(String.format("Expected a single instance variable, found %d.", ctx.getChildCount()));
+                throw new InternalCompilerErrorException("Expected a single instance variable, found %d.", ctx.getChildCount());
 
             return ctx.getChild(0).accept(new TypeVisitor());
         }
@@ -79,7 +79,7 @@ public class ParseTreeVisitor {
         @Override
         public Value visitLiteral_value(zkStrata.Literal_valueContext ctx) {
             if (ctx.getChildCount() != 1)
-                throw new InternalCompilerErrorException(String.format("Expected 1 literal value, found %d.", ctx.getChildCount()));
+                throw new InternalCompilerErrorException("Expected 1 literal value, found %d.", ctx.getChildCount());
 
             TerminalNode node = (TerminalNode) ctx.getChild(0);
 
@@ -91,8 +91,7 @@ public class ParseTreeVisitor {
                 case zkStrataLexer.INTEGER_LITERAL:
                     return new IntegerLiteral(node.getText(), ParserUtils.getPosition(ctx.getStart()));
                 default:
-                    String msg = String.format("The literal with type index %s is defined in the grammar but not implemented by the parse tree visitor.", node.getSymbol().getType());
-                    throw new InternalCompilerErrorException(msg);
+                    throw new InternalCompilerErrorException("The literal with type index %s is defined in the grammar but not implemented by the parse tree visitor.", node.getSymbol().getType());
             }
         }
     }
@@ -154,24 +153,22 @@ public class ParseTreeVisitor {
                     try {
                         return (PredicateParser) parser.getConstructor().newInstance();
                     } catch (Exception e) {
-                        String msg = String.format("Invalid implementation of parser %s.", name);
-                        throw new InternalCompilerErrorException(msg);
+                        throw new InternalCompilerErrorException("Invalid implementation of parser %s.", name);
                     }
                 }
             }
 
-            String msg = String.format("Could not find a parser implementation for rule: %s.", name);
-            throw new InternalCompilerErrorException(msg);
+            throw new InternalCompilerErrorException("Could not find a parser implementation for rule: %s.", name);
         }
 
         @Override
         public Predicate visitPredicate_clause(zkStrata.Predicate_clauseContext ctx) {
             if (ctx.getChildCount() != 1)
-                throw new InternalCompilerErrorException(String.format("Expected 1 predicate in clause, found %d.", ctx.getChildCount()));
+                throw new InternalCompilerErrorException("Expected 1 predicate in clause, found %d.", ctx.getChildCount());
 
             ParseTree child = ctx.getChild(0);
             if (!(child instanceof ParserRuleContext))
-                throw new InternalCompilerErrorException(String.format("Expected predicate to be a parser rule, found %s.", child.getClass()));
+                throw new InternalCompilerErrorException("Expected predicate to be a parser rule, found %s.", child.getClass());
 
             ParserRuleContext gadget = (ParserRuleContext) child;
             String name = this.rules[gadget.getRuleIndex()];
