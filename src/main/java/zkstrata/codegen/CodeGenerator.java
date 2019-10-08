@@ -33,7 +33,7 @@ public class CodeGenerator {
     }
 
     public void run(List<Gadget> gadgets, boolean writeWitnesses) {
-        LOGGER.debug(String.format("Starting target code generation for %s gadgets", gadgets.size()));
+        LOGGER.debug("Starting target code generation for {} gadgets", gadgets.size());
 
         generateGadgetsFile(gadgets);
         generateInstanceFile(instanceVariables);
@@ -45,7 +45,7 @@ public class CodeGenerator {
 
     private void generateGadgetsFile(List<Gadget> gadgets) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(gadgetsFileName))) {
-            LOGGER.debug(String.format("Writing to %s", gadgetsFileName));
+            LOGGER.debug("Writing to {}", gadgetsFileName);
 
             List<TargetFormat> target = gadgets.stream().map(Gadget::toTargetFormat).collect(Collectors.toList());
 
@@ -55,7 +55,8 @@ public class CodeGenerator {
                 String line = substitutor.replace(targetFormat.getFormat());
                 writer.write(line);
                 writer.newLine();
-                LOGGER.debug(String.format("Generated line: %s", line));
+
+                LOGGER.debug("Generated line: {}", line);
             }
         } catch (IOException e) {
             // TODO: handle error
@@ -86,13 +87,13 @@ public class CodeGenerator {
 
     private void generateInstanceFile(Map<InstanceVariable, String> variables) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(instanceFileName))) {
-            LOGGER.debug(String.format("Writing to %s", instanceFileName));
+            LOGGER.debug("Writing to {}", instanceFileName);
 
             for(Map.Entry<InstanceVariable, String> entry : variables.entrySet()) {
                 String line = String.format("%s = 0x%s", entry.getValue(), entry.getKey().getValue().toHex());
                 writer.write(line);
                 writer.newLine();
-                LOGGER.debug(String.format("Generated line: %s", line));
+                LOGGER.debug("Generated line: {}", line);
             }
         } catch (IOException e) {
             // TODO: handle error
@@ -102,13 +103,13 @@ public class CodeGenerator {
 
     private void generateWitnessFile(Map<WitnessVariable, String> variables) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(witnessFileName))) {
-            LOGGER.debug(String.format("Writing to %s", witnessFileName));
+            LOGGER.debug("Writing to {}", witnessFileName);
 
             for(Map.Entry<WitnessVariable, String> entry : variables.entrySet()) {
                 String line = String.format("%s = 0x%s", entry.getValue(), entry.getKey().getValue().toHex());
                 writer.write(line);
                 writer.newLine();
-                LOGGER.debug(String.format("Generated line: %s", line));
+                LOGGER.debug("Generated line: {}", line);
             }
         } catch (IOException e) {
             // TODO: handle error
