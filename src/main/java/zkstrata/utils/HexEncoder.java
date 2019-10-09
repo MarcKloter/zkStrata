@@ -3,6 +3,7 @@ package zkstrata.utils;
 import org.apache.commons.codec.binary.Hex;
 
 import java.lang.reflect.Method;
+import java.math.BigInteger;
 
 public class HexEncoder {
     public static String encode(Object object) {
@@ -17,6 +18,10 @@ public class HexEncoder {
             String msg = String.format("Invalid implementation of method encode for type %s.", type);
             throw new IllegalStateException(msg);
         }
+    }
+
+    public static String encode(BigInteger bigInteger) {
+        return bigInteger.toString(16);
     }
 
     public static String encode(Integer integer) {

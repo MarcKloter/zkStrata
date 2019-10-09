@@ -1,17 +1,19 @@
 package zkstrata.parser.ast.types;
 
-import zkstrata.parser.ast.Position;
+import zkstrata.exceptions.Position;
 
-public class IntegerLiteral extends Literal<Integer> {
-    private Integer value;
+import java.math.BigInteger;
+
+public class IntegerLiteral extends Literal<BigInteger> {
+    private BigInteger value;
 
     public IntegerLiteral(String value, Position position) {
         super(position);
-        this.value = Integer.parseInt(value);
+        this.value = new BigInteger(value, 10);
     }
 
     @Override
-    public Integer getValue() {
+    public BigInteger getValue() {
         return value;
     }
 }

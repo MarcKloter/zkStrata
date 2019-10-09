@@ -7,6 +7,7 @@ import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.Value;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -46,6 +47,9 @@ public class JsonAccessor implements ValueAccessor {
 
         if (object instanceof JSONArray)
             object = ((JSONArray) object).toList();
+
+        if (object instanceof Integer)
+            return new Literal(BigInteger.valueOf((Integer) object));
 
         return new Literal(object);
     }

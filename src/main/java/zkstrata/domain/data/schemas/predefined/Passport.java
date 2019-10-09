@@ -2,6 +2,7 @@ package zkstrata.domain.data.schemas.predefined;
 
 import zkstrata.domain.data.schemas.AbstractSchema;
 
+import java.math.BigInteger;
 import java.util.Date;
 
 @Schema(name = "passport_ch")
@@ -13,6 +14,6 @@ public class Passport extends AbstractSchema {
     private Date issuedOn;
     private Date expiresOn;
 
-    private Integer count; // TODO: remove
+    private BigInteger count; // TODO: remove
     private DriversLicense owner; // TODO: remove
 }

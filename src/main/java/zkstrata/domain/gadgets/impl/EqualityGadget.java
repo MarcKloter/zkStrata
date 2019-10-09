@@ -8,20 +8,21 @@ import zkstrata.optimizer.GlobalOptimizationRule;
 import zkstrata.optimizer.LocalOptimizationRule;
 import zkstrata.parser.ast.predicates.Equality;
 
+import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 @AstElement(Equality.class)
 public class EqualityGadget extends AbstractGadget<EqualityGadget> {
-    @Type({String.class, Integer.class})
+    @Type({String.class, BigInteger.class})
     private Variable leftHand;
 
-    @Type({String.class, Integer.class})
+    @Type({String.class, BigInteger.class})
     private Variable rightHand;
 
     @Override
-    public void checkSemantics() {
+    public void performChecks() {
     }
 
     @Override
