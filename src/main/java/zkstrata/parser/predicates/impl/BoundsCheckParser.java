@@ -20,19 +20,25 @@ public class BoundsCheckParser implements PredicateParser {
     public BoundsCheck parse(ParserRuleContext ctx) {
         zkStrata.Bounds_checkContext boundsCheckContext = (zkStrata.Bounds_checkContext) ctx;
 
-        if (boundsCheckContext.bounds() != null) {
-            List<Value> values = getValues(boundsCheckContext.bounds());
+        if (boundsCheckContext.min_max() != null) {
+            List<Value> values = getValues(boundsCheckContext.min_max());
             return new BoundsCheck(values.get(0), values.get(1), values.get(2), ParserUtils.getPosition(ctx.getStart()));
         }
 
+        if (boundsCheckContext.max_min() != null) {
+            List<Value> values = getValues(boundsCheckContext.max_min());
+            return new BoundsCheck(values.get(0), values.get(2), values.get(1), ParserUtils.getPosition(ctx.getStart()));
+        }
+
+
         if (boundsCheckContext.less_than() != null) {
             List<Value> values = getValues(boundsCheckContext.less_than());
-            return new BoundsCheck(values.get(0), values.get(1), null, ParserUtils.getPosition(ctx.getStart()));
+            return new BoundsCheck(values.get(0), null, values.get(1), ParserUtils.getPosition(ctx.getStart()));
         }
 
         if (boundsCheckContext.greater_than() != null) {
             List<Value> values = getValues(boundsCheckContext.greater_than());
-            return new BoundsCheck(values.get(0), null, values.get(1), ParserUtils.getPosition(ctx.getStart()));
+            return new BoundsCheck(values.get(0), values.get(1), null, ParserUtils.getPosition(ctx.getStart()));
         }
 
         throw new InternalCompilerException("Unknown bounds_check rule.");
