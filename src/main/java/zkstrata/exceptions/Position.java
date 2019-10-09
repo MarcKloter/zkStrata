@@ -1,7 +1,5 @@
 package zkstrata.exceptions;
 
-import java.util.Comparator;
-
 public class Position {
     private String target;
     private int line;
