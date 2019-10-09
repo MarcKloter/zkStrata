@@ -1,5 +1,8 @@
 package zkstrata.parser.ast;
 
+import zkstrata.exceptions.Position;
+import zkstrata.exceptions.Traceable;
+
 public class Subject {
     private Schema schema;
     private Alias alias;
@@ -29,7 +32,7 @@ public class Subject {
         return witness;
     }
 
-    public class Schema extends Leaf {
+    public class Schema extends Traceable {
         private String name;
 
         private Schema(String name, Position position) {
@@ -42,7 +45,7 @@ public class Subject {
         }
     }
 
-    public class Alias extends Leaf {
+    public class Alias extends Traceable {
         private String name;
 
         private Alias(String name, Position position) {

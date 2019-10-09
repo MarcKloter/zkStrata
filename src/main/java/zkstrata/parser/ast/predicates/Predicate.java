@@ -1,10 +1,10 @@
 package zkstrata.parser.ast.predicates;
 
-import zkstrata.parser.ast.Leaf;
-import zkstrata.parser.ast.Position;
+import zkstrata.exceptions.Position;
+import zkstrata.exceptions.Traceable;
 
 // TODO: do we utilize position information for these predicate objects?
-public abstract class Predicate extends Leaf {
+public abstract class Predicate extends Traceable {
     public Predicate(Position position) {
         super(position);
     }

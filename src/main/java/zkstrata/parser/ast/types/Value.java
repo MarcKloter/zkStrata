@@ -1,9 +1,9 @@
 package zkstrata.parser.ast.types;
 
-import zkstrata.parser.ast.Leaf;
-import zkstrata.parser.ast.Position;
+import zkstrata.exceptions.Position;
+import zkstrata.exceptions.Traceable;
 
-public abstract class Value extends Leaf {
+public abstract class Value extends Traceable {
     public Value(Position position) {
         super(position);
     }

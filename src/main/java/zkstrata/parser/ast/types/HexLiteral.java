@@ -1,6 +1,6 @@
 package zkstrata.parser.ast.types;
 
-import zkstrata.parser.ast.Position;
+import zkstrata.exceptions.Position;
 
 public class HexLiteral extends Literal<String> {
     private String value;

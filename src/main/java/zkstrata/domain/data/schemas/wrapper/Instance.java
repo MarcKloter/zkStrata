@@ -5,6 +5,7 @@ import zkstrata.domain.data.schemas.Schema;
 import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
+import zkstrata.exceptions.Position;
 
 /**
  * wrapper class to mark a {@link Schema} as instance wide (usually publicly) known
@@ -31,10 +32,10 @@ public class Instance implements StructuredData<InstanceVariable> {
     }
 
     @Override
-    public InstanceVariable getVariable(Selector selector) {
+    public InstanceVariable getVariable(Selector selector, Position position) {
         // TODO: test case (instance is subject -> referenced)
         // TODO: ensure missing instance is thrown before or check here
         Literal value = (Literal) resolve(schema, selector, accessor);
-        return new InstanceVariable(value);
+        return new InstanceVariable(value, position);
     }
 }

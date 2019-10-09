@@ -2,6 +2,7 @@ package zkstrata.domain.gadgets;
 
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.data.types.wrapper.Variable;
+import zkstrata.exceptions.CompileTimeException;
 
 import java.util.Map;
 
@@ -11,7 +12,7 @@ public interface Gadget<T extends Gadget> {
      *
      * @param source {@link Map} containing the field name and {@link Variable} pairs
      */
-    void initFrom(Map<String, Variable> source);
+    void initFrom(Map<String, Variable> source) throws CompileTimeException;
 
     /**
      * Indicates whether this gadget instance is equal to the provided one.
@@ -26,5 +27,5 @@ public interface Gadget<T extends Gadget> {
     /**
      * Hook method that will be called after @Type annotated fields were wired.
      */
-    void checkSemantics();
+    void performChecks() throws CompileTimeException;
 }

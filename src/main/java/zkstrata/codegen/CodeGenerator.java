@@ -7,7 +7,7 @@ import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.Gadget;
-import zkstrata.exceptions.InternalCompilerErrorException;
+import zkstrata.exceptions.InternalCompilerException;
 
 import java.io.*;
 import java.util.*;
@@ -82,7 +82,7 @@ public class CodeGenerator {
             return instanceVariables.get(var);
         }
 
-        throw new InternalCompilerErrorException(String.format("Invalid Variable instance: %s.", var.getClass()));
+        throw new InternalCompilerException("Invalid Variable instance: %s.", var.getClass());
     }
 
     private void generateInstanceFile(Map<InstanceVariable, String> variables) {

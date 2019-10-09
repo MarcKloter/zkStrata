@@ -5,9 +5,8 @@ import org.apache.logging.log4j.Logger;
 import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.accessors.SchemaAccessor;
 import zkstrata.domain.data.accessors.ValueAccessor;
-import zkstrata.exceptions.CompileException;
-import zkstrata.exceptions.InternalCompilerErrorException;
-import zkstrata.parser.ast.Position;
+import zkstrata.exceptions.CompileTimeException;
+import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.parser.ast.types.*;
 import zkstrata.utils.ReflectionHelper;
 import zkstrata.utils.SchemaHelper;
@@ -25,16 +24,12 @@ import zkstrata.parser.ast.Subject;
 import zkstrata.parser.ast.predicates.Predicate;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ASTVisitorImpl implements ASTVisitor {
     private static final Logger LOGGER = LogManager.getLogger(ASTVisitorImpl.class);
 
-    private String statement;
     private Map<String, Schema> schemas;
     private MapListener<String, StructuredData> subjects;
     private Map<String, ValueAccessor> witnessData;
@@ -52,68 +47,57 @@ public class ASTVisitorImpl implements ASTVisitor {
     }
 
     @Override
-    public List<Gadget> visitStatement(Statement statement) {
-        this.statement = statement.getStatement();
-
+    public List<Gadget> visitStatement(Statement statement) throws CompileTimeException {
         for (Subject subject : statement.getSubjects()) {
             String alias = subject.getAlias().getName();
-            if (subjects.containsKey(alias)) {
-                String message = String.format("Alias `%s` is already defined.", alias);
-                throw new CompileException(message, this.statement, alias.length(), subject.getAlias().getPosition());
-            }
+            if (subjects.containsKey(alias))
+                throw new CompileTimeException(String.format("Alias `%s` is already defined.", alias), subject.getAlias().getPosition());
 
             this.subjects.put(alias, visitSubject(subject));
         }
 
-        List<Gadget> result = statement.getPredicates().stream()
-                .map(this::visitPredicate)
-                .collect(Collectors.toList());
+        List<Gadget> gadgets = new ArrayList<>();
+        for (Predicate predicate : statement.getPredicates())
+            gadgets.add(visitPredicate(predicate));
 
         this.checkUnusedSubjects();
 
-        return result;
+        return gadgets;
     }
 
-    private StructuredData visitSubject(Subject subject) {
+    private StructuredData visitSubject(Subject subject) throws CompileTimeException {
         String alias = subject.getAlias().getName();
         String schemaName = subject.getSchema().getName();
         Schema schema = schemas.getOrDefault(schemaName, SchemaHelper.resolve(schemaName));
 
-        if (schema == null) {
-            Position position = subject.getSchema().getPosition();
-            String message = String.format("Undefined schema %s.", schemaName);
-            throw new CompileException(message, statement, schemaName.length(), position);
-        }
+        if (schema == null)
+            throw new CompileTimeException(String.format("Undefined schema %s.", schemaName), subject.getSchema().getPosition());
 
         if (subject.isWitness()) {
-            if (!witnessData.isEmpty() && !witnessData.containsKey(alias)) {
-                String message = String.format("Missing witness data for subject %s.", alias);
-                throw new CompileException(message, statement, alias.length(), subject.getAlias().getPosition());
-            }
+            if (!witnessData.isEmpty() && !witnessData.containsKey(alias))
+                throw new CompileTimeException(String.format("Missing witness data for subject %s.", alias), subject.getAlias().getPosition());
 
             ValueAccessor accessor = witnessData.getOrDefault(alias, new SchemaAccessor(alias, schema));
             return new Witness(alias, schema, accessor);
         } else {
             ValueAccessor accessor = instanceData.get(alias);
 
-            if (accessor == null) {
-                String message = String.format("Missing instance data for subject %s.", alias);
-                throw new CompileException(message, statement, alias.length(), subject.getAlias().getPosition());
-            }
+            if (accessor == null)
+                throw new CompileTimeException(String.format("Missing instance data for subject %s.", alias), subject.getAlias().getPosition());
 
             return new Instance(alias, schema, accessor);
         }
     }
 
     // TODO: refactor?
-    private Gadget visitPredicate(Predicate predicate) {
+    private Gadget visitPredicate(Predicate predicate) throws CompileTimeException {
         Set<Class<? extends Gadget>> gadgets = ReflectionHelper.getAllGadgets();
 
         for (Class<? extends Gadget> gadget : gadgets) {
             AstElement from = gadget.getAnnotation(AstElement.class);
 
             if (from == null)
-                throw new InternalCompilerErrorException("Missing @AstElement annotation in %s.", gadget);
+                throw new InternalCompilerException("Missing @AstElement annotation in %s.", gadget);
 
             if (from.value() == predicate.getClass()) {
                 try {
@@ -132,17 +116,17 @@ public class ASTVisitorImpl implements ASTVisitor {
 
                     return instance;
                 } catch (NoSuchMethodException e) {
-                    throw new InternalCompilerErrorException("Gadget %s is missing a default constructor.", gadget);
+                    throw new InternalCompilerException("Gadget %s is missing a default constructor.", gadget);
                 } catch (ReflectiveOperationException e) {
-                    throw new InternalCompilerErrorException("Invalid implementation of gadget %s.", gadget);
+                    throw new InternalCompilerException("Invalid implementation of gadget %s.", gadget);
                 }
             }
         }
 
-        throw new InternalCompilerErrorException("Missing gadget implementation for predicate: %s", predicate.getClass());
+        throw new InternalCompilerException("Missing gadget implementation for predicate: %s", predicate.getClass());
     }
 
-    private Variable visitType(Value type) {
+    private Variable visitType(Value type) throws CompileTimeException {
         if (type == null) {
             return new Nullable();
         } else {
@@ -152,7 +136,7 @@ public class ASTVisitorImpl implements ASTVisitor {
                 return visitIdentifier((Identifier) type);
         }
 
-        throw new InternalCompilerErrorException("Unimplemented type %s in AST.", type.getClass());
+        throw new InternalCompilerException("Unimplemented type %s in AST.", type.getClass());
     }
 
     /**
@@ -160,7 +144,7 @@ public class ASTVisitorImpl implements ASTVisitor {
      * As literals can only be public data (otherwise the witness would be leaked), return an {@link InstanceVariable}.
      */
     private Variable visitLiteral(Literal literal) {
-        return new InstanceVariable(from(literal));
+        return new InstanceVariable(from(literal), literal.getPosition());
     }
 
     private zkstrata.domain.data.types.Literal from(Literal literal) {
@@ -174,14 +158,13 @@ public class ASTVisitorImpl implements ASTVisitor {
     /**
      * Binds an identifier to its referenced value.
      */
-    private Variable visitIdentifier(Identifier identifier) {
+    private Variable visitIdentifier(Identifier identifier) throws CompileTimeException {
         String subject = identifier.getSubject();
         if (subjects.containsKey(subject)) {
             StructuredData data = subjects.get(subject);
-            return data.getVariable(Selector.from(identifier.getSelectors()));
+            return data.getVariable(Selector.from(identifier.getSelectors()), identifier.getPosition());
         } else {
-            String message = String.format("Missing declaration for subject alias `%s`.", subject);
-            throw new CompileException(message, statement, subject.length(), identifier.getPosition());
+            throw new CompileTimeException(String.format("Missing declaration for subject alias `%s`.", subject), identifier.getPosition());
         }
     }
 

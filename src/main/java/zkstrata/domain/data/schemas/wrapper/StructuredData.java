@@ -5,11 +5,11 @@ import zkstrata.domain.data.accessors.ValueAccessor;
 import zkstrata.domain.data.schemas.Schema;
 import zkstrata.domain.data.types.Value;
 import zkstrata.domain.data.types.wrapper.Variable;
+import zkstrata.exceptions.Position;
 
 public interface StructuredData<T extends Variable> {
     String getAlias();
-    T getVariable(Selector selector);
-
+    T getVariable(Selector selector, Position position);
 
     default Value resolve(Schema schema, Selector selector, ValueAccessor accessor) {
         Class<?> type = schema.getType(selector);

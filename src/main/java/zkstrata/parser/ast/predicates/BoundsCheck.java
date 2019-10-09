@@ -1,6 +1,6 @@
 package zkstrata.parser.ast.predicates;
 
-import zkstrata.parser.ast.Position;
+import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.types.Value;
 
 public class BoundsCheck extends Predicate {
@@ -8,8 +8,8 @@ public class BoundsCheck extends Predicate {
     private Value min;
     private Value max;
 
-    public BoundsCheck(Value value, Value min, Value max, Position position) {
-        super(position);
+    public BoundsCheck(Value value, Value min, Value max, Position tokenInfo) {
+        super(tokenInfo);
         this.value = value;
         this.min = min;
         this.max = max;

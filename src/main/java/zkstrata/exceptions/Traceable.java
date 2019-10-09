@@ -1,9 +1,9 @@
-package zkstrata.parser.ast;
+package zkstrata.exceptions;
 
-public abstract class Leaf {
+public abstract class Traceable {
     private Position position;
 
-    public Leaf(Position position) {
+    public Traceable(Position position) {
         this.position = position;
     }
 

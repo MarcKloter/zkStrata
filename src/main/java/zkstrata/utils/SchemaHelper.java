@@ -2,7 +2,7 @@ package zkstrata.utils;
 
 import org.reflections.Reflections;
 import zkstrata.domain.data.schemas.predefined.Schema;
-import zkstrata.exceptions.InternalCompilerErrorException;
+import zkstrata.exceptions.InternalCompilerException;
 
 import java.util.Set;
 
@@ -17,13 +17,13 @@ public class SchemaHelper {
                 if (!zkstrata.domain.data.schemas.Schema.class.isAssignableFrom(schema)) {
                     // TODO: add test for this case
                     String msg = String.format("The predefined schema %s does not implement %s.", name, zkstrata.domain.data.schemas.Schema.class);
-                    throw new InternalCompilerErrorException(msg);
+                    throw new InternalCompilerException(msg);
                 }
 
                 try {
                     return (zkstrata.domain.data.schemas.Schema) schema.getConstructor().newInstance();
                 } catch (Exception e) {
-                    throw new InternalCompilerErrorException(String.format("Invalid implementation of schema: %s", name));
+                    throw new InternalCompilerException(String.format("Invalid implementation of schema: %s", name));
                 }
             }
         }

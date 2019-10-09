@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.reflections.Reflections;
-import zkstrata.exceptions.InternalCompilerErrorException;
+import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.utils.ParserUtils;
 import zkstrata.zkStrataLexer;
 import zkstrata.parser.ast.types.Identifier;
@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
  * Statement (String) -> Parse Tree -> Abstract Syntax Tree
  */
 public class ParseTreeVisitor {
+
     public Statement parse(String statement) {
         ANTLRErrorListener errorListener = new ErrorListener();
 
@@ -43,7 +44,7 @@ public class ParseTreeVisitor {
 
         ParseTree tree = parser.statement();
 
-        StatementVisitor visitor = new StatementVisitor(statement, parser.getRuleNames());
+        StatementVisitor visitor = new StatementVisitor(parser.getRuleNames());
         return visitor.visit(tree);
     }
 
@@ -51,7 +52,7 @@ public class ParseTreeVisitor {
         @Override
         public Value visitWitness_var(zkStrata.Witness_varContext ctx) {
             if (ctx.getChildCount() != 1)
-                throw new InternalCompilerErrorException("Expected a single witness variable, found %d.", ctx.getChildCount());
+                throw new InternalCompilerException("Expected a single witness variable, found %d.", ctx.getChildCount());
 
             return ctx.getChild(0).accept(new TypeVisitor());
         }
@@ -59,7 +60,7 @@ public class ParseTreeVisitor {
         @Override
         public Value visitInstance_var(zkStrata.Instance_varContext ctx) {
             if (ctx.getChildCount() != 1)
-                throw new InternalCompilerErrorException("Expected a single instance variable, found %d.", ctx.getChildCount());
+                throw new InternalCompilerException("Expected a single instance variable, found %d.", ctx.getChildCount());
 
             return ctx.getChild(0).accept(new TypeVisitor());
         }
@@ -67,7 +68,7 @@ public class ParseTreeVisitor {
         @Override
         public Value visitReferenced_value(zkStrata.Referenced_valueContext ctx) {
             if (ctx.getChildCount() == 0)
-                throw new InternalCompilerErrorException("Expected a reference, found nothing.");
+                throw new InternalCompilerException("Expected a reference, found nothing.");
 
             String subject = ctx.alias().getText();
             List<String> accessors = ctx.property().stream()
@@ -79,7 +80,7 @@ public class ParseTreeVisitor {
         @Override
         public Value visitLiteral_value(zkStrata.Literal_valueContext ctx) {
             if (ctx.getChildCount() != 1)
-                throw new InternalCompilerErrorException("Expected 1 literal value, found %d.", ctx.getChildCount());
+                throw new InternalCompilerException("Expected 1 literal value, found %d.", ctx.getChildCount());
 
             TerminalNode node = (TerminalNode) ctx.getChild(0);
 
@@ -91,17 +92,15 @@ public class ParseTreeVisitor {
                 case zkStrataLexer.INTEGER_LITERAL:
                     return new IntegerLiteral(node.getText(), ParserUtils.getPosition(ctx.getStart()));
                 default:
-                    throw new InternalCompilerErrorException("The literal with type index %s is defined in the grammar but not implemented by the parse tree visitor.", node.getSymbol().getType());
+                    throw new InternalCompilerException("The literal with type index %s is defined in the grammar but not implemented by the parse tree visitor.", node.getSymbol().getType());
             }
         }
     }
 
     public class StatementVisitor extends zkStrataBaseVisitor<Statement> {
-        private String statement;
         private String[] rules;
 
-        StatementVisitor(String statement, String[] rules) {
-            this.statement = statement;
+        StatementVisitor(String[] rules) {
             this.rules = rules;
         }
 
@@ -119,7 +118,7 @@ public class ParseTreeVisitor {
                     .map(predicate -> predicate.accept(predicateVisitor))
                     .collect(Collectors.toList());
 
-            return new Statement(statement, subjects, predicates);
+            return new Statement(subjects, predicates);
         }
     }
 
@@ -153,22 +152,22 @@ public class ParseTreeVisitor {
                     try {
                         return (PredicateParser) parser.getConstructor().newInstance();
                     } catch (Exception e) {
-                        throw new InternalCompilerErrorException("Invalid implementation of parser %s.", name);
+                        throw new InternalCompilerException("Invalid implementation of parser %s.", name);
                     }
                 }
             }
 
-            throw new InternalCompilerErrorException("Could not find a parser implementation for rule: %s.", name);
+            throw new InternalCompilerException("Could not find a parser implementation for rule: %s.", name);
         }
 
         @Override
         public Predicate visitPredicate_clause(zkStrata.Predicate_clauseContext ctx) {
             if (ctx.getChildCount() != 1)
-                throw new InternalCompilerErrorException("Expected 1 predicate in clause, found %d.", ctx.getChildCount());
+                throw new InternalCompilerException("Expected 1 predicate in clause, found %d.", ctx.getChildCount());
 
             ParseTree child = ctx.getChild(0);
             if (!(child instanceof ParserRuleContext))
-                throw new InternalCompilerErrorException("Expected predicate to be a parser rule, found %s.", child.getClass());
+                throw new InternalCompilerException("Expected predicate to be a parser rule, found %s.", child.getClass());
 
             ParserRuleContext gadget = (ParserRuleContext) child;
             String name = this.rules[gadget.getRuleIndex()];

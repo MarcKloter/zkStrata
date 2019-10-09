@@ -1,6 +1,6 @@
 package zkstrata.parser.ast.types;
 
-import zkstrata.parser.ast.Position;
+import zkstrata.exceptions.Position;
 
 import java.util.List;
 

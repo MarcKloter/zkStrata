@@ -5,6 +5,8 @@ import zkstrata.domain.data.accessors.ValueAccessor;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.visitor.ASTVisitorImpl;
 import zkstrata.domain.data.schemas.Schema;
+import zkstrata.exceptions.CompileTimeException;
+import zkstrata.exceptions.CompilerException;
 import zkstrata.optimizer.Optimizer;
 import zkstrata.parser.ParseTreeVisitor;
 import zkstrata.parser.ast.Statement;
@@ -32,7 +34,12 @@ public class Compiler {
     ) {
         ParseTreeVisitor grammarParser = new ParseTreeVisitor();
         Statement ast = grammarParser.parse(statement);
-        List<Gadget> gadgets = new ASTVisitorImpl(schemas, witnessData, instanceData).visitStatement(ast);
+        List<Gadget> gadgets;
+        try {
+            gadgets = new ASTVisitorImpl(schemas, witnessData, instanceData).visitStatement(ast);
+        } catch (CompileTimeException e) {
+            throw new CompilerException(statement, e);
+        }
 
         gadgets = Optimizer.run(gadgets);
 

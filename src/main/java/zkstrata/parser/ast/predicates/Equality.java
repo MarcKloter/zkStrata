@@ -1,6 +1,6 @@
 package zkstrata.parser.ast.predicates;
 
-import zkstrata.parser.ast.Position;
+import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.types.Value;
 
 public class Equality extends Predicate {
