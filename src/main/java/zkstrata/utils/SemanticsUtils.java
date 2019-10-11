@@ -1,7 +1,5 @@
 package zkstrata.utils;
 
-import zkstrata.exceptions.CompileTimeException;
-
 import java.math.BigInteger;
 
 public class SemanticsUtils {
