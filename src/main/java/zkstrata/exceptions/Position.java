@@ -1,6 +1,8 @@
 package zkstrata.exceptions;
 
-public class Position {
+import java.io.Serializable;
+
+public class Position implements Serializable {
     private String target;
     private int line;
     private int charPositionInLine;
