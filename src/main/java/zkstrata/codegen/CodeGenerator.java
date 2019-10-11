@@ -59,8 +59,7 @@ public class CodeGenerator {
                 LOGGER.debug("Generated line: {}", line);
             }
         } catch (IOException e) {
-            // TODO: handle error
-            e.printStackTrace();
+            throw new InternalCompilerException("Error while writing to {}.", gadgetsFileName);
         }
     }
 
@@ -71,7 +70,6 @@ public class CodeGenerator {
     }
 
     private String getLabel(Variable var) {
-        // TODO: ONLY WITNESS: DO NOT COMBINE DIFFERENT REFERENCES INTO ONE VALUE (IF THEY RESOLVE TO THE SAME VALUE)
         if (var instanceof WitnessVariable) {
             witnessVariables.putIfAbsent((WitnessVariable) var, String.format("W%d", witnessVariables.size()));
             return witnessVariables.get(var);
@@ -96,8 +94,7 @@ public class CodeGenerator {
                 LOGGER.debug("Generated line: {}", line);
             }
         } catch (IOException e) {
-            // TODO: handle error
-            e.printStackTrace();
+            throw new InternalCompilerException(e, "Error while writing to {}.", instanceFileName);
         }
     }
 
@@ -112,8 +109,7 @@ public class CodeGenerator {
                 LOGGER.debug("Generated line: {}", line);
             }
         } catch (IOException e) {
-            // TODO: handle error
-            e.printStackTrace();
+            throw new InternalCompilerException(e, "Error while writing to {}.", witnessFileName);
         }
     }
 }
