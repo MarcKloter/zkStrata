@@ -9,7 +9,10 @@ import zkstrata.exceptions.Position;
 
 public interface StructuredData<T extends Variable> {
     String getAlias();
-    T getVariable(Selector selector, Position position);
+
+    Schema getSchema();
+
+    T getVariable(Selector selector, Position.Absolute position);
 
     default Value resolve(Schema schema, Selector selector, ValueAccessor accessor) {
         Class<?> type = schema.getType(selector);

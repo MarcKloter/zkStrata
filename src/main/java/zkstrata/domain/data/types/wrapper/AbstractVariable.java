@@ -8,9 +8,14 @@ import zkstrata.exceptions.Traceable;
 public abstract class AbstractVariable extends Traceable implements Variable {
     private Value value;
 
-    public AbstractVariable(Value value, Position position) {
+    public AbstractVariable(Value value, Position.Absolute position) {
         super(position);
         this.value = value;
+    }
+
+    @Override
+    public Position.Absolute getPosition() {
+        return (Position.Absolute) super.getPosition();
     }
 
     @Override

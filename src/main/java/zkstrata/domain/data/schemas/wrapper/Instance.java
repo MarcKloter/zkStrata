@@ -8,7 +8,7 @@ import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.exceptions.Position;
 
 /**
- * wrapper class to mark a {@link Schema} as instance wide (usually publicly) known
+ * Wrapper class to mark a {@link Schema} as instance wide (to all participants, usually publicly) known.
  */
 public class Instance implements StructuredData<InstanceVariable> {
     private String alias;
@@ -16,7 +16,7 @@ public class Instance implements StructuredData<InstanceVariable> {
     private ValueAccessor accessor;
 
     public Instance(String alias, Schema schema, ValueAccessor accessor) {
-        if(accessor == null) {
+        if (accessor == null) {
             String msg = String.format("Missing instance data for %s.", alias);
             throw new IllegalArgumentException(msg);
         }
@@ -32,7 +32,12 @@ public class Instance implements StructuredData<InstanceVariable> {
     }
 
     @Override
-    public InstanceVariable getVariable(Selector selector, Position position) {
+    public Schema getSchema() {
+        return schema;
+    }
+
+    @Override
+    public InstanceVariable getVariable(Selector selector, Position.Absolute position) {
         // TODO: test case (instance is subject -> referenced)
         // TODO: ensure missing instance is thrown before or check here
         Literal value = (Literal) resolve(schema, selector, accessor);

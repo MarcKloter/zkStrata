@@ -2,8 +2,9 @@ package zkstrata.parser;
 
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.Interval;
-import zkstrata.exceptions.CompilerException;
+import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
+import zkstrata.exceptions.ParserException;
 import zkstrata.exceptions.Position;
 import zkstrata.parser.exceptions.MissingTokenException;
 import zkstrata.parser.exceptions.UnwantedTokenException;
@@ -38,20 +39,20 @@ public class ErrorListener extends BaseErrorListener {
         String statement = charStream.toString();
         String symbol = charStream.getText(Interval.of(absolutePosition, absolutePosition));
         String message = String.format("Unexpected symbol %s.", symbol);
-        throw new CompilerException(message, statement, new Position(symbol, line, relativePosition));
+        throw new ParserException(message, new Position.Relative(symbol, line, relativePosition));
     }
 
     private void unexpectedToken(Recognizer<?, ?> recognizer, Token token, int line, int position) {
         CommonTokenStream commonTokenStream = (CommonTokenStream) recognizer.getInputStream();
         String statement = commonTokenStream.getTokenSource().getInputStream().toString();
         String message = String.format("Unexpected token %s.", token.getText());
-        throw new CompilerException(message, statement, new Position(token.getText(), line, position));
+        throw new ParserException(message, new Position.Relative(token.getText(), line, position));
     }
 
     private void unexpectedInput(Recognizer<?, ?> recognizer, Token token, int line, int position) {
         CommonTokenStream commonTokenStream = (CommonTokenStream) recognizer.getInputStream();
         String statement = commonTokenStream.getTokenSource().getInputStream().toString();
         String message = String.format("Unexpected input %s.", token.getText());
-        throw new CompilerException(message, statement, new Position(token.getText(), line, position));
+        throw new ParserException(message, new Position.Relative(token.getText(), line, position));
     }
 }

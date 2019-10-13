@@ -7,6 +7,7 @@ import java.util.Map;
 
 public class Arguments {
     private String name;
+    private String source;
     private String statement;
     private Map<String, ValueAccessor> witnessData;
     private Map<String, ValueAccessor> instanceData;
@@ -14,12 +15,14 @@ public class Arguments {
 
     public Arguments(
             String name,
+            String source,
             String statement,
             Map<String, ValueAccessor> witnessData,
             Map<String, ValueAccessor> instanceData,
             Map<String, Schema> schemas
     ) {
         this.name = name;
+        this.source = source;
         this.statement = statement;
         this.witnessData = witnessData;
         this.instanceData = instanceData;
@@ -28,6 +31,10 @@ public class Arguments {
 
     public String getName() {
         return name;
+    }
+
+    public String getSource() {
+        return source;
     }
 
     public String getStatement() {

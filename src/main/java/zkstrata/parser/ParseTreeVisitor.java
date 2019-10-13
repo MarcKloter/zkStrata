@@ -4,11 +4,13 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.reflections.Reflections;
+import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
+import zkstrata.exceptions.ParserException;
 import zkstrata.utils.ParserUtils;
 import zkstrata.zkStrataLexer;
 import zkstrata.parser.ast.types.Identifier;
-import zkstrata.parser.ast.Statement;
+import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.Subject;
 import zkstrata.parser.ast.predicates.Predicate;
 import zkstrata.parser.ast.types.HexLiteral;
@@ -30,7 +32,7 @@ import java.util.stream.Collectors;
  */
 public class ParseTreeVisitor {
 
-    public Statement parse(String statement) {
+    public AbstractSyntaxTree parse(String source, String statement) {
         ANTLRErrorListener errorListener = new ErrorListener();
 
         zkStrataLexer lexer = new zkStrataLexer(CharStreams.fromString(statement));
@@ -42,9 +44,14 @@ public class ParseTreeVisitor {
         parser.addErrorListener(errorListener);
         parser.setErrorHandler(new ErrorStrategy());
 
-        ParseTree tree = parser.statement();
+        ParseTree tree;
+        try {
+            tree = parser.statement();
+        } catch (ParserException e) {
+            throw new CompileTimeException(source, statement, e);
+        }
 
-        StatementVisitor visitor = new StatementVisitor(parser.getRuleNames());
+        StatementVisitor visitor = new StatementVisitor(source, statement, parser.getRuleNames());
         return visitor.visit(tree);
     }
 
@@ -97,15 +104,19 @@ public class ParseTreeVisitor {
         }
     }
 
-    public class StatementVisitor extends zkStrataBaseVisitor<Statement> {
+    public class StatementVisitor extends zkStrataBaseVisitor<AbstractSyntaxTree> {
+        private String source;
+        private String statement;
         private String[] rules;
 
-        StatementVisitor(String[] rules) {
+        StatementVisitor(String source, String statement, String[] rules) {
+            this.source = source;
+            this.statement = statement;
             this.rules = rules;
         }
 
         @Override
-        public Statement visitStatement(zkStrata.StatementContext ctx) {
+        public AbstractSyntaxTree visitStatement(zkStrata.StatementContext ctx) {
             SubjectVisitor subjectVisitor = new SubjectVisitor();
             List<Subject> subjects = ctx.subjects().subject()
                     .stream()
@@ -118,7 +129,7 @@ public class ParseTreeVisitor {
                     .map(predicate -> predicate.accept(predicateVisitor))
                     .collect(Collectors.toList());
 
-            return new Statement(subjects, predicates);
+            return new AbstractSyntaxTree(source, statement, subjects, predicates);
         }
     }
 

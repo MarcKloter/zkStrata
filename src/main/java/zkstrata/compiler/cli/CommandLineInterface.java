@@ -45,12 +45,13 @@ public class CommandLineInterface {
         CommandLine cmd = parser.parse(options, args);
 
         String statementName = getStatementName(cmd);
-        String statementFile = getStatement(cmd);
+        String statementFile = getStatementFile(cmd);
+        String statement = getStatement(cmd);
         HashMap<String, ValueAccessor> witnessFiles = getWitnessData(cmd);
         HashMap<String, Schema> schemaFiles = getSchemas(cmd);
         HashMap<String, ValueAccessor> instanceFiles = getInstanceData(cmd);
 
-        return new Arguments(statementName, statementFile, witnessFiles, instanceFiles, schemaFiles);
+        return new Arguments(statementName, statementFile, statement, witnessFiles, instanceFiles, schemaFiles);
     }
 
     /**
@@ -93,13 +94,16 @@ public class CommandLineInterface {
         System.exit(1);
     }
 
+    private String getStatementFile(CommandLine cmd) {
+        return cmd.getOptionValue("statement");
+    }
+
     private String getStatementName(CommandLine cmd) {
-        String file = cmd.getOptionValue("statement");
-        return FilenameUtils.getBaseName(file);
+        return FilenameUtils.getBaseName(getStatementFile(cmd));
     }
 
     private String getStatement(CommandLine cmd) {
-        String file = cmd.getOptionValue("statement");
+        String file = getStatementFile(cmd);
         try {
             return Files.readString(Path.of(file), StandardCharsets.UTF_8);
         } catch (IOException e) {

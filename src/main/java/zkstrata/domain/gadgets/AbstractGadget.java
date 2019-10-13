@@ -2,20 +2,16 @@ package zkstrata.domain.gadgets;
 
 import zkstrata.domain.data.types.wrapper.Nullable;
 import zkstrata.domain.data.types.wrapper.Variable;
-import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.optimizer.LocalOptimizationRule;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget<T> {
 
     @Override
-    public void initFrom(Map<String, Variable> sourceFields) throws CompileTimeException {
+    public void initFrom(Map<String, Variable> sourceFields) {
         for (Map.Entry<String, Variable> source : sourceFields.entrySet()) {
             try {
                 Field destination = this.getClass().getDeclaredField(source.getKey());
@@ -38,28 +34,46 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
     private void checkType(Field field, Variable variable) {
         Type annotation = field.getAnnotation(Type.class);
 
-        if (annotation == null) {
-            throw new InternalCompilerException("Field %s in %s is missing @Type annotation.", field.getName(), this.getClass());
-        }
+        if (annotation == null)
+            throw new InternalCompilerException("Field %s in %s is missing @Type annotation.",
+                    field.getName(), this.getClass());
 
         List<Class<?>> allowedTypes = Arrays.asList(annotation.value());
 
-        if (!allowedTypes.contains(variable.getType())) {
-            String msg = String.format("Type %s not allowed for field %s in %s.", variable.getType().getSimpleName(), field.getName(), this.getClass());
-            // TODO: replace IllegalArgumentException by CompileException
-            throw new IllegalArgumentException(msg);
+        if (!allowedTypes.contains(variable.getType()))
+            throw new InternalCompilerException("Type %s not allowed for field %s in %s.",
+                    variable.getType().getSimpleName(), field.getName(), this.getClass());
+    }
+
+    @Override
+    public List<Variable> getVariables() {
+        List<Variable> variables = new ArrayList<>();
+        Field[] fields = this.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            Type annotation = field.getAnnotation(Type.class);
+
+            if (annotation != null) {
+                try {
+                    field.setAccessible(true);
+                    variables.add((Variable) field.get(this));
+                } catch (IllegalAccessException e) {
+                    throw new InternalCompilerException("Unable to access field %s in %s.",
+                            field.getName(), this.getClass());
+                }
+            }
         }
+        return variables;
     }
 
     /**
      * Empty default implementation to override by gadgets on demand.
      */
     @Override
-    public void performChecks() throws CompileTimeException {
+    public void performChecks() {
     }
 
     @LocalOptimizationRule(context = {AbstractGadget.class})
-    public Optional<Gadget> checkEquality(T other) {
+    public Optional<Gadget> removeDuplicate(T other) {
         return isEqualTo(other) ? Optional.empty() : Optional.of(this);
     }
 }

@@ -5,6 +5,6 @@ import zkstrata.exceptions.Position;
 
 public class ParserUtils {
     public static Position getPosition(Token token) {
-        return new Position(token.getText(), token.getLine(), token.getCharPositionInLine());
+        return new Position.Relative(token.getText(), token.getLine(), token.getCharPositionInLine());
     }
 }
