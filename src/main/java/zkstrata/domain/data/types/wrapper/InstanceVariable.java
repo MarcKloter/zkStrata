@@ -16,4 +16,9 @@ public class InstanceVariable extends AbstractVariable {
     public Literal getValue() {
         return (Literal) super.getValue();
     }
+
+    @Override
+    public String toString() {
+        return getValue().toString();
+    }
 }

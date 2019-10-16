@@ -31,4 +31,14 @@ public class WitnessVariable extends AbstractVariable {
 
         return reference.equals(((WitnessVariable) obj).getReference());
     }
+
+    @Override
+    public int hashCode() {
+        return reference.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return reference.toString();
+    }
 }

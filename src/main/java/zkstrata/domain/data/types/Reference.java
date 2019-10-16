@@ -21,6 +21,11 @@ public class Reference implements Value {
     }
 
     @Override
+    public String toString() {
+        return String.format("%s.%s", subject, selector.toString());
+    }
+
+    @Override
     public String toHex() {
         throw new IllegalStateException("Invalid method call toHex on Reference.");
     }

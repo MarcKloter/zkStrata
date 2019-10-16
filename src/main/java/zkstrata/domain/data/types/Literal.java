@@ -38,4 +38,9 @@ public class Literal implements Value {
 
         return value.equals(((Literal) obj).getValue());
     }
+
+    @Override
+    public String toString() {
+        return value.toString();
+    }
 }
