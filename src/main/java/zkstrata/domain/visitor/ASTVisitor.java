@@ -68,7 +68,7 @@ public class ASTVisitor {
 
         this.checkUnusedSubjects();
 
-        return new Statement(ast.getSource(), ast.getStatement(), subjects.getUsedMap(), !witnessData.isEmpty(), gadgets);
+        return new Statement(subjects.getUsedMap(), gadgets);
     }
 
     private StructuredData visitSubject(Subject subject) {
