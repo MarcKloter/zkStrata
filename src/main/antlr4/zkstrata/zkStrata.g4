@@ -7,7 +7,7 @@ import BoundsCheck,
        MerkleTree,
        MiMCHash;
 
-statement           : K_PROOF K_FOR subjects K_THAT predicates EOF ;
+statement           : K_PROOF K_FOR (subjects | K_THIS) K_THAT predicates EOF ;
 predicates          : predicate_clause (joint predicate_clause)* ;
 subjects            : subject (joint subject)* ;
 subject             : K_INSTANCE? schema_name K_AS alias ;

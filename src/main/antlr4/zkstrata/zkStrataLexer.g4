@@ -19,6 +19,7 @@ K_PROOF               : P R O O F ;
 K_ROOT                : R O O T ;
 K_THAN                : T H A N ;
 K_THAT                : T H A T ;
+K_THIS                : T H I S ;
 K_TO                  : T O ;
 
 /**
