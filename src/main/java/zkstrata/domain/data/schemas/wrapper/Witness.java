@@ -11,34 +11,18 @@ import zkstrata.exceptions.Position;
 /**
  * Wrapper class to mark a {@link Schema} as witness (only known to the prover, confidential information).
  */
-public class Witness implements StructuredData<WitnessVariable> {
-    private String alias;
-    private Schema schema;
-    private ValueAccessor accessor;
-
+public class Witness extends AbstractStructuredData<WitnessVariable> {
     public Witness(String alias, Schema schema, ValueAccessor accessor) {
-        this.alias = alias;
-        this.schema = schema;
-        this.accessor = accessor;
-    }
-
-    @Override
-    public String getAlias() {
-        return alias;
-    }
-
-    @Override
-    public Schema getSchema() {
-        return schema;
+        super(alias, schema, accessor);
     }
 
     @Override
     public WitnessVariable getVariable(Selector selector, Position.Absolute position) {
         try {
-            Value value = resolve(schema, selector, accessor);
-            return new WitnessVariable(value, new Reference(value.getType(), alias, selector), position);
+            Value value = resolve(getSchema(), selector, getAccessor());
+            return new WitnessVariable(value, new Reference(value.getType(), getAlias(), selector), position);
         } catch (ClassCastException e) {
-            String msg = String.format("Instance data %s does not match the structure of schema %s.", alias, schema.getClass().getSimpleName());
+            String msg = String.format("Witness data %s does not match the structure of schema %s.", getAlias(), getSchema().getClass().getSimpleName());
             throw new IllegalArgumentException(msg);
         }
     }
