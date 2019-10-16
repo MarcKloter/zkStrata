@@ -1,11 +1,10 @@
 package zkstrata.domain.data.types.wrapper;
 
 import zkstrata.domain.data.types.Value;
-import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.exceptions.Position;
-import zkstrata.exceptions.Traceable;
+import zkstrata.exceptions.AbstractTraceable;
 
-public abstract class AbstractVariable extends Traceable implements Variable {
+public abstract class AbstractVariable extends AbstractTraceable implements Variable {
     private Value value;
 
     public AbstractVariable(Value value, Position.Absolute position) {
@@ -26,11 +25,6 @@ public abstract class AbstractVariable extends Traceable implements Variable {
     @Override
     public Value getValue() {
         return value;
-    }
-
-    @Override
-    public String toString() {
-        throw new InternalCompilerException("Method toString is not allowed on objects of class Variable.");
     }
 
     @Override

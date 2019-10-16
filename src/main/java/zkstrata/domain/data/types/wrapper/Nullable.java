@@ -1,6 +1,7 @@
 package zkstrata.domain.data.types.wrapper;
 
 import zkstrata.domain.data.types.Value;
+import zkstrata.exceptions.Position;
 
 public class Nullable implements Variable {
     @Override
@@ -10,6 +11,11 @@ public class Nullable implements Variable {
 
     @Override
     public Value getValue() {
+        return null;
+    }
+
+    @Override
+    public Position.Absolute getPosition() {
         return null;
     }
 }
