@@ -4,7 +4,7 @@ import zkstrata.exceptions.Position;
 
 import java.util.List;
 
-public class Identifier extends Value {
+public class Identifier extends Value<String> {
     private String subject;
     private List<String> selectors;
 
@@ -20,5 +20,11 @@ public class Identifier extends Value {
 
     public List<String> getSelectors() {
         return selectors;
+    }
+
+
+    @Override
+    public String getValue() {
+        return String.format("%s.%s", subject, String.join(".", selectors));
     }
 }

@@ -14,5 +14,4 @@ public class StringLiteral extends Literal<String> {
     public String getValue() {
         return value;
     }
-
 }
