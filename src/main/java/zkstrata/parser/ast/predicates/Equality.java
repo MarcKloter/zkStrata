@@ -17,7 +17,7 @@ public class Equality extends Predicate {
         return leftHand;
     }
 
-    public Value getRight() {
+    public Value getRightHand() {
         return rightHand;
     }
 }
