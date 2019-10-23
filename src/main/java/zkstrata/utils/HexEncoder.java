@@ -31,14 +31,21 @@ public class HexEncoder {
     }
 
     public static String encode(BigInteger bigInteger) {
-        return String.format("%02x", bigInteger);
+        return pad(String.format("%x", bigInteger));
     }
 
     public static String encode(Integer integer) {
-        return String.format("%02x", integer);
+        return pad(String.format("%x", integer));
     }
 
     public static String encode(String string) {
         return Hex.encodeHexString(string.getBytes());
+    }
+
+    private static String pad(String string) {
+        if (string.length() % 2 == 1)
+            return String.format("0%s", string);
+        else
+            return string;
     }
 }
