@@ -1,48 +1,25 @@
 package zkstrata.compiler;
 
+import zkstrata.analysis.SemanticAnalyzer;
 import zkstrata.codegen.CodeGenerator;
-import zkstrata.domain.data.accessors.ValueAccessor;
-import zkstrata.domain.gadgets.Gadget;
-import zkstrata.domain.visitor.ASTVisitorImpl;
-import zkstrata.domain.data.schemas.Schema;
-import zkstrata.exceptions.CompileTimeException;
-import zkstrata.exceptions.CompilerException;
-import zkstrata.optimizer.Optimizer;
+import zkstrata.domain.Statement;
+import zkstrata.domain.visitor.ASTVisitor;
 import zkstrata.parser.ParseTreeVisitor;
-import zkstrata.parser.ast.Statement;
-
-import java.util.List;
-import java.util.Map;
+import zkstrata.parser.ast.AbstractSyntaxTree;
 
 public class Compiler {
-    public static void run(Arguments args) {
-        run(
-                args.getName(),
-                args.getStatement(),
-                args.getWitnessData(),
-                args.getInstanceData(),
-                args.getSchemas()
-        );
+    private Compiler() {
+        throw new IllegalStateException("Utility class");
     }
 
-    public static void run(
-            String name,
-            String statement,
-            Map<String, ValueAccessor> witnessData,
-            Map<String, ValueAccessor> instanceData,
-            Map<String, Schema> schemas
-    ) {
+    public static void run(Arguments args) {
         ParseTreeVisitor grammarParser = new ParseTreeVisitor();
-        Statement ast = grammarParser.parse(statement);
-        List<Gadget> gadgets;
-        try {
-            gadgets = new ASTVisitorImpl(schemas, witnessData, instanceData).visitStatement(ast);
-        } catch (CompileTimeException e) {
-            throw new CompilerException(statement, e);
-        }
+        AbstractSyntaxTree ast = grammarParser.parse(args.getSource(), args.getStatement());
+        ASTVisitor astVisitor = new ASTVisitor(ast, args.getWitnessData(), args.getInstanceData(), args.getSchemas());
+        Statement statement = astVisitor.visitStatement();
 
-        gadgets = Optimizer.run(gadgets);
 
-        new CodeGenerator(name).run(gadgets, !witnessData.isEmpty());
+        new SemanticAnalyzer().process(statement);
+        new CodeGenerator(args.getName()).run(statement.getGadgets(), args.hasWitnessData());
     }
 }

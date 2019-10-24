@@ -52,4 +52,8 @@ public class Arguments {
     public Map<String, Schema> getSchemas() {
         return schemas;
     }
+
+    public boolean hasWitnessData() {
+        return !witnessData.isEmpty();
+    }
 }
