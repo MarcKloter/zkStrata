@@ -6,10 +6,7 @@ import zkstrata.domain.Statement;
 import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.accessors.SchemaAccessor;
 import zkstrata.domain.data.accessors.ValueAccessor;
-import zkstrata.exceptions.CompileTimeException;
-import zkstrata.exceptions.InternalCompilerException;
-import zkstrata.exceptions.Position;
-import zkstrata.exceptions.Traceable;
+import zkstrata.exceptions.*;
 import zkstrata.parser.ast.types.*;
 import zkstrata.utils.ReflectionHelper;
 import zkstrata.utils.SchemaHelper;
@@ -176,7 +173,7 @@ public class ASTVisitor {
 
     private void checkUnusedSubjects() {
         for (String alias : subjects.getUnusedKeySet()) {
-            LOGGER.warn("Unused subject '{}'", alias);
+            LOGGER.warn("Removing unused subject '{}'", alias);
         }
     }
 

@@ -7,6 +7,10 @@ import zkstrata.exceptions.InternalCompilerException;
 import java.util.Set;
 
 public class SchemaHelper {
+    private SchemaHelper() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static zkstrata.domain.data.schemas.Schema resolve(String name) {
         Reflections reflections = new Reflections("zkstrata.domain.data.schemas.predefined");
         Set<Class<?>> schemas = reflections.getTypesAnnotatedWith(Schema.class);

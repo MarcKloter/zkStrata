@@ -10,6 +10,10 @@ import java.math.BigInteger;
 public class HexEncoder {
     private static final Logger LOGGER = LogManager.getLogger(HexEncoder.class);
 
+    private HexEncoder() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Encodes the given {@link Object} as hex string in little endian encoding.
      *
