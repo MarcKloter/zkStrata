@@ -1,33 +1,115 @@
 package zkstrata.domain.gadgets.impl;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import zkstrata.analysis.Contradiction;
+import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
+import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.*;
-import zkstrata.optimizer.GlobalOptimizationRule;
-import zkstrata.optimizer.LocalOptimizationRule;
+import zkstrata.exceptions.CompileTimeException;
+import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.Equality;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @AstElement(Equality.class)
 public class EqualityGadget extends AbstractGadget<EqualityGadget> {
+    private static final Logger LOGGER = LogManager.getLogger(EqualityGadget.class);
+
     @Type({String.class, BigInteger.class})
     private Variable leftHand;
 
     @Type({String.class, BigInteger.class})
     private Variable rightHand;
 
-    @Override
-    public void performChecks() {
+    public EqualityGadget() {
+
+    }
+
+    public EqualityGadget(Variable leftHand, Variable rightHand) {
+        this.leftHand = leftHand;
+        this.rightHand = rightHand;
+    }
+
+    @Implication(premise = {EqualityGadget.class, EqualityGadget.class})
+    public static Optional<Gadget> implyEquality(EqualityGadget eq1, EqualityGadget eq2) {
+        List<Variable> parity = getParity(eq1, eq2);
+        if (new HashSet<>(parity).size() == 2)
+            return Optional.of(new EqualityGadget(parity.get(0), parity.get(1)));
+
+        return Optional.empty();
+    }
+
+    @Contradiction(propositions = {EqualityGadget.class})
+    public static void checkContradiction(EqualityGadget eq) {
+        if (eq.getLeft() instanceof InstanceVariable && eq.getRight() instanceof InstanceVariable
+                && !eq.getLeft().equals(eq.getRight()))
+            throw new CompileTimeException("Contradiction.", Set.of(eq.getLeft(), eq.getRight()));
+    }
+
+    @Substitution(target = {EqualityGadget.class})
+    public static List<Gadget> removeWitnessEqualsSelf(EqualityGadget eq) {
+        if (eq.getLeft() instanceof WitnessVariable && eq.getRight() instanceof WitnessVariable
+                && eq.getLeft().equals(eq.getRight())) {
+            // TODO: maybe add statements information
+            LOGGER.info("Removed equality predicate of single witness variable.");
+            return Collections.emptyList();
+        }
+
+        return List.of(eq);
+    }
+
+    @Substitution(target = {EqualityGadget.class})
+    public static List<Gadget> removeInstanceEqualsInstance(EqualityGadget eq) {
+        if (eq.getLeft() instanceof InstanceVariable && eq.getRight() instanceof InstanceVariable
+                && eq.getLeft().getValue().equals(eq.getRight().getValue())) {
+            // TODO: maybe add statements information
+            LOGGER.info("Removed equality predicate of two instance variables.");
+            return Collections.emptyList();
+        }
+
+        return List.of(eq);
+    }
+
+    /**
+     * Checks whether two equality gadgets have a common witness variable and returns the other two variables.
+     *
+     * @param eq1 {@link EqualityGadget} to check
+     * @param eq2 {@link EqualityGadget} to check
+     * @return {@link List} containing two variables if the given gadgets have a common witness variable, empty list otherwise.
+     */
+    private static List<Variable> getParity(EqualityGadget eq1, EqualityGadget eq2) {
+        if (eq1.getLeft() instanceof WitnessVariable) {
+            if (eq2.getLeft() instanceof WitnessVariable && eq1.getLeft().equals(eq2.getLeft()))
+                return List.of(eq1.getRight(), eq2.getRight());
+            if (eq2.getRight() instanceof WitnessVariable && eq1.getLeft().equals(eq2.getRight()))
+                return List.of(eq1.getRight(), eq2.getLeft());
+        } else if (eq1.getRight() instanceof WitnessVariable) {
+            if (eq2.getLeft() instanceof WitnessVariable && eq1.getRight().equals(eq2.getLeft()))
+                return List.of(eq1.getLeft(), eq2.getRight());
+            if (eq2.getRight() instanceof WitnessVariable && eq1.getRight().equals(eq2.getRight()))
+                return List.of(eq1.getLeft(), eq2.getLeft());
+        }
+
+        return Collections.emptyList();
+    }
+
+    public Variable getLeft() {
+        return leftHand;
+    }
+
+    public Variable getRight() {
+        return rightHand;
     }
 
     @Override
     public boolean isEqualTo(EqualityGadget other) {
-        return false;
+        return (leftHand.equals(other.leftHand) && rightHand.equals(other.rightHand)) ||
+                (rightHand.equals(other.leftHand)) && leftHand.equals(other.rightHand);
     }
 
     @Override
@@ -37,46 +119,5 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
                 Map.entry("rightHand", rightHand)
         );
         return new TargetFormat("EQUALS %(leftHand) %(rightHand)", args);
-    }
-
-    @LocalOptimizationRule
-    public Optional<Gadget> checkInstanceEqualsInstance() {
-        System.out.println("Called checkInstanceEqualsInstance");
-        // TODO: how are we going to display warnings (return an object?)
-        if (leftHand instanceof InstanceVariable && rightHand instanceof InstanceVariable
-                && leftHand.getValue().equals(rightHand.getValue()))
-            return Optional.empty();
-
-        return Optional.of(this);
-    }
-
-
-    @LocalOptimizationRule(context = {EqualityGadget.class, EqualityGadget.class})
-    public Optional<Gadget> testOptimizationMethod1(EqualityGadget eq1, EqualityGadget eq2) {
-        System.out.println("Called testOptimizationMethod1");
-        // TODO: (LocalOptimizationRule) W1 == W2 (remove), W1 == 5 (context), W2 == 5 (context)
-
-        return Optional.of(this);
-    }
-
-    @LocalOptimizationRule(context = {EqualityGadget.class})
-    public Optional<Gadget> testOptimizationMethod2(EqualityGadget equalityGadget) {
-        System.out.println("Called testOptimizationMethod2");
-
-        return Optional.of(this);
-    }
-
-    @LocalOptimizationRule(context = {BoundsCheckGadget.class, EqualityGadget.class})
-    public Optional<Gadget> testOptimizationMethod3(BoundsCheckGadget boundsCheckGadget, EqualityGadget equalityGadget) {
-        System.out.println("Called testOptimizationMethod3");
-
-        return Optional.of(this);
-    }
-
-    @GlobalOptimizationRule(gadgets = {EqualityGadget.class, EqualityGadget.class, EqualityGadget.class})
-    public List<Gadget> testOptimizationMethod4(EqualityGadget eq1, EqualityGadget eq2, EqualityGadget eq3) {
-        System.out.println("Called testOptimizationMethod4");
-
-        return List.of(eq1, eq2, eq3);
     }
 }

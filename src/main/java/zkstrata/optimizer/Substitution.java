@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface GlobalOptimizationRule {
-    Class<? extends Gadget>[] gadgets();
+public @interface Substitution {
+    Class<? extends Gadget>[] target();
     Class<? extends Gadget>[] context() default {};
 }
