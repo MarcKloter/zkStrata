@@ -45,4 +45,9 @@ public abstract class AbstractSchema implements Schema {
             throw new IllegalArgumentException(msg);
         }
     }
+
+    @Override
+    public String getStatement() {
+        return null;
+    }
 }
