@@ -1,9 +1,10 @@
 package zkstrata.domain.gadgets;
 
+import org.apache.commons.text.TextStringBuilder;
 import zkstrata.domain.data.types.wrapper.Nullable;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.exceptions.InternalCompilerException;
-import zkstrata.optimizer.LocalOptimizationRule;
+import zkstrata.optimizer.Substitution;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -48,21 +49,27 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
     @Override
     public List<Variable> getVariables() {
         List<Variable> variables = new ArrayList<>();
-        Field[] fields = this.getClass().getDeclaredFields();
-        for (Field field : fields) {
-            Type annotation = field.getAnnotation(Type.class);
-
-            if (annotation != null) {
-                try {
-                    field.setAccessible(true);
-                    variables.add((Variable) field.get(this));
-                } catch (IllegalAccessException e) {
-                    throw new InternalCompilerException("Unable to access field %s in %s.",
-                            field.getName(), this.getClass());
-                }
+        for (Field field : getTypeAnnotatedFields()) {
+            try {
+                field.setAccessible(true);
+                variables.add((Variable) field.get(this));
+            } catch (IllegalAccessException e) {
+                throw new InternalCompilerException("Unable to access field %s in %s.",
+                        field.getName(), this.getClass());
             }
         }
         return variables;
+    }
+
+    private Set<Field> getTypeAnnotatedFields() {
+        Set<Field> fields = new HashSet<>();
+        for (Field field : this.getClass().getDeclaredFields()) {
+            Type annotation = field.getAnnotation(Type.class);
+
+            if (annotation != null)
+                fields.add(field);
+        }
+        return fields;
     }
 
     /**
@@ -72,8 +79,42 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
     public void performChecks() {
     }
 
-    @LocalOptimizationRule(context = {AbstractGadget.class})
-    public Optional<Gadget> removeDuplicate(T other) {
-        return isEqualTo(other) ? Optional.empty() : Optional.of(this);
+    @Substitution(target = {AbstractGadget.class}, context = {AbstractGadget.class})
+    public Optional<Set<Gadget>> removeDuplicate(T other) {
+        return isEqualTo(other) ? Optional.empty() : Optional.of(Set.of(this));
+    }
+
+    @Override
+    public String toString() {
+        TextStringBuilder builder = new TextStringBuilder();
+        builder.append("%s@%s", getClass().getSimpleName(), Integer.toHexString(hashCode()));
+        getVariables().forEach(var -> builder.append(" <%s>", var.toString()));
+        return builder.build();
+    }
+
+    @Override
+    public String toDebugString() {
+        TextStringBuilder builder = new TextStringBuilder();
+        builder.appendln("%s@%s", getClass().getSimpleName(), Integer.toHexString(hashCode()));
+        getVariables().forEach(var ->
+                builder.appendln("    %s@%s: %s", var.getClass().getSimpleName(), Integer.toHexString(var.hashCode()), var.toString())
+        );
+        return builder.build();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+
+        if (getClass() != obj.getClass())
+            return false;
+
+        return isEqualTo((T) obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return getVariables().stream().mapToInt(Variable::hashCode).sum();
     }
 }
