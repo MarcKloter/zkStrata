@@ -2,8 +2,11 @@ package zkstrata.optimizer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import zkstrata.domain.Statement;
 import zkstrata.domain.gadgets.Gadget;
+import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.utils.CombinatoricsUtils;
+import zkstrata.utils.ReflectionHelper;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -12,11 +15,11 @@ import java.util.stream.Collectors;
 public class Optimizer {
     private static final Logger LOGGER = LogManager.getLogger(Optimizer.class);
 
-    public static List<Gadget> run(List<Gadget> input) {
-        LOGGER.debug(String.format("Starting optimization on %s gadgets", input.size()));
+    public static List<Gadget> run(Statement statement) {
+        LOGGER.debug("Starting optimization on {} gadgets", statement.getGadgets().size());
 
-        List<Gadget> state = new ArrayList<>(input);
 
+        List<Gadget> state = new ArrayList<>(statement.getGadgets());
         List<Gadget> context = new ArrayList<>(state);
 
         for (Gadget gadget : state) {
@@ -26,13 +29,13 @@ public class Optimizer {
 
         state = new ArrayList<>(context);
 
-        LOGGER.debug(String.format("Finishing optimization with %s gadgets", state.size()));
+        LOGGER.debug("Finishing optimization with {} gadgets", state.size());
         return state;
     }
 
     private static Optional<Gadget> applyLocalOptimizations(Gadget gadget, List<Gadget> others) {
         Set<Method> optimizationRules = Arrays.stream(gadget.getClass().getMethods())
-                .filter(method -> method.isAnnotationPresent(LocalOptimizationRule.class))
+                .filter(method -> method.isAnnotationPresent(Substitution.class))
                 .collect(Collectors.toSet());
 
         // TODO move loop from applyOptimizationRules up here
@@ -40,33 +43,29 @@ public class Optimizer {
         return applyOptimizationRules(gadget, others, optimizationRules);
     }
 
-    /**
-     * Determines whether the provided gadget should be included in the optimizer output by applying the given optimization methods.
-     *
-     * @param gadget            {@link Gadget} as target to apply optimization methods on
-     * @param others            {@link List} of {@link Gadget} for using clauses of optimization rules
-     * @param optimizationRules {@link Set} of {@link Method} annotated with {@link LocalOptimizationRule} to apply on the gadget
-     * @return indicator to include the given gadget in the output of the optimizer or whether it can be safely removed
-     */
     private static Optional<Gadget> applyOptimizationRules(Gadget gadget, List<Gadget> others, Set<Method> optimizationRules) {
-        // TODO: finish implementing this method
-        LOGGER.debug(String.format("Found %d @LocalOptimizationRule for %s", optimizationRules.size(), gadget.getClass().getSimpleName()));
+        LOGGER.debug("Found {} methods annotated as @Substitution for {}",
+                optimizationRules.size(), gadget.getClass().getSimpleName());
         for (Method optimizationRule : optimizationRules) {
-            Class<? extends Gadget>[] context = optimizationRule.getAnnotation(LocalOptimizationRule.class).context();
+            if (!ReflectionHelper.checkReturnType(optimizationRule, Optional.class, Gadget.class))
+                throw new InternalCompilerException("Invalid implementation of @Substitution annotated method %s in %s. "
+                        + "Return type must be Optional<Gadget>.", optimizationRule.getName(), optimizationRule.getDeclaringClass());
+
+            Class<? extends Gadget>[] context = optimizationRule.getAnnotation(Substitution.class).context();
             try {
                 if (context.length > 0) {
-                    List<Deque<Gadget>> contextCombinations = CombinatoricsUtils.getCombinations(List.of(context), others);
-                    for (Deque<Gadget> contextCombination : contextCombinations) {
+                    List<List<Gadget>> contextCombinations = CombinatoricsUtils.getCombinations(List.of(context), others);
+                    for (List<Gadget> contextCombination : contextCombinations) {
+                        @SuppressWarnings("unchecked")
                         Optional<Gadget> result = (Optional<Gadget>) optimizationRule.invoke(gadget, contextCombination.toArray());
                     }
-                } else
-                    if (((Optional<Gadget>) optimizationRule.invoke(gadget)).isPresent())
+                } else {
+                    @SuppressWarnings("unchecked")
+                    Optional<Gadget> result = (Optional<Gadget>) optimizationRule.invoke(gadget);
+                    if (result.isPresent())
                         ;// return Optional.empty();
+                }
             } catch (ReflectiveOperationException e) {
-            } catch (ClassCastException e) {
-                LOGGER.fatal(e.toString());
-                String msg = String.format("Invalid implementation of @LocalOptimizationRule annotated method %s in %s. Return type must be Optional<Gadget>.", optimizationRule.getName(), optimizationRule.getDeclaringClass());
-                throw new IllegalStateException(msg);
             }
         }
 
