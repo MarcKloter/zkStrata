@@ -1,0 +1,8 @@
+PROOF FOR
+    passport_ch AS pass
+THAT
+    pass.dateOfBirth.year IS GREATER THAN 1900
+AND
+    pass.dateOfBirth.month IS GREATER THAN 1 AND LESS THAN 12
+AND
+    pass.dateOfBirth.day IS LESS THAN 15
