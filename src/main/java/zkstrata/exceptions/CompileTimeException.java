@@ -1,6 +1,6 @@
 package zkstrata.exceptions;
 
-import zkstrata.domain.data.types.wrapper.AbstractVariable;
+import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.utils.ErrorUtils;
 
 import java.util.List;
@@ -15,12 +15,12 @@ public class CompileTimeException extends RuntimeException {
         this(e.getMessage(), e.getPositions().stream().map(pos -> new Position.Absolute(source, statement, pos)).collect(Collectors.toList()));
     }
 
-    public CompileTimeException(String message, AbstractVariable variable) {
+    public CompileTimeException(String message, Variable variable) {
         this(message, List.of(variable.getPosition()));
     }
 
-    public CompileTimeException(String message, Set<AbstractVariable> variable) {
-        this(message, variable.stream().map(AbstractVariable::getPosition).collect(Collectors.toList()));
+    public CompileTimeException(String message, Set<Variable> variables) {
+        this(message, variables.stream().map(Variable::getPosition).collect(Collectors.toList()));
     }
 
     public CompileTimeException(String message, Position.Absolute position) {

@@ -10,6 +10,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class ErrorUtils {
+    private ErrorUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Sanitizes the given String.
      * Required to remove specific symbols from inputs to ensure erroneous symbols get underlined properly.
@@ -33,8 +37,9 @@ public class ErrorUtils {
 
     public static String underline(List<Position.Absolute> positions) {
         TextStringBuilder builder = new TextStringBuilder();
-        Map<String, String> statements = positions.stream().collect(Collectors.toMap(Position.Absolute::getSource, Position.Absolute::getStatement));
-        for(Map.Entry<String, String> statement : statements.entrySet()) {
+        Map<String, String> statements = positions.stream()
+                .collect(Collectors.toMap(Position.Absolute::getSource, Position.Absolute::getStatement, (s1, s2) -> s1));
+        for (Map.Entry<String, String> statement : statements.entrySet()) {
             processSource(builder, statement.getKey());
             String value = sanitize(statement.getValue());
             Set<Integer> lineNumbers = positions.stream().map(Position::getLine).collect(Collectors.toSet());
