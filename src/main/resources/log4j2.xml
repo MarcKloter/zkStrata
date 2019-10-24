@@ -2,11 +2,11 @@
 <Configuration>
     <Appenders>
         <Console name="LogToConsole" target="SYSTEM_OUT">
-            <PatternLayout pattern="[%d - %p] %c{1}: %m%n" />
+            <PatternLayout pattern="[%d - %p] %m%n" />
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="DEBUG">
+        <Root level="WARN">
             <AppenderRef ref="LogToConsole"/>
         </Root>
     </Loggers>

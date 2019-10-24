@@ -44,6 +44,13 @@ public class OptionBuilder {
                         .build()
         );
 
+        options.addOption(
+                Option.builder()
+                        .longOpt("verbose")
+                        .desc("use verbose output")
+                        .build()
+        );
+
         options.addOption(helpFlag());
         options.addOption(versionFlag());
 

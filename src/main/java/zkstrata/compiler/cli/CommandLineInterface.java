@@ -2,6 +2,8 @@ package zkstrata.compiler.cli;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import zkstrata.compiler.Arguments;
 import zkstrata.compiler.Compiler;
 import zkstrata.domain.data.accessors.ValueAccessor;
@@ -43,6 +45,9 @@ public class CommandLineInterface {
     private Arguments parseArguments(String[] args) throws ParseException {
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
+
+        if (cmd.hasOption("verbose"))
+            setVerbose();
 
         String statementName = getStatementName(cmd);
         String statementFile = getStatementFile(cmd);
@@ -92,6 +97,10 @@ public class CommandLineInterface {
         String version = Compiler.class.getPackage().getImplementationVersion();
         System.out.println(String.format("%s %s", name, version));
         System.exit(1);
+    }
+
+    private void setVerbose() {
+        Configurator.setRootLevel(Level.DEBUG);
     }
 
     private String getStatementFile(CommandLine cmd) {
