@@ -14,13 +14,13 @@ import java.nio.file.Path;
 
 public class JsonAccessor implements ValueAccessor {
     private String subject;
-    private JSONObject object;
+    private JSONObject jsonObject;
 
     public JsonAccessor(String subject, String filename) {
         this.subject = subject;
 
         try {
-            this.object = new JSONObject(Files.readString(Path.of(filename), StandardCharsets.UTF_8));
+            this.jsonObject = new JSONObject(Files.readString(Path.of(filename), StandardCharsets.UTF_8));
         } catch (IOException e) {
             String msg = String.format("Unable to read file %s.", filename);
             throw new IllegalArgumentException(msg);
@@ -34,7 +34,7 @@ public class JsonAccessor implements ValueAccessor {
 
     @Override
     public Value getValue(Selector selector) {
-        Object object = this.object;
+        Object object = this.jsonObject;
         for (String key : selector.getSelectors()) {
             if (object instanceof JSONObject)
                 object = ((JSONObject) object).get(key);
