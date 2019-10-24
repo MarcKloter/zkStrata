@@ -14,6 +14,12 @@ public class MapListener<K, V> extends AbstractMap<K, V> {
         this.unused = new HashSet<>();
     }
 
+    public Map<K,V> getUsedMap() {
+        Map<K,V> map = new HashMap<>(delegatee);
+        unused.forEach(map::remove);
+        return map;
+    }
+
     public Set<K> getUnusedKeySet() {
         return unused;
     }
@@ -37,5 +43,15 @@ public class MapListener<K, V> extends AbstractMap<K, V> {
     public V get(Object key) {
         unused.remove(key);
         return delegatee.get(key);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        return super.equals(o);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
     }
 }
