@@ -21,6 +21,7 @@ K_THAN                : T H A N ;
 K_THAT                : T H A T ;
 K_THIS                : T H I S ;
 K_TO                  : T O ;
+K_UNEQUAL             : U N E Q U A L ;
 
 /**
  * Separators

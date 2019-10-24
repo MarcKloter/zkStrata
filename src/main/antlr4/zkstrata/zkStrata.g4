@@ -4,6 +4,7 @@ options { tokenVocab = zkStrataLexer; }
 
 import BoundsCheck,
        Equality,
+       Inequality,
        MerkleTree,
        MiMCHash;
 
@@ -33,4 +34,5 @@ joint               : (K_AND | SCOL) ;
 predicate_clause    : bounds_check
                     | merkle_tree
                     | mimc_hash
-                    | equality ;
+                    | equality
+                    | inequality ;
