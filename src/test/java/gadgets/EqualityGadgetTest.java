@@ -87,4 +87,13 @@ public class EqualityGadgetTest {
         assertTrue(result.get() instanceof EqualityGadget);
         assertTrue(implication.isEqualTo((EqualityGadget) result.get()));
     }
+
+    @Test
+    void Parity_None_Implication() {
+        EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_41);
+
+        Optional<Gadget> result = EqualityGadget.implyEquality(equalityGadget1, equalityGadget2);
+        assertTrue(result.isEmpty());
+    }
 }
