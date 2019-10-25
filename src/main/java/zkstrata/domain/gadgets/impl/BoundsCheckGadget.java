@@ -47,6 +47,8 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
         this.value = value;
         this.min = min;
         this.max = max;
+
+        this.performChecks();
     }
 
     @Implication(premise = {EqualityGadget.class, BoundsCheckGadget.class})
@@ -152,11 +154,11 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
         if (SemanticsUtils.testMaxBitSize(getMaxValue(), 256))
             throw new CompileTimeException("The upper bound cannot be longer than 32 bytes.", this.max);
 
-        if (getMaxValue().compareTo(MIN) < 0)
-            throw new CompileTimeException(String.format("The upper bound must be greater than or equal to %s.", MIN), this.max);
+        if (getMinValue().compareTo(MIN) < 0 || getMinValue().compareTo(MAX) > 0)
+            throw new CompileTimeException(String.format("The lower bound must be in the range between %s and %s.", MIN, MAX), this.max);
 
-        if (getMinValue().compareTo(MAX) > 0)
-            throw new CompileTimeException(String.format("The lower bound must be less than or equal to %s.", MAX), this.min);
+        if (getMaxValue().compareTo(MIN) < 0 || getMinValue().compareTo(MAX) > 0)
+            throw new CompileTimeException(String.format("The upper bound must be in the range between %s and %s.", MIN, MAX), this.max);
     }
 
     @Override
