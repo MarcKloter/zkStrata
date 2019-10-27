@@ -23,6 +23,7 @@ public class EqualityGadgetTest {
 
     private static final InstanceVariable INSTANCE_VAR_17 = new InstanceVariable(new Literal(BigInteger.valueOf(17)), DUMMY_POS);
     private static final InstanceVariable INSTANCE_VAR_41 = new InstanceVariable(new Literal(BigInteger.valueOf(41)), DUMMY_POS);
+    private static final InstanceVariable INSTANCE_VAR_STRING = new InstanceVariable(new Literal("String"), DUMMY_POS);
 
     private static final Reference REF_1 = new Reference(BigInteger.class, "alias1", new Selector(List.of("selector1")));
     private static final Reference REF_2 = new Reference(BigInteger.class, "alias2", new Selector(List.of("selector2")));
@@ -95,5 +96,12 @@ public class EqualityGadgetTest {
 
         Optional<Gadget> result = EqualityGadget.implyEquality(equalityGadget1, equalityGadget2);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void Type_Mismatch() {
+        assertThrows(CompileTimeException.class, () -> {
+            new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_STRING);
+        });
     }
 }
