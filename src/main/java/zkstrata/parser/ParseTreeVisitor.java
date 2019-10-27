@@ -7,6 +7,7 @@ import org.reflections.Reflections;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.exceptions.ParserException;
+import zkstrata.exceptions.Position;
 import zkstrata.utils.ParserUtils;
 import zkstrata.zkStrataLexer;
 import zkstrata.parser.ast.types.Identifier;
@@ -81,7 +82,8 @@ public class ParseTreeVisitor {
             List<String> accessors = ctx.property().stream()
                     .map(RuleContext::getText)
                     .collect(Collectors.toList());
-            return new Identifier(subject, accessors, ParserUtils.getPosition(ctx.alias().getStart()));
+            Position.Relative position = new Position.Relative(ctx.getText(), ctx.getStart().getLine(), ctx.getStart().getCharPositionInLine());
+            return new Identifier(subject, accessors, position);
         }
 
         @Override
