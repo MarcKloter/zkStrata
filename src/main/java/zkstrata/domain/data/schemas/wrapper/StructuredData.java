@@ -12,6 +12,8 @@ public interface StructuredData<T extends Variable> {
 
     Schema getSchema();
 
+    boolean isWitness();
+
     T getVariable(Selector selector, Position.Absolute position);
 
     default Value resolve(Schema schema, Selector selector, ValueAccessor accessor) {
@@ -20,12 +22,13 @@ public interface StructuredData<T extends Variable> {
         Value value = accessor.getValue(selector);
 
         if (value == null) {
-            String msg = String.format("Subject %s is missing the entry '%s'.", getAlias(), selector);
+            String msg = String.format("The provided subject for `%s` is missing the entry `%s`.", getAlias(), selector);
             throw new IllegalArgumentException(msg);
         }
 
         if (value.getType() != type) {
-            String msg = String.format("Subject %s does not match schema %s.", getAlias(), schema.getClass().getSimpleName());
+            String msg = String.format("The provided subject for `%s` does not match the schema `%s`.",
+                    getAlias(), schema.getClass().getSimpleName());
             throw new IllegalArgumentException(msg);
         }
 

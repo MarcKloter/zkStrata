@@ -44,14 +44,18 @@ public class SemanticAnalyzer {
 
         statement.setInferences(inferences);
 
-        LOGGER.debug("Finishing analysis. Found a total of {} inferences.", inferences.size());
+        LOGGER.debug("Finishing analysis: Found a total of {} inferences", inferences.size());
     }
 
     private void checkContradictions() {
         for (Method contradictionRule : contradictionRules) {
             Class<? extends Gadget>[] context = contradictionRule.getAnnotation(Contradiction.class).propositions();
 
-            List<List<Gadget>> contextCombinations = CombinatoricsUtils.getCombinations(List.of(context), inferences.stream().map(Inference::getConclusion).collect(Collectors.toList()));
+            List<List<Gadget>> contextCombinations = CombinatoricsUtils.getCombinations(
+                    List.of(context),
+                    inferences.stream().map(Inference::getConclusion).collect(Collectors.toList())
+            );
+
             for (List<Gadget> contextCombination : contextCombinations) {
                 try {
                     contradictionRule.invoke(null, contextCombination.toArray());
@@ -60,8 +64,8 @@ public class SemanticAnalyzer {
                     if (cause instanceof CompileTimeException)
                         throw (CompileTimeException) cause;
                     else
-                        throw new InternalCompilerException(cause, "Invalid Exception %s thrown by %s in %s.", cause.getClass(),
-                                contradictionRule.getName(), contradictionRule.getDeclaringClass());
+                        throw new InternalCompilerException(cause, "Invalid exception %s thrown by %s in %s.",
+                                cause.getClass().getSimpleName(), contradictionRule.getName(), contradictionRule.getDeclaringClass());
                 } catch (IllegalAccessException | IllegalArgumentException e) {
                     throw new InternalCompilerException(e, "Invalid implementation of @Contradiction annotated method %s in %s: "
                             + "Ensure the method is static and its parameters are matching the annotation.",

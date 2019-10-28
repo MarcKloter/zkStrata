@@ -1,0 +1,11 @@
+{
+  "title": "passport_ch",
+  "type": "object",
+  "properties": {
+    "firstName": {
+      "type": "string",
+      "description": "The owner's first name."
+    }
+  },
+  "statement": "PROOF FOR THIS THAT self.firstName IS EQUAL TO 'Jane'"
+}

@@ -22,7 +22,6 @@ public class Identifier extends Value<String> {
         return selectors;
     }
 
-
     @Override
     public String getValue() {
         return String.format("%s.%s", subject, String.join(".", selectors));

@@ -15,11 +15,6 @@ public class SchemaAccessor implements ValueAccessor {
     }
 
     @Override
-    public String getSubject() {
-        return subject;
-    }
-
-    @Override
     public Value getValue(Selector selector) {
         return new Reference(schema.getType(selector), subject, selector);
     }

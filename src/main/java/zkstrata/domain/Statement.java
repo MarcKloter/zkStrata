@@ -4,7 +4,6 @@ import zkstrata.analysis.Inference;
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
 import zkstrata.domain.gadgets.Gadget;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,9 +21,6 @@ public class Statement {
         this.gadgets = gadgets;
     }
 
-    // TODO: addGadget(Gadget gadget)
-    // TODO removeGadget(Gadget gadget)
-
     public Map<String, StructuredData> getSubjects() {
         return subjects;
     }
@@ -41,12 +37,7 @@ public class Statement {
         this.inferences = inferences;
     }
 
-    public Map<String, String> getSupplementaryStatements() {
-        Map<String, String> supplementaryStatements = new HashMap<>();
-        for (Map.Entry<String, StructuredData> subject : subjects.entrySet()) {
-            supplementaryStatements.put(subject.getKey(), subject.getValue().getSchema().getStatement());
-        }
-        return supplementaryStatements;
+    public void addGadgets(List<Gadget> gadgets) {
+        this.gadgets.addAll(gadgets);
     }
-
 }

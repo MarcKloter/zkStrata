@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Visitor oriented zkStrata parser
- * Statement (String) -> Parse Tree -> Abstract Syntax Tree
+ * Transforms a zkStrata statement ({@link String}) into a parse tree ({@link ParseTree}) using ANTLR.
+ * Then visits this parse tree to form an abstract syntax tree ({@link AbstractSyntaxTree}).
  */
 public class ParseTreeVisitor {
 
@@ -119,7 +119,7 @@ public class ParseTreeVisitor {
 
         @Override
         public AbstractSyntaxTree visitStatement(zkStrata.StatementContext ctx) {
-            SubjectVisitor subjectVisitor = new SubjectVisitor();
+            SubjectVisitor subjectVisitor = new SubjectVisitor(source);
             List<Subject> subjects = ctx.subjects().subject()
                     .stream()
                     .map(subject -> subject.accept(subjectVisitor))
@@ -136,13 +136,29 @@ public class ParseTreeVisitor {
     }
 
     private class SubjectVisitor extends zkStrataBaseVisitor<Subject> {
+        private String schema;
+
+        SubjectVisitor(String schema) {
+            this.schema = schema;
+        }
+
         @Override
         public Subject visitSubject(zkStrata.SubjectContext ctx) {
+            if (ctx.K_THIS() != null)
+                return handleThis(ctx);
+
             // check whether the instance keyword is present
             boolean isWitness = ctx.K_INSTANCE() == null;
             Subject subject = new Subject(isWitness);
             subject.setSchema(ctx.schema_name().getText(), ParserUtils.getPosition(ctx.schema_name().getStart()));
             subject.setAlias(ctx.alias().getText(), ParserUtils.getPosition(ctx.alias().getStart()));
+            return subject;
+        }
+
+        private Subject handleThis(zkStrata.SubjectContext ctx) {
+            Subject subject = new Subject(true);
+            subject.setSchema(schema, ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+            subject.setAlias("self", ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
             return subject;
         }
     }

@@ -24,8 +24,13 @@ public class Passport extends AbstractSchema {
 
     @Override
     public String getStatement() {
-        return "PROOF FOR THIS THAT firstName IS EQUAL TO 'John'";
-        /*return "PROOF FOR THIS THAT hash IS MERKLE ROOT OF (((firstName, lastName), (dateOfBirth, placeOfBirth)), " +
+        return "PROOF FOR THIS THAT self.firstName IS EQUAL TO 'John'";
+        /*return "PROOF FOR THIS THAT this.hash IS MERKLE ROOT OF (((firstName, lastName), (dateOfBirth, placeOfBirth)), " +
                 "((issuedOn, expiresOn), (count, owner)))";*/
+    }
+
+    @Override
+    public String getIdentifier() {
+        return "passport_ch";
     }
 }

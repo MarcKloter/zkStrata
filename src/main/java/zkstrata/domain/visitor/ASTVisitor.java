@@ -29,6 +29,7 @@ import java.util.*;
 public class ASTVisitor {
     private static final Logger LOGGER = LogManager.getLogger(ASTVisitor.class);
 
+    private String self;
     private Map<String, ValueAccessor> witnessData;
     private Map<String, ValueAccessor> instanceData;
     private Map<String, Schema> schemas;
@@ -39,11 +40,13 @@ public class ASTVisitor {
 
     public ASTVisitor(
             AbstractSyntaxTree ast,
+            String self,
             Map<String, ValueAccessor> witnessData,
             Map<String, ValueAccessor> instanceData,
             Map<String, Schema> schemas
     ) {
         this.ast = ast;
+        this.self = self;
         this.witnessData = witnessData;
         this.instanceData = instanceData;
         this.schemas = schemas;
@@ -51,6 +54,8 @@ public class ASTVisitor {
     }
 
     public Statement visitStatement() {
+        LOGGER.debug("Starting visit of AST for {}", ast.getSource());
+
         for (Subject subject : ast.getSubjects()) {
             String alias = subject.getAlias().getName();
             if (subjects.containsKey(alias))
@@ -65,11 +70,21 @@ public class ASTVisitor {
 
         this.checkUnusedSubjects();
 
+        LOGGER.debug("Finishing visit of AST for {}: Found {} gadgets over {} subjects",
+                ast.getSource(), gadgets.size(), subjects.getUsedMap().size());
         return new Statement(subjects.getUsedMap(), gadgets);
     }
 
     private StructuredData visitSubject(Subject subject) {
         String alias = subject.getAlias().getName();
+
+        if (alias.equals("self")) {
+            if (self == null)
+                throw new CompileTimeException("Reserved word `self` used as alias.", pinPosition(subject.getAlias()));
+
+            alias = self;
+        }
+
         String schemaName = subject.getSchema().getName();
         Schema schema = schemas.getOrDefault(schemaName, SchemaHelper.resolve(schemaName));
 
@@ -104,6 +119,7 @@ public class ASTVisitor {
 
             if (from.value() == predicate.getClass()) {
                 try {
+                    // TODO: change this to use a parameterized constructor
                     Gadget instance = gadget.getConstructor().newInstance();
 
                     Field[] sourceFields = predicate.getClass().getDeclaredFields();
@@ -165,7 +181,7 @@ public class ASTVisitor {
         String subject = identifier.getSubject();
         if (subjects.containsKey(subject)) {
             StructuredData data = subjects.get(subject);
-            return data.getVariable(Selector.from(identifier.getSelectors()), pinPosition(identifier));
+            return data.getVariable(new Selector(identifier.getSelectors()), pinPosition(identifier));
         } else {
             throw new CompileTimeException(String.format("Missing declaration for subject alias `%s`.", subject), pinPosition(identifier));
         }

@@ -9,4 +9,9 @@ public class Date extends AbstractSchema {
     private BigInteger day;
     private BigInteger month;
     private BigInteger year;
+
+    @Override
+    public String getIdentifier() {
+        return "date";
+    }
 }

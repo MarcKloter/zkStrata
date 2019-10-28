@@ -1,0 +1,1 @@
+PROOF FOR passport_ch AS self THAT pass.firstName IS EQUAL TO 'John'

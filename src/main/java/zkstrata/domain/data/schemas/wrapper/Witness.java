@@ -17,6 +17,11 @@ public class Witness extends AbstractStructuredData<WitnessVariable> {
     }
 
     @Override
+    public boolean isWitness() {
+        return true;
+    }
+
+    @Override
     public WitnessVariable getVariable(Selector selector, Position.Absolute position) {
         try {
             Value value = resolve(getSchema(), selector, getAccessor());

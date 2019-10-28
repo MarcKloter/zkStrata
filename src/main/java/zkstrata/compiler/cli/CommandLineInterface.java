@@ -144,7 +144,7 @@ public class CommandLineInterface {
                     String msg = String.format("Malformed witness data provided as argument: %s", witness);
                     throw new IllegalArgumentException(msg);
                 }
-                witnessData.put(parts[0], new JsonAccessor(parts[0], parts[1]));
+                witnessData.put(parts[0], new JsonAccessor(parts[1]));
             }
         }
         return witnessData;
@@ -159,7 +159,7 @@ public class CommandLineInterface {
                     String msg = String.format("Malformed instance data provided as argument: %s", witness);
                     throw new IllegalArgumentException(msg);
                 }
-                instanceData.put(parts[0], new JsonAccessor(parts[0], parts[1]));
+                instanceData.put(parts[0], new JsonAccessor(parts[1]));
             }
         }
         return instanceData;

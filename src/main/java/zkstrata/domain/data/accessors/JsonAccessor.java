@@ -13,12 +13,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class JsonAccessor implements ValueAccessor {
-    private String subject;
     private JSONObject jsonObject;
 
-    public JsonAccessor(String subject, String filename) {
-        this.subject = subject;
-
+    public JsonAccessor(String filename) {
         try {
             this.jsonObject = new JSONObject(Files.readString(Path.of(filename), StandardCharsets.UTF_8));
         } catch (IOException e) {
@@ -28,16 +25,14 @@ public class JsonAccessor implements ValueAccessor {
     }
 
     @Override
-    public String getSubject() {
-        return subject;
-    }
-
-    @Override
     public Value getValue(Selector selector) {
         Object object = this.jsonObject;
         for (String key : selector.getSelectors()) {
             if (object instanceof JSONObject)
-                object = ((JSONObject) object).get(key);
+                    if(((JSONObject) object).has(key))
+                        object = ((JSONObject) object).get(key);
+                    else
+                        return null;
             else
                 return null;
         }

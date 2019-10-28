@@ -21,6 +21,11 @@ public class Instance extends AbstractStructuredData<InstanceVariable> {
     }
 
     @Override
+    public boolean isWitness() {
+        return false;
+    }
+
+    @Override
     public InstanceVariable getVariable(Selector selector, Position.Absolute position) {
         // TODO: test case (instance is subject -> referenced)
         // TODO: ensure missing instance is thrown before or check here
