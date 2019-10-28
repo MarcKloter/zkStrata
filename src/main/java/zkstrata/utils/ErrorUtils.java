@@ -42,7 +42,10 @@ public class ErrorUtils {
         for (Map.Entry<String, String> statement : statements.entrySet()) {
             processSource(builder, statement.getKey());
             String value = sanitize(statement.getValue());
-            Set<Integer> lineNumbers = positions.stream().map(Position::getLine).collect(Collectors.toSet());
+            Set<Integer> lineNumbers = positions.stream()
+                    .filter(pos -> pos.getSource().equals(statement.getKey()))
+                    .map(Position::getLine)
+                    .collect(Collectors.toSet());
             for (int lineNumber : lineNumbers) {
                 processLine(
                         builder,
