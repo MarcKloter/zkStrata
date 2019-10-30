@@ -2,6 +2,7 @@ package zkstrata.compiler;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import zkstrata.analysis.ExposureAnalyzer;
 import zkstrata.analysis.SemanticAnalyzer;
 import zkstrata.codegen.CodeGenerator;
 import zkstrata.domain.Statement;
