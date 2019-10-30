@@ -18,6 +18,7 @@ public class ParseTreeVisitorTest {
     private static final String SOURCE = "test";
     private static final String SCHEMA = "schema";
     private static final String ALIAS = "alias";
+    private static final String INVALID_SYMBOL = "%";
     private static final String IDENTIFIER = "alias.identifier";
     private static final String STRING_LITERAL = "StringLiteral";
     private static final BigInteger INT_LITERAL_1 = BigInteger.valueOf(5);
@@ -59,8 +60,10 @@ public class ParseTreeVisitorTest {
 
     @Test
     void BoundsCheck_Is_Parsed_Correctly_1() {
-        String statement = String.format("PROOF FOR schema AS %s THAT %s IS LESS THAN %s AND GREATER THAN %s",
-                ALIAS, IDENTIFIER, INT_LITERAL_1, INT_LITERAL_2);
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .boundsCheck(IDENTIFIER, INT_LITERAL_1, INT_LITERAL_2)
+                .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse("test", statement);
         assertEquals(1, ast.getPredicates().size());
 
@@ -69,15 +72,14 @@ public class ParseTreeVisitorTest {
 
         BoundsCheck boundsCheck = (BoundsCheck) predicate;
         assertEquals(IDENTIFIER, boundsCheck.getValue().getValue());
-        assertEquals(INT_LITERAL_1, boundsCheck.getMax().getValue());
-        assertEquals(INT_LITERAL_2, boundsCheck.getMin().getValue());
+        assertEquals(INT_LITERAL_1, boundsCheck.getMin().getValue());
+        assertEquals(INT_LITERAL_2, boundsCheck.getMax().getValue());
     }
 
     @Test
     void Invalid_Symbol_Should_Fail() {
-        String invalidSymbol = "%";
         assertThrows(CompileTimeException.class, () -> {
-            new ParseTreeVisitor().parse("test", invalidSymbol);
+            new ParseTreeVisitor().parse(SOURCE, INVALID_SYMBOL);
         });
     }
 }

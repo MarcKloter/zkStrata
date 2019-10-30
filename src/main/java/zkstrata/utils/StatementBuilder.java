@@ -44,7 +44,7 @@ public class StatementBuilder {
         else if (max == null)
             predicates.add(String.format("%s IS GREATER THAN %s", value, min));
         else
-            predicates.add(String.format("%s IS LESS THAN %s AND GREATER THAN", max, min));
+            predicates.add(String.format("%s IS LESS THAN %s AND GREATER THAN %s", value, max, min));
 
         return this;
     }
