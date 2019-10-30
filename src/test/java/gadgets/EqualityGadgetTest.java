@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.*;
 public class EqualityGadgetTest {
     private static final Position.Absolute DUMMY_POS = new Position.Absolute("src", "stmt", "t", 1, 1);
 
-    private static final InstanceVariable INSTANCE_VAR_17 = new InstanceVariable(new Literal(BigInteger.valueOf(17)), DUMMY_POS);
-    private static final InstanceVariable INSTANCE_VAR_41 = new InstanceVariable(new Literal(BigInteger.valueOf(41)), DUMMY_POS);
-    private static final InstanceVariable INSTANCE_VAR_STRING = new InstanceVariable(new Literal("String"), DUMMY_POS);
+    private static final InstanceVariable INSTANCE_VAR_17 = new InstanceVariable(new Literal(BigInteger.valueOf(17)), null, DUMMY_POS);
+    private static final InstanceVariable INSTANCE_VAR_41 = new InstanceVariable(new Literal(BigInteger.valueOf(41)), null, DUMMY_POS);
+    private static final InstanceVariable INSTANCE_VAR_STRING = new InstanceVariable(new Literal("String"), null, DUMMY_POS);
 
     private static final Reference REF_1 = new Reference(BigInteger.class, "alias1", new Selector(List.of("selector1")));
     private static final Reference REF_2 = new Reference(BigInteger.class, "alias2", new Selector(List.of("selector2")));

@@ -1,15 +1,23 @@
 package zkstrata.domain.data.types.wrapper;
 
+import zkstrata.domain.data.types.Reference;
 import zkstrata.domain.data.types.Value;
 import zkstrata.exceptions.Position;
 import zkstrata.exceptions.AbstractTraceable;
 
 public abstract class AbstractVariable extends AbstractTraceable implements Variable {
     private Value value;
+    private Reference reference;
 
-    public AbstractVariable(Value value, Position.Absolute position) {
+    public AbstractVariable(Value value, Reference reference, Position.Absolute position) {
         super(position);
         this.value = value;
+        this.reference = reference;
+    }
+
+    @Override
+    public Reference getReference() {
+        return reference;
     }
 
     @Override

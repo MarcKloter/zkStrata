@@ -11,12 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class JsonSchema extends AbstractSchema {
-    private String filename;
     private String identifier;
     private JsonAccessor accessor;
 
     public JsonSchema(String filename, String identifier) {
-        this.filename = filename;
         this.identifier = identifier;
         this.accessor = new JsonAccessor(filename);
     }
@@ -32,15 +30,15 @@ public class JsonSchema extends AbstractSchema {
 
         Value typeString = accessor.getValue(new Selector(typeSelector));
         if (typeString == null) {
-            String msg = String.format("The provided schema %s is missing the type definition `%s`.",
-                    filename, String.join(".", typeSelector));
+            String msg = String.format("The provided schema %s is missing a type definition for property `%s`.",
+                    accessor.getSource(), selector);
             throw new IllegalArgumentException(msg);
         }
 
         if (typeString.getType() != String.class) {
             String msg = String.format("Invalid type for property `%s` in schema %s. "
                             + "Each instance must be restricted to exactly one primitive type.",
-                    String.join(".", selector.getSelectors()), filename);
+                    String.join(".", selector.getSelectors()), accessor.getSource());
             throw new IllegalArgumentException(msg);
         }
 
@@ -48,7 +46,7 @@ public class JsonSchema extends AbstractSchema {
             return JSONType.valueOf(typeString.toString().toUpperCase()).getType();
         } catch (IllegalArgumentException e) {
             String msg = String.format("Unknown type `%s` for property `%s` in schema %s.",
-                    typeString.toString(), String.join(".", selector.getSelectors()), filename);
+                    typeString.toString(), String.join(".", selector.getSelectors()), accessor.getSource());
             throw new IllegalArgumentException(msg);
         }
     }
@@ -61,7 +59,7 @@ public class JsonSchema extends AbstractSchema {
             return null;
 
         if (statement.getType() != String.class) {
-            String msg = String.format("Invalid statement in schema %s. The statement must be a string.", filename);
+            String msg = String.format("Invalid statement in schema %s. The statement must be a string.", accessor.getSource());
             throw new IllegalArgumentException(msg);
         }
 
@@ -75,7 +73,7 @@ public class JsonSchema extends AbstractSchema {
 
     @Override
     public String getSource() {
-        return filename;
+        return accessor.getSource();
     }
 
     /**

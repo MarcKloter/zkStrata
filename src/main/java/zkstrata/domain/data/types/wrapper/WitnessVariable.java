@@ -10,15 +10,8 @@ import zkstrata.exceptions.Position;
  * compared using the reference (although the prover would be able to access its value directly).
  */
 public class WitnessVariable extends AbstractVariable {
-    private Reference reference;
-
     public WitnessVariable(Value value, Reference reference, Position.Absolute position) {
-        super(value, position);
-        this.reference = reference;
-    }
-
-    public Reference getReference() {
-        return reference;
+        super(value, reference, position);
     }
 
     @Override
@@ -29,16 +22,16 @@ public class WitnessVariable extends AbstractVariable {
         if (getClass() != obj.getClass())
             return false;
 
-        return reference.equals(((WitnessVariable) obj).getReference());
+        return getReference().equals(((WitnessVariable) obj).getReference());
     }
 
     @Override
     public int hashCode() {
-        return reference.hashCode();
+        return getReference().hashCode();
     }
 
     @Override
     public String toString() {
-        return reference.toString();
+        return getReference().toString();
     }
 }

@@ -17,17 +17,18 @@ public interface StructuredData<T extends Variable> {
     T getVariable(Selector selector, Position.Absolute position);
 
     default Value resolve(Schema schema, Selector selector, ValueAccessor accessor) {
-        Class<?> type = schema.getType(selector);
-
         Value value = accessor.getValue(selector);
 
         if (value == null) {
-            String msg = String.format("The provided subject for `%s` is missing the entry `%s`.", getAlias(), selector);
+            String msg = String.format("The provided data for subject `%s` does not match the schema `%s`: "
+                    + "Missing entry `%s`.", getAlias(), schema.getSource(), selector);
             throw new IllegalArgumentException(msg);
         }
 
+        Class<?> type = schema.getType(selector);
+
         if (value.getType() != type) {
-            String msg = String.format("The provided subject for `%s` does not match the schema `%s`.",
+            String msg = String.format("The provided data for subject `%s` does not match the schema `%s`: Type mismatch.",
                     getAlias(), schema.getClass().getSimpleName());
             throw new IllegalArgumentException(msg);
         }

@@ -13,9 +13,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class JsonAccessor implements ValueAccessor {
+    private String filename;
     private JSONObject jsonObject;
 
     public JsonAccessor(String filename) {
+        this.filename = filename;
+
         try {
             this.jsonObject = new JSONObject(Files.readString(Path.of(filename), StandardCharsets.UTF_8));
         } catch (IOException e) {
@@ -47,5 +50,10 @@ public class JsonAccessor implements ValueAccessor {
             return new Literal(BigInteger.valueOf((Integer) object));
 
         return new Literal(object);
+    }
+
+    @Override
+    public String getSource() {
+        return filename;
     }
 }

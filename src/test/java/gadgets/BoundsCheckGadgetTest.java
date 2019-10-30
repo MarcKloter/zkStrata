@@ -21,10 +21,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BoundsCheckGadgetTest {
     private static final Position.Absolute DUMMY_POS = new Position.Absolute("src", "stmt", "t", 1, 1);
 
-    private static final InstanceVariable INSTANCE_VAR_17 = new InstanceVariable(new Literal(BigInteger.valueOf(17)), DUMMY_POS);
-    private static final InstanceVariable INSTANCE_VAR_29 = new InstanceVariable(new Literal(BigInteger.valueOf(29)), DUMMY_POS);
-    private static final InstanceVariable INSTANCE_VAR_41 = new InstanceVariable(new Literal(BigInteger.valueOf(41)), DUMMY_POS);
-    private static final InstanceVariable INSTANCE_VAR_53 = new InstanceVariable(new Literal(BigInteger.valueOf(53)), DUMMY_POS);
+    private static final InstanceVariable INSTANCE_VAR_17 = new InstanceVariable(new Literal(BigInteger.valueOf(17)), null, DUMMY_POS);
+    private static final InstanceVariable INSTANCE_VAR_29 = new InstanceVariable(new Literal(BigInteger.valueOf(29)), null, DUMMY_POS);
+    private static final InstanceVariable INSTANCE_VAR_41 = new InstanceVariable(new Literal(BigInteger.valueOf(41)), null, DUMMY_POS);
+    private static final InstanceVariable INSTANCE_VAR_53 = new InstanceVariable(new Literal(BigInteger.valueOf(53)), null, DUMMY_POS);
 
     private static final Reference REF_1 = new Reference(BigInteger.class, "alias1", new Selector(List.of("selector1")));
     private static final Reference REF_2 = new Reference(BigInteger.class, "alias2", new Selector(List.of("selector2")));
@@ -33,7 +33,7 @@ public class BoundsCheckGadgetTest {
 
     @Test
     void Invalid_Lower_Bound() {
-        InstanceVariable instanceVariable = new InstanceVariable(new Literal(BigInteger.valueOf(-5)), DUMMY_POS);
+        InstanceVariable instanceVariable = new InstanceVariable(new Literal(BigInteger.valueOf(-5)), null, DUMMY_POS);
         assertThrows(CompileTimeException.class, () -> {
             new BoundsCheckGadget(WITNESS_VAR_1, instanceVariable, INSTANCE_VAR_17);
         });
@@ -41,7 +41,7 @@ public class BoundsCheckGadgetTest {
 
     @Test
     void Invalid_Upper_Bound() {
-        InstanceVariable instanceVariable = new InstanceVariable(new Literal(BigInteger.valueOf(-5)), DUMMY_POS);
+        InstanceVariable instanceVariable = new InstanceVariable(new Literal(BigInteger.valueOf(-5)), null, DUMMY_POS);
         assertThrows(CompileTimeException.class, () -> {
             new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, instanceVariable);
         });
@@ -50,7 +50,7 @@ public class BoundsCheckGadgetTest {
     @Test
     void Lower_Bound_33Bytes() {
         BigInteger bigInteger_33bytes = new BigInteger("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
-        InstanceVariable instanceVariable = new InstanceVariable(new Literal(bigInteger_33bytes), DUMMY_POS);
+        InstanceVariable instanceVariable = new InstanceVariable(new Literal(bigInteger_33bytes), null, DUMMY_POS);
         assertThrows(CompileTimeException.class, () -> {
             new BoundsCheckGadget(WITNESS_VAR_1, instanceVariable, INSTANCE_VAR_17);
         });
@@ -59,7 +59,7 @@ public class BoundsCheckGadgetTest {
     @Test
     void Upper_Bound_33Bytes() {
         BigInteger bigInteger_33bytes = new BigInteger("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
-        InstanceVariable instanceVariable = new InstanceVariable(new Literal(bigInteger_33bytes), DUMMY_POS);
+        InstanceVariable instanceVariable = new InstanceVariable(new Literal(bigInteger_33bytes), null, DUMMY_POS);
         assertThrows(CompileTimeException.class, () -> {
             new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, instanceVariable);
         });

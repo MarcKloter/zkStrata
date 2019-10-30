@@ -68,7 +68,8 @@ public class ASTVisitor {
         for (Subject subject : ast.getSubjects()) {
             String alias = subject.getAlias().getName();
             if (subjects.containsKey(alias))
-                throw new CompileTimeException(String.format("Alias `%s` is already defined.", alias), pinPosition(subject.getAlias()));
+                throw new CompileTimeException(String.format("Alias `%s` is already defined.", alias),
+                        pinPosition(subject.getAlias()));
 
             this.subjects.put(alias, visitSubject(subject));
         }
@@ -98,11 +99,13 @@ public class ASTVisitor {
         Schema schema = schemas.getOrDefault(schemaName, SchemaHelper.resolve(schemaName));
 
         if (schema == null)
-            throw new CompileTimeException(String.format("Undefined schema %s.", schemaName), pinPosition(subject.getSchema()));
+            throw new CompileTimeException(String.format("Undefined schema %s.", schemaName),
+                    pinPosition(subject.getSchema()));
 
         if (subject.isWitness()) {
             if (!witnessData.isEmpty() && !witnessData.containsKey(alias))
-                throw new CompileTimeException(String.format("Missing witness data for subject %s.", alias), pinPosition(subject.getAlias()));
+                throw new CompileTimeException(String.format("Missing witness data for subject %s.", alias),
+                        pinPosition(subject.getAlias()));
 
             ValueAccessor accessor = witnessData.getOrDefault(alias, new SchemaAccessor(alias, schema));
             return new Witness(alias, schema, accessor);
@@ -110,7 +113,8 @@ public class ASTVisitor {
             ValueAccessor accessor = instanceData.get(alias);
 
             if (accessor == null)
-                throw new CompileTimeException(String.format("Missing instance data for subject %s.", alias), pinPosition(subject.getAlias()));
+                throw new CompileTimeException(String.format("Missing instance data for subject %s.", alias),
+                        pinPosition(subject.getAlias()));
 
             return new Instance(alias, schema, accessor);
         }
@@ -172,7 +176,7 @@ public class ASTVisitor {
      * As literals can only be public data (otherwise the witness would be leaked), return an {@link InstanceVariable}.
      */
     private Variable visitLiteral(Literal literal) {
-        return new InstanceVariable(from(literal), pinPosition(literal));
+        return new InstanceVariable(from(literal), null, pinPosition(literal));
     }
 
     private zkstrata.domain.data.types.Literal from(Literal literal) {
@@ -192,7 +196,8 @@ public class ASTVisitor {
             StructuredData data = subjects.get(subject);
             return data.getVariable(new Selector(identifier.getSelectors()), pinPosition(identifier));
         } else {
-            throw new CompileTimeException(String.format("Missing declaration for subject alias `%s`.", subject), pinPosition(identifier));
+            throw new CompileTimeException(String.format("Missing declaration for subject alias `%s`.",
+                    subject), pinPosition(identifier));
         }
     }
 

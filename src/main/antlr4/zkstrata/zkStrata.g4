@@ -15,7 +15,7 @@ subject             : K_INSTANCE? schema_name K_AS alias
                     | K_THIS ;
 
 witness_var         : referenced_value ;
-instance_var        : literal_value ;
+instance_var        : (referenced_value | literal_value) ;
 
 referenced_value    : alias (DOT property)+ ;
 

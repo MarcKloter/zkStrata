@@ -3,7 +3,6 @@ package zkstrata.domain.data.accessors;
 import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.schemas.Schema;
 import zkstrata.domain.data.types.Reference;
-import zkstrata.domain.data.types.Value;
 
 public class SchemaAccessor implements ValueAccessor {
     private String subject;
@@ -15,7 +14,12 @@ public class SchemaAccessor implements ValueAccessor {
     }
 
     @Override
-    public Value getValue(Selector selector) {
+    public Reference getValue(Selector selector) {
         return new Reference(schema.getType(selector), subject, selector);
+    }
+
+    @Override
+    public String getSource() {
+        return schema.getIdentifier();
     }
 }

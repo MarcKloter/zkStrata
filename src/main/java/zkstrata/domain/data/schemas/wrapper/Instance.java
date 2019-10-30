@@ -4,6 +4,7 @@ import zkstrata.domain.data.accessors.ValueAccessor;
 import zkstrata.domain.data.schemas.Schema;
 import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.types.Literal;
+import zkstrata.domain.data.types.Reference;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.exceptions.Position;
 
@@ -27,9 +28,7 @@ public class Instance extends AbstractStructuredData<InstanceVariable> {
 
     @Override
     public InstanceVariable getVariable(Selector selector, Position.Absolute position) {
-        // TODO: test case (instance is subject -> referenced)
-        // TODO: ensure missing instance is thrown before or check here
         Literal value = (Literal) resolve(getSchema(), selector, getAccessor());
-        return new InstanceVariable(value, position);
+        return new InstanceVariable(value, new Reference(value.getType(), getAlias(), selector), position);
     }
 }

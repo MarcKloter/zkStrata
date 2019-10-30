@@ -35,6 +35,9 @@ public class Compiler {
         List<Statement> supplementaryStatements = checkSupplementaryStatements(statement.getSubjects(), args);
         supplementaryStatements.forEach(supp -> statement.addGadgets(supp.getGadgets()));
 
+
+        if(args.hasWitnessData())
+            ExposureAnalyzer.process(statement, args);
         new SemanticAnalyzer().process(statement);
         new CodeGenerator(args.getName()).run(statement.getGadgets(), args.hasWitnessData());
     }

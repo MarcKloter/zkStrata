@@ -3,11 +3,13 @@ package zkstrata.domain.gadgets;
 import org.apache.commons.text.TextStringBuilder;
 import zkstrata.domain.data.types.wrapper.Nullable;
 import zkstrata.domain.data.types.wrapper.Variable;
+import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.optimizer.Substitution;
 
 import java.lang.reflect.Field;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget<T> {
 
@@ -42,8 +44,12 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
         List<Class<?>> allowedTypes = Arrays.asList(annotation.value());
 
         if (!allowedTypes.contains(variable.getType()))
-            throw new InternalCompilerException("Type %s not allowed for field %s in %s.",
-                    variable.getType().getSimpleName(), field.getName(), this.getClass());
+            throw new CompileTimeException(String.format("Unexpected type %s. Expected: %s.", variable.getType().getSimpleName(),
+                    allowedTypes.stream().map(Class::getSimpleName).collect(Collectors.joining(", "))), variable);
+
+        if(variable.getClass() != Nullable.class && !field.getType().isAssignableFrom(variable.getClass()))
+            throw new CompileTimeException(String.format("%s not allowed here. Expected: %s.",
+                    variable.getClass().getSimpleName(), field.getType().getSimpleName()), variable);
     }
 
     @Override
