@@ -1,10 +1,14 @@
 package zkstrata.parser;
 
 import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.IntervalSet;
 import zkstrata.parser.exceptions.MissingTokenException;
 import zkstrata.parser.exceptions.UnwantedTokenException;
 
+/**
+ * ANTLR error strategy that overwrites two methods of {@link DefaultErrorStrategy} to enable distinguishing between
+ * missing and unwanted tokens in the error listener by throwing dedicated exceptions {@link UnwantedTokenException}
+ * and {@link MissingTokenException}.
+ */
 public class ErrorStrategy extends DefaultErrorStrategy {
     @Override
     protected void reportUnwantedToken(Parser recognizer) {
@@ -13,13 +17,10 @@ public class ErrorStrategy extends DefaultErrorStrategy {
 
         beginErrorCondition(recognizer);
 
-        Token t = recognizer.getCurrentToken();
-        String tokenName = getTokenErrorDisplay(t);
-        IntervalSet expecting = getExpectedTokens(recognizer);
-        String msg = "extraneous input " + tokenName + " expecting " + expecting.toString(recognizer.getVocabulary());
+        Token offendingToken = recognizer.getCurrentToken();
         RecognitionException e = new UnwantedTokenException(recognizer, recognizer.getInputStream(), recognizer.getRuleContext());
 
-        recognizer.notifyErrorListeners(t, msg, e);
+        recognizer.notifyErrorListeners(offendingToken, "", e);
     }
 
     @Override
@@ -29,11 +30,9 @@ public class ErrorStrategy extends DefaultErrorStrategy {
 
         beginErrorCondition(recognizer);
 
-        Token t = recognizer.getCurrentToken();
-        IntervalSet expecting = getExpectedTokens(recognizer);
-        String msg = "missing " + expecting.toString(recognizer.getVocabulary()) + " at " + getTokenErrorDisplay(t);
+        Token offendingToken = recognizer.getCurrentToken();
         RecognitionException e = new MissingTokenException(recognizer, recognizer.getInputStream(), recognizer.getRuleContext());
 
-        recognizer.notifyErrorListeners(t, msg, e);
+        recognizer.notifyErrorListeners(offendingToken, "", e);
     }
 }
