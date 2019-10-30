@@ -29,7 +29,7 @@ import java.util.*;
 public class ASTVisitor {
     private static final Logger LOGGER = LogManager.getLogger(ASTVisitor.class);
 
-    private String self;
+    private String parentAlias;
     private Map<String, ValueAccessor> witnessData;
     private Map<String, ValueAccessor> instanceData;
     private Map<String, Schema> schemas;
@@ -40,17 +40,26 @@ public class ASTVisitor {
 
     public ASTVisitor(
             AbstractSyntaxTree ast,
-            String self,
             Map<String, ValueAccessor> witnessData,
             Map<String, ValueAccessor> instanceData,
-            Map<String, Schema> schemas
+            Map<String, Schema> schemas,
+            String parentAlias
     ) {
         this.ast = ast;
-        this.self = self;
         this.witnessData = witnessData;
         this.instanceData = instanceData;
         this.schemas = schemas;
         this.subjects = new MapListener<>(new HashMap<>());
+        this.parentAlias = parentAlias;
+    }
+
+    public ASTVisitor(
+            AbstractSyntaxTree ast,
+            Map<String, ValueAccessor> witnessData,
+            Map<String, ValueAccessor> instanceData,
+            Map<String, Schema> schemas
+    ) {
+        this(ast, witnessData, instanceData, schemas, null);
     }
 
     public Statement visitStatement() {
@@ -79,10 +88,10 @@ public class ASTVisitor {
         String alias = subject.getAlias().getName();
 
         if (alias.equals("self")) {
-            if (self == null)
+            if (parentAlias == null)
                 throw new CompileTimeException("Reserved word `self` used as alias.", pinPosition(subject.getAlias()));
 
-            alias = self;
+            alias = parentAlias;
         }
 
         String schemaName = subject.getSchema().getName();

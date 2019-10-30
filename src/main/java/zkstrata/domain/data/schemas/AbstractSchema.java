@@ -50,4 +50,9 @@ public abstract class AbstractSchema implements Schema {
     public String getStatement() {
         return null;
     }
+
+    @Override
+    public String getSource() {
+        return getIdentifier();
+    }
 }

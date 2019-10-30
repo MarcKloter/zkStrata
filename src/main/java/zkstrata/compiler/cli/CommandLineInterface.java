@@ -129,7 +129,7 @@ public class CommandLineInterface {
                     String msg = String.format("Malformed schema provided as argument: %s", schema);
                     throw new IllegalArgumentException(msg);
                 }
-                schemas.put(parts[0], new JsonSchema(parts[1]));
+                schemas.put(parts[0], new JsonSchema(parts[1], parts[0]));
             }
         }
         return schemas;

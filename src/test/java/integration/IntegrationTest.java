@@ -6,7 +6,6 @@ import org.apache.commons.io.IOUtils;
 import org.junit.jupiter.api.Test;
 import zkstrata.compiler.Arguments;
 import zkstrata.compiler.Compiler;
-import zkstrata.domain.data.schemas.Schema;
 import zkstrata.domain.data.schemas.dynamic.JsonSchema;
 import zkstrata.exceptions.CompileTimeException;
 
@@ -77,6 +76,20 @@ public class IntegrationTest {
     }
 
     @Test
+    void Schema_Statement_Default() {
+        String name = "default";
+        String schema_name = "passport_ch";
+        String schema_file = SCHEMAS + "default_schema_statement" + SCHEMA_EXT;
+
+        assertDoesNotThrow(() -> {
+            String statement = getStatement(name);
+            Arguments args = new Arguments(name, SOURCE, statement, Collections.emptyMap(), Collections.emptyMap(),
+                    Map.of(schema_name, new JsonSchema(schema_file, schema_name)));
+            Compiler.run(args);
+        });
+    }
+
+    @Test
     void Schema_Statement_Default_Contradiction() {
         String name = "default";
         String schema_name = "passport_ch";
@@ -85,7 +98,7 @@ public class IntegrationTest {
         assertThrows(CompileTimeException.class, () -> {
             String statement = getStatement(name);
             Arguments args = new Arguments(name, SOURCE, statement, Collections.emptyMap(), Collections.emptyMap(),
-                    Map.of(schema_name, new JsonSchema(schema_file)));
+                    Map.of(schema_name, new JsonSchema(schema_file, schema_name)));
             Compiler.run(args);
         });
     }

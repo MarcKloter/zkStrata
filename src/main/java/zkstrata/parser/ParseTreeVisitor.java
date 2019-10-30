@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
  */
 public class ParseTreeVisitor {
 
-    public AbstractSyntaxTree parse(String source, String statement) {
+    public AbstractSyntaxTree parse(String source, String statement, String parentSchema) {
         ANTLRErrorListener errorListener = new ErrorListener();
 
         zkStrataLexer lexer = new zkStrataLexer(CharStreams.fromString(statement));
@@ -52,8 +52,12 @@ public class ParseTreeVisitor {
             throw new CompileTimeException(source, statement, e);
         }
 
-        StatementVisitor visitor = new StatementVisitor(source, statement, parser.getRuleNames());
+        StatementVisitor visitor = new StatementVisitor(source, statement, parser.getRuleNames(), parentSchema);
         return visitor.visit(tree);
+    }
+
+    public AbstractSyntaxTree parse(String source, String statement) {
+        return parse(source, statement, null);
     }
 
     public static class TypeVisitor extends zkStrataBaseVisitor<Value> {
@@ -110,16 +114,18 @@ public class ParseTreeVisitor {
         private String source;
         private String statement;
         private String[] rules;
+        private String parentSchema;
 
-        StatementVisitor(String source, String statement, String[] rules) {
+        StatementVisitor(String source, String statement, String[] rules, String parentSchema) {
             this.source = source;
             this.statement = statement;
             this.rules = rules;
+            this.parentSchema = parentSchema;
         }
 
         @Override
         public AbstractSyntaxTree visitStatement(zkStrata.StatementContext ctx) {
-            SubjectVisitor subjectVisitor = new SubjectVisitor(source);
+            SubjectVisitor subjectVisitor = new SubjectVisitor(parentSchema);
             List<Subject> subjects = ctx.subjects().subject()
                     .stream()
                     .map(subject -> subject.accept(subjectVisitor))
@@ -136,10 +142,10 @@ public class ParseTreeVisitor {
     }
 
     private class SubjectVisitor extends zkStrataBaseVisitor<Subject> {
-        private String schema;
+        private String parentSchema;
 
-        SubjectVisitor(String schema) {
-            this.schema = schema;
+        SubjectVisitor(String parentSchema) {
+            this.parentSchema = parentSchema;
         }
 
         @Override
@@ -157,7 +163,7 @@ public class ParseTreeVisitor {
 
         private Subject handleThis(zkStrata.SubjectContext ctx) {
             Subject subject = new Subject(true);
-            subject.setSchema(schema, ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+            subject.setSchema(parentSchema, ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
             subject.setAlias("self", ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
             return subject;
         }

@@ -12,10 +12,12 @@ import java.util.List;
 
 public class JsonSchema extends AbstractSchema {
     private String filename;
+    private String identifier;
     private JsonAccessor accessor;
 
-    public JsonSchema(String filename) {
+    public JsonSchema(String filename, String identifier) {
         this.filename = filename;
+        this.identifier = identifier;
         this.accessor = new JsonAccessor(filename);
     }
 
@@ -68,6 +70,11 @@ public class JsonSchema extends AbstractSchema {
 
     @Override
     public String getIdentifier() {
+        return identifier;
+    }
+
+    @Override
+    public String getSource() {
         return filename;
     }
 

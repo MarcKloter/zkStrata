@@ -26,7 +26,6 @@ public class Compiler {
         AbstractSyntaxTree ast = grammarParser.parse(args.getSource(), args.getStatement());
         ASTVisitor astVisitor = new ASTVisitor(
                 ast,
-                null,
                 args.getWitnessData(),
                 args.getInstanceData(),
                 args.getSchemas()
@@ -45,19 +44,20 @@ public class Compiler {
 
         for (Map.Entry<String, StructuredData> subject : subjects.entrySet()) {
             if (subject.getValue().isWitness() && subject.getValue().getSchema().getStatement() != null) {
-                String self = subject.getKey();
+                String alias = subject.getKey();
+                String source = subject.getValue().getSchema().getSource();
                 String schema = subject.getValue().getSchema().getIdentifier();
 
-                LOGGER.debug("Processing supplementary statement of {} (schema {})", self, schema);
+                LOGGER.debug("Processing supplementary statement of alias {} (schema: {}, source: {})", alias, schema, source);
 
                 ParseTreeVisitor grammarParser = new ParseTreeVisitor();
-                AbstractSyntaxTree ast = grammarParser.parse(schema, subject.getValue().getSchema().getStatement());
+                AbstractSyntaxTree ast = grammarParser.parse(source, subject.getValue().getSchema().getStatement(), schema);
                 ASTVisitor astVisitor = new ASTVisitor(
                         ast,
-                        self,
                         args.getWitnessData(),
                         args.getInstanceData(),
-                        args.getSchemas()
+                        args.getSchemas(),
+                        alias
                 );
                 supplementaryStatements.add(astVisitor.visitStatement());
             }
