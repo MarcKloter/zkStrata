@@ -20,6 +20,11 @@ import java.util.Map;
 public class ExposureAnalyzer {
     private static final Logger LOGGER = LogManager.getLogger(ExposureAnalyzer.class);
 
+
+    private ExposureAnalyzer() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void process(Statement statement, Arguments args) {
         Map<String, ValueAccessor> witnessData = args.getWitnessData();
         Map<String, ValueAccessor> instanceData = args.getInstanceData();
