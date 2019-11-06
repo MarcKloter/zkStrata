@@ -11,6 +11,7 @@ import zkstrata.domain.gadgets.impl.BoundsCheckGadget;
 import zkstrata.domain.gadgets.impl.EqualityGadget;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.Position;
+import zkstrata.utils.SemanticsUtils;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -31,8 +32,6 @@ public class BoundsCheckGadgetTest {
     private static final WitnessVariable WITNESS_VAR_1 = new WitnessVariable(REF_1, REF_1, DUMMY_POS);
     private static final WitnessVariable WITNESS_VAR_2 = new WitnessVariable(REF_2, REF_2, DUMMY_POS);
 
-    private static final BigInteger ED25519_PRIME_ORDER = new BigInteger("1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ed", 16);
-
     @Test
     void Negative_Lower_Bound() {
         InstanceVariable instanceVariable = new InstanceVariable(new Literal(BigInteger.valueOf(-5)), null, DUMMY_POS);
@@ -51,7 +50,7 @@ public class BoundsCheckGadgetTest {
 
     @Test
     void Lower_Bound_Too_Large() {
-        InstanceVariable instanceVariable = new InstanceVariable(new Literal(ED25519_PRIME_ORDER), null, DUMMY_POS);
+        InstanceVariable instanceVariable = new InstanceVariable(new Literal(SemanticsUtils.ED25519_PRIME_ORDER), null, DUMMY_POS);
         assertThrows(CompileTimeException.class, () -> {
             new BoundsCheckGadget(WITNESS_VAR_1, instanceVariable, INSTANCE_VAR_17);
         });
@@ -59,7 +58,7 @@ public class BoundsCheckGadgetTest {
 
     @Test
     void Upper_Bound_Too_Large() {
-        InstanceVariable instanceVariable = new InstanceVariable(new Literal(ED25519_PRIME_ORDER), null, DUMMY_POS);
+        InstanceVariable instanceVariable = new InstanceVariable(new Literal(SemanticsUtils.ED25519_PRIME_ORDER), null, DUMMY_POS);
         assertThrows(CompileTimeException.class, () -> {
             new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, instanceVariable);
         });

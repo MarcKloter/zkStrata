@@ -28,7 +28,7 @@ import java.util.Set;
 public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     private static final Logger LOGGER = LogManager.getLogger(BoundsCheckGadget.class);
     private static final BigInteger MIN = BigInteger.valueOf(0);
-    private static final BigInteger MAX = new BigInteger("1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ec", 16);
+    private static final BigInteger MAX = SemanticsUtils.ED25519_PRIME_ORDER.subtract(BigInteger.ONE);
 
     @Type({BigInteger.class})
     private WitnessVariable value;
