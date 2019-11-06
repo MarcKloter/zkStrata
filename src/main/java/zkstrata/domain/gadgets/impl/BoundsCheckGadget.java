@@ -28,7 +28,7 @@ import java.util.Set;
 public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     private static final Logger LOGGER = LogManager.getLogger(BoundsCheckGadget.class);
     private static final BigInteger MIN = BigInteger.valueOf(0);
-    private static final BigInteger MAX = new BigInteger("ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", 16);
+    private static final BigInteger MAX = new BigInteger("1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ec", 16);
 
     @Type({BigInteger.class})
     private WitnessVariable value;
@@ -148,16 +148,10 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
         if (this.max == null)
             this.max = InstanceVariable.of(MAX);
 
-        if (SemanticsUtils.testMaxBitSize(getMinValue(), 256))
-            throw new CompileTimeException("The lower bound cannot be longer than 32 bytes.", this.min);
-
-        if (SemanticsUtils.testMaxBitSize(getMaxValue(), 256))
-            throw new CompileTimeException("The upper bound cannot be longer than 32 bytes.", this.max);
-
         if (getMinValue().compareTo(MIN) < 0 || getMinValue().compareTo(MAX) > 0)
             throw new CompileTimeException(String.format("The lower bound must be in the range between %s and %s.", MIN, MAX), this.max);
 
-        if (getMaxValue().compareTo(MIN) < 0 || getMinValue().compareTo(MAX) > 0)
+        if (getMaxValue().compareTo(MIN) < 0 || getMaxValue().compareTo(MAX) > 0)
             throw new CompileTimeException(String.format("The upper bound must be in the range between %s and %s.", MIN, MAX), this.max);
     }
 
