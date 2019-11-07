@@ -15,6 +15,7 @@ import java.math.BigInteger;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,25 +50,25 @@ public class EqualityGadgetTest {
     @Test
     void Witness_Equals_Self_Substitution() {
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_1);
-        assertEquals(Collections.emptyList(), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
+        assertEquals(Collections.emptySet(), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
     }
 
     @Test
     void Witness_Equals_Self_No_Substitution() {
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
-        assertEquals(List.of(equalityGadget), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
+        assertEquals(Set.of(equalityGadget), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
     }
 
     @Test
     void Instance_Equals_Instance_Substitution() {
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_17, INSTANCE_VAR_17);
-        assertEquals(Collections.emptyList(), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
+        assertEquals(Collections.emptySet(), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
     }
 
     @Test
     void Instance_Equals_Instance_No_Substitution() {
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_17, INSTANCE_VAR_41);
-        assertEquals(List.of(equalityGadget), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
+        assertEquals(Set.of(equalityGadget), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
     }
 
     @Test

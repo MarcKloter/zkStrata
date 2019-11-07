@@ -54,27 +54,27 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
     }
 
     @Substitution(target = {EqualityGadget.class})
-    public static List<Gadget> removeWitnessEqualsSelf(EqualityGadget eq) {
+    public static Set<Gadget> removeWitnessEqualsSelf(EqualityGadget eq) {
         if (eq.getLeft() instanceof WitnessVariable && eq.getRight() instanceof WitnessVariable
                 && eq.getLeft().equals(eq.getRight())) {
             // TODO: maybe add statements information
             LOGGER.info("Removed equality predicate of single witness variable.");
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
-        return List.of(eq);
+        return Set.of(eq);
     }
 
     @Substitution(target = {EqualityGadget.class})
-    public static List<Gadget> removeInstanceEqualsInstance(EqualityGadget eq) {
+    public static Set<Gadget> removeInstanceEqualsInstance(EqualityGadget eq) {
         if (eq.getLeft() instanceof InstanceVariable && eq.getRight() instanceof InstanceVariable
                 && eq.getLeft().getValue().equals(eq.getRight().getValue())) {
             // TODO: maybe add statements information
             LOGGER.info("Removed equality predicate of two instance variables.");
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
-        return List.of(eq);
+        return Set.of(eq);
     }
 
     /**
