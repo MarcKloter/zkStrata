@@ -30,18 +30,9 @@ public class BoundsCheckGadgetTest {
 
     private static final Reference REF_1 = new Reference(BigInteger.class, "alias1", new Selector(List.of("selector1")));
     private static final Reference REF_2 = new Reference(BigInteger.class, "alias2", new Selector(List.of("selector2")));
-    private static final Reference REF_3 = new Reference(String.class, "alias3", new Selector(List.of("selector3")));
 
     private static final WitnessVariable WITNESS_VAR_1 = new WitnessVariable(REF_1, REF_1, DUMMY_POS);
     private static final WitnessVariable WITNESS_VAR_2 = new WitnessVariable(REF_2, REF_2, DUMMY_POS);
-    private static final WitnessVariable WITNESS_VAR_3 = new WitnessVariable(REF_3, REF_3, DUMMY_POS);
-
-    @Test
-    void Invalid_Type_String() {
-        assertThrows(CompileTimeException.class, () -> {
-            new BoundsCheckGadget(WITNESS_VAR_3, INSTANCE_VAR_NEG, INSTANCE_VAR_17);
-        });
-    }
 
     @Test
     void Negative_Lower_Bound() {
