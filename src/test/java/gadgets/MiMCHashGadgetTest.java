@@ -63,6 +63,7 @@ public class MiMCHashGadgetTest {
         MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         assertDoesNotThrow(() -> {
             MiMCHashGadget.checkContradiction(miMCHashGadget1, miMCHashGadget2);
+            MiMCHashGadget.checkContradiction(miMCHashGadget2, miMCHashGadget1);
         });
     }
 
@@ -72,6 +73,7 @@ public class MiMCHashGadgetTest {
         MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_2, INSTANCE_VAR_IMAGE_2);
         assertDoesNotThrow(() -> {
             MiMCHashGadget.checkContradiction(miMCHashGadget1, miMCHashGadget2);
+            MiMCHashGadget.checkContradiction(miMCHashGadget2, miMCHashGadget1);
         });
     }
 }
