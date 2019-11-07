@@ -83,19 +83,27 @@ public class EqualityGadgetTest {
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, WITNESS_VAR_1);
         EqualityGadget implication = new EqualityGadget(INSTANCE_VAR_17, WITNESS_VAR_2);
 
-        Optional<Gadget> result = EqualityGadget.implyEquality(equalityGadget1, equalityGadget2);
-        assertTrue(result.isPresent());
-        assertTrue(result.get() instanceof EqualityGadget);
-        assertTrue(implication.isEqualTo((EqualityGadget) result.get()));
+        Optional<Gadget> result1 = EqualityGadget.implyEquality(equalityGadget1, equalityGadget2);
+        assertTrue(result1.isPresent());
+        assertTrue(result1.get() instanceof EqualityGadget);
+        assertTrue(implication.isEqualTo((EqualityGadget) result1.get()));
+
+        Optional<Gadget> result2 = EqualityGadget.implyEquality(equalityGadget2, equalityGadget1);
+        assertTrue(result2.isPresent());
+        assertTrue(result2.get() instanceof EqualityGadget);
+        assertTrue(implication.isEqualTo((EqualityGadget) result2.get()));
     }
 
     @Test
     void Parity_None_Implication() {
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
-        EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_41);
+        EqualityGadget equalityGadget2 = new EqualityGadget(INSTANCE_VAR_41, WITNESS_VAR_2);
 
-        Optional<Gadget> result = EqualityGadget.implyEquality(equalityGadget1, equalityGadget2);
-        assertTrue(result.isEmpty());
+        Optional<Gadget> result1 = EqualityGadget.implyEquality(equalityGadget1, equalityGadget2);
+        assertTrue(result1.isEmpty());
+
+        Optional<Gadget> result2 = EqualityGadget.implyEquality(equalityGadget2, equalityGadget1);
+        assertTrue(result2.isEmpty());
     }
 
     @Test

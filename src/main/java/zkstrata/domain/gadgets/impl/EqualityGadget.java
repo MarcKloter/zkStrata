@@ -90,7 +90,9 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
                 return List.of(eq1.getRight(), eq2.getRight());
             if (eq2.getRight() instanceof WitnessVariable && eq1.getLeft().equals(eq2.getRight()))
                 return List.of(eq1.getRight(), eq2.getLeft());
-        } else if (eq1.getRight() instanceof WitnessVariable) {
+        }
+
+        if (eq1.getRight() instanceof WitnessVariable) {
             if (eq2.getLeft() instanceof WitnessVariable && eq1.getRight().equals(eq2.getLeft()))
                 return List.of(eq1.getLeft(), eq2.getRight());
             if (eq2.getRight() instanceof WitnessVariable && eq1.getRight().equals(eq2.getRight()))
