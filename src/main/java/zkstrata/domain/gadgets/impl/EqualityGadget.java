@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
+import zkstrata.domain.data.types.custom.Any;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
@@ -13,17 +14,16 @@ import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.Equality;
 
-import java.math.BigInteger;
 import java.util.*;
 
 @AstElement(Equality.class)
 public class EqualityGadget extends AbstractGadget<EqualityGadget> {
     private static final Logger LOGGER = LogManager.getLogger(EqualityGadget.class);
 
-    @Type({String.class, BigInteger.class})
+    @Type({Any.class})
     private Variable leftHand;
 
-    @Type({String.class, BigInteger.class})
+    @Type({Any.class})
     private Variable rightHand;
 
     public EqualityGadget() {

@@ -1,6 +1,7 @@
 package zkstrata.domain.gadgets;
 
 import org.apache.commons.text.TextStringBuilder;
+import zkstrata.domain.data.types.custom.Any;
 import zkstrata.domain.data.types.custom.Null;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.exceptions.CompileTimeException;
@@ -43,11 +44,13 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
 
         List<Class<?>> allowedTypes = Arrays.asList(annotation.value());
 
-        if (!allowedTypes.contains(variable.getType()))
+        // check whether the type of the variable is allowed for the gadget
+        if (!allowedTypes.contains(Any.class) && !allowedTypes.contains(variable.getType()))
             throw new CompileTimeException(String.format("Unexpected type %s. Expected: %s.", variable.getType().getSimpleName(),
                     allowedTypes.stream().map(Class::getSimpleName).collect(Collectors.joining(", "))), variable);
 
-        if(variable.getClass() != Null.class && !field.getType().isAssignableFrom(variable.getClass()))
+        // check whether the variables confidentiality level (instance or witness) matches the gadgets requirements
+        if (variable.getClass() != Null.class && !field.getType().isAssignableFrom(variable.getClass()))
             throw new CompileTimeException(String.format("%s not allowed here. Expected: %s.",
                     variable.getClass().getSimpleName(), field.getType().getSimpleName()), variable);
     }
