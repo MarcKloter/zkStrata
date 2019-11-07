@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BoundsCheckGadgetTest {
     private static final Position.Absolute DUMMY_POS = new Position.Absolute("src", "stmt", "t", 1, 1);
 
+    private static final InstanceVariable INSTANCE_VAR_NEG = new InstanceVariable(new Literal(BigInteger.valueOf(-5)), null, DUMMY_POS);
     private static final InstanceVariable INSTANCE_VAR_17 = new InstanceVariable(new Literal(BigInteger.valueOf(17)), null, DUMMY_POS);
     private static final InstanceVariable INSTANCE_VAR_29 = new InstanceVariable(new Literal(BigInteger.valueOf(29)), null, DUMMY_POS);
     private static final InstanceVariable INSTANCE_VAR_41 = new InstanceVariable(new Literal(BigInteger.valueOf(41)), null, DUMMY_POS);
@@ -29,22 +30,30 @@ public class BoundsCheckGadgetTest {
 
     private static final Reference REF_1 = new Reference(BigInteger.class, "alias1", new Selector(List.of("selector1")));
     private static final Reference REF_2 = new Reference(BigInteger.class, "alias2", new Selector(List.of("selector2")));
+    private static final Reference REF_3 = new Reference(String.class, "alias3", new Selector(List.of("selector3")));
+
     private static final WitnessVariable WITNESS_VAR_1 = new WitnessVariable(REF_1, REF_1, DUMMY_POS);
     private static final WitnessVariable WITNESS_VAR_2 = new WitnessVariable(REF_2, REF_2, DUMMY_POS);
+    private static final WitnessVariable WITNESS_VAR_3 = new WitnessVariable(REF_3, REF_3, DUMMY_POS);
+
+    @Test
+    void Invalid_Type_String() {
+        assertThrows(CompileTimeException.class, () -> {
+            new BoundsCheckGadget(WITNESS_VAR_3, INSTANCE_VAR_NEG, INSTANCE_VAR_17);
+        });
+    }
 
     @Test
     void Negative_Lower_Bound() {
-        InstanceVariable instanceVariable = new InstanceVariable(new Literal(BigInteger.valueOf(-5)), null, DUMMY_POS);
         assertThrows(CompileTimeException.class, () -> {
-            new BoundsCheckGadget(WITNESS_VAR_1, instanceVariable, INSTANCE_VAR_17);
+            new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_NEG, INSTANCE_VAR_17);
         });
     }
 
     @Test
     void Negative_Upper_Bound() {
-        InstanceVariable instanceVariable = new InstanceVariable(new Literal(BigInteger.valueOf(-5)), null, DUMMY_POS);
         assertThrows(CompileTimeException.class, () -> {
-            new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, instanceVariable);
+            new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_NEG);
         });
     }
 
@@ -69,7 +78,6 @@ public class BoundsCheckGadgetTest {
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
         BoundsCheckGadget implication = new BoundsCheckGadget(WITNESS_VAR_2, INSTANCE_VAR_17, INSTANCE_VAR_41);
-
 
         Optional<Gadget> result = BoundsCheckGadget.implyBounds(equalityGadget, boundsCheckGadget);
         assertTrue(result.isPresent());

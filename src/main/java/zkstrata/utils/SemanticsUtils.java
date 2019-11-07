@@ -8,8 +8,5 @@ public class SemanticsUtils {
     }
 
     public static final BigInteger ED25519_PRIME_ORDER = new BigInteger("1000000000000000000000000000000014def9dea2f79cd65812631a5cf5d3ed", 16);
-
-    public static boolean testMaxBitSize(BigInteger bigInteger, int maxNumberOfBits) {
-        return bigInteger.bitCount() > maxNumberOfBits;
-    }
+    public static final BigInteger ED25519_MAX_VALUE = ED25519_PRIME_ORDER.subtract(BigInteger.ONE);
 }

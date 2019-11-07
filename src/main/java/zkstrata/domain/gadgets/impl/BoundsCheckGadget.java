@@ -27,8 +27,8 @@ import java.util.Set;
 @AstElement(BoundsCheck.class)
 public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     private static final Logger LOGGER = LogManager.getLogger(BoundsCheckGadget.class);
-    private static final BigInteger MIN = BigInteger.valueOf(0);
-    private static final BigInteger MAX = SemanticsUtils.ED25519_PRIME_ORDER.subtract(BigInteger.ONE);
+    private static final BigInteger MIN = BigInteger.ZERO;
+    private static final BigInteger MAX = SemanticsUtils.ED25519_MAX_VALUE;
 
     @Type({BigInteger.class})
     private WitnessVariable value;
@@ -149,10 +149,12 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
             this.max = InstanceVariable.of(MAX);
 
         if (getMinValue().compareTo(MIN) < 0 || getMinValue().compareTo(MAX) > 0)
-            throw new CompileTimeException(String.format("The lower bound must be in the range between %s and %s.", MIN, MAX), this.max);
+            throw new CompileTimeException(String.format("The lower bound must be in the range between %s and %s.",
+                    MIN, MAX), this.max);
 
         if (getMaxValue().compareTo(MIN) < 0 || getMaxValue().compareTo(MAX) > 0)
-            throw new CompileTimeException(String.format("The upper bound must be in the range between %s and %s.", MIN, MAX), this.max);
+            throw new CompileTimeException(String.format("The upper bound must be in the range between %s and %s.",
+                    MIN, MAX), this.max);
     }
 
     @Override
