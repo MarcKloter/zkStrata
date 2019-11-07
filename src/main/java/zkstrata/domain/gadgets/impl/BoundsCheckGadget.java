@@ -91,16 +91,20 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     */
 
     @Substitution(target = {BoundsCheckGadget.class, BoundsCheckGadget.class})
-    public static List<Gadget> replaceEquality2(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
-        if (bc1.value.equals(bc2.value) &&
-                (bc1.getMaxValue().subtract(bc2.getMinValue()).equals(BigInteger.valueOf(0))
-                        || bc2.getMaxValue().subtract(bc1.getMinValue()).equals(BigInteger.valueOf(0)))) {
-            // TODO: try out, maybe add statements information
-            LOGGER.info("Removed equality predicate of two instance variables.");
-            return List.of(new EqualityGadget(bc1.value, bc1.getMin()));
+    public static Set<Gadget> replaceEquality2(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
+        if (bc1.getValue().equals(bc2.getValue())) {
+            if (bc1.getMaxValue().subtract(bc2.getMinValue()).equals(BigInteger.valueOf(0))) {
+                LOGGER.info("Removed equality predicate of two instance variables.");
+                return Set.of(new EqualityGadget(bc1.getValue(), bc2.getMin()));
+            }
+
+            if (bc2.getMaxValue().subtract(bc1.getMinValue()).equals(BigInteger.valueOf(0))) {
+                LOGGER.info("Removed equality predicate of two instance variables.");
+                return Set.of(new EqualityGadget(bc1.getValue(), bc1.getMin()));
+            }
         }
 
-        return List.of(bc1, bc2);
+        return Set.of(bc1, bc2);
     }
 
     @Substitution(target = {BoundsCheckGadget.class})

@@ -14,8 +14,10 @@ import zkstrata.exceptions.Position;
 import zkstrata.utils.SemanticsUtils;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -144,5 +146,28 @@ public class BoundsCheckGadgetTest {
             BoundsCheckGadget.checkContradiction1(boundsCheckGadget1, boundsCheckGadget2);
             BoundsCheckGadget.checkContradiction1(boundsCheckGadget2, boundsCheckGadget1);
         });
+    }
+
+    @Test
+    void Equality_Substitution_1() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_17);
+        EqualityGadget substitution = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        assertEquals(Set.of(substitution), BoundsCheckGadget.replaceEquality1(boundsCheckGadget));
+    }
+
+    @Test
+    void Equality_Substitution_2() {
+        BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_41, INSTANCE_VAR_53);
+        EqualityGadget substitution = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_41);
+        assertEquals(Set.of(substitution), BoundsCheckGadget.replaceEquality2(boundsCheckGadget1, boundsCheckGadget2));
+    }
+
+    @Test
+    void Equality_Substitution_3() {
+        BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_29);
+        EqualityGadget substitution = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_29);
+        assertEquals(Set.of(substitution), BoundsCheckGadget.replaceEquality2(boundsCheckGadget1, boundsCheckGadget2));
     }
 }
