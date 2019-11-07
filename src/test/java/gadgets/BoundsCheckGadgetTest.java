@@ -170,4 +170,17 @@ public class BoundsCheckGadgetTest {
         EqualityGadget substitution = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_29);
         assertEquals(Set.of(substitution), BoundsCheckGadget.replaceEquality2(boundsCheckGadget1, boundsCheckGadget2));
     }
+
+    @Test
+    void Equality_No_Substitution_1() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_29);
+        assertEquals(Set.of(boundsCheckGadget), BoundsCheckGadget.replaceEquality1(boundsCheckGadget));
+    }
+
+    @Test
+    void Equality_No_Substitution_2() {
+        BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_2, INSTANCE_VAR_17, INSTANCE_VAR_29);
+        assertEquals(Set.of(boundsCheckGadget1, boundsCheckGadget2), BoundsCheckGadget.replaceEquality2(boundsCheckGadget1, boundsCheckGadget2));
+    }
 }
