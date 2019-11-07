@@ -107,6 +107,15 @@ public class BoundsCheckGadgetTest {
     }
 
     @Test
+    void Single_Gadget_No_Contradiction() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+
+        assertDoesNotThrow(() -> {
+            BoundsCheckGadget.checkContradiction2(boundsCheckGadget);
+        });
+    }
+
+    @Test
     void Two_Gadget_Contradiction_1() {
         BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_41, INSTANCE_VAR_53);
         BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_29);
@@ -123,6 +132,17 @@ public class BoundsCheckGadgetTest {
 
         assertThrows(CompileTimeException.class, () -> {
             BoundsCheckGadget.checkContradiction1(boundsCheckGadget1, boundsCheckGadget2);
+        });
+    }
+
+    @Test
+    void Two_Gadget_No_Contradiction() {
+        BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_53);
+
+        assertDoesNotThrow(() -> {
+            BoundsCheckGadget.checkContradiction1(boundsCheckGadget1, boundsCheckGadget2);
+            BoundsCheckGadget.checkContradiction1(boundsCheckGadget2, boundsCheckGadget1);
         });
     }
 }
