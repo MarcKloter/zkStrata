@@ -4,7 +4,7 @@ import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.accessors.JsonAccessor;
 import zkstrata.domain.data.schemas.AbstractSchema;
 import zkstrata.domain.data.types.Value;
-import zkstrata.domain.data.types.wrapper.Nullable;
+import zkstrata.domain.data.types.custom.Null;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -83,7 +83,7 @@ public class JsonSchema extends AbstractSchema {
         STRING("string", String.class),
         NUMBER("number", BigInteger.class),
         BOOLEAN("boolean", Boolean.class),
-        NULL("null", Nullable.class);
+        NULL("null", Null.class);
 
         private Class<?> type;
 

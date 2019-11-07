@@ -6,7 +6,7 @@ import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
-import zkstrata.domain.data.types.wrapper.Nullable;
+import zkstrata.domain.data.types.custom.Null;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
@@ -33,10 +33,10 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     @Type({BigInteger.class})
     private WitnessVariable value;
 
-    @Type({Nullable.class, BigInteger.class})
+    @Type({Null.class, BigInteger.class})
     private InstanceVariable min;
 
-    @Type({Nullable.class, BigInteger.class})
+    @Type({Null.class, BigInteger.class})
     private InstanceVariable max;
 
     public BoundsCheckGadget() {

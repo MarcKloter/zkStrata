@@ -1,13 +1,14 @@
-package zkstrata.domain.data.types.wrapper;
+package zkstrata.domain.data.types.custom;
 
 import zkstrata.domain.data.types.Reference;
 import zkstrata.domain.data.types.Value;
+import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.exceptions.Position;
 
-public class Nullable implements Variable {
+public class Null implements Variable {
     @Override
     public Class<?> getType() {
-        return Nullable.class;
+        return Null.class;
     }
 
     @Override

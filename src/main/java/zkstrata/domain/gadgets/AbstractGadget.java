@@ -1,7 +1,7 @@
 package zkstrata.domain.gadgets;
 
 import org.apache.commons.text.TextStringBuilder;
-import zkstrata.domain.data.types.wrapper.Nullable;
+import zkstrata.domain.data.types.custom.Null;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
@@ -20,7 +20,7 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
                 Field destination = this.getClass().getDeclaredField(source.getKey());
                 Variable destinationValue = source.getValue();
                 checkType(destination, destinationValue);
-                if (destinationValue.getClass() == Nullable.class)
+                if (destinationValue.getClass() == Null.class)
                     destinationValue = null;
                 destination.setAccessible(true);
                 destination.set(this, destinationValue);
@@ -47,7 +47,7 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
             throw new CompileTimeException(String.format("Unexpected type %s. Expected: %s.", variable.getType().getSimpleName(),
                     allowedTypes.stream().map(Class::getSimpleName).collect(Collectors.joining(", "))), variable);
 
-        if(variable.getClass() != Nullable.class && !field.getType().isAssignableFrom(variable.getClass()))
+        if(variable.getClass() != Null.class && !field.getType().isAssignableFrom(variable.getClass()))
             throw new CompileTimeException(String.format("%s not allowed here. Expected: %s.",
                     variable.getClass().getSimpleName(), field.getType().getSimpleName()), variable);
     }

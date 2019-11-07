@@ -10,7 +10,7 @@ import zkstrata.exceptions.*;
 import zkstrata.parser.ast.types.*;
 import zkstrata.utils.ReflectionHelper;
 import zkstrata.utils.SchemaHelper;
-import zkstrata.domain.data.types.wrapper.Nullable;
+import zkstrata.domain.data.types.custom.Null;
 import zkstrata.domain.data.schemas.wrapper.Instance;
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
 import zkstrata.domain.data.schemas.wrapper.Witness;
@@ -160,7 +160,7 @@ public class ASTVisitor {
 
     private Variable visitType(Value type) {
         if (type == null) {
-            return new Nullable();
+            return new Null();
         } else {
             if (Literal.class.isAssignableFrom(type.getClass()))
                 return visitLiteral((Literal) type);
