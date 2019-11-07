@@ -4,7 +4,7 @@ import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.accessors.JsonAccessor;
 import zkstrata.domain.data.schemas.AbstractSchema;
 import zkstrata.domain.data.types.Value;
-import zkstrata.domain.data.types.custom.Null;
+import zkstrata.domain.data.types.wrapper.Null;
 
 import java.math.BigInteger;
 import java.util.ArrayList;

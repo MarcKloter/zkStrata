@@ -1,8 +1,8 @@
 package zkstrata.domain.gadgets;
 
 import org.apache.commons.text.TextStringBuilder;
-import zkstrata.domain.data.types.custom.Any;
-import zkstrata.domain.data.types.custom.Null;
+import zkstrata.domain.data.types.Any;
+import zkstrata.domain.data.types.wrapper.Null;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;

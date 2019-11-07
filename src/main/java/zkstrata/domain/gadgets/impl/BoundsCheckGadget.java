@@ -6,7 +6,7 @@ import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
-import zkstrata.domain.data.types.custom.Null;
+import zkstrata.domain.data.types.wrapper.Null;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;

@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
-import zkstrata.domain.data.types.custom.Any;
+import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;

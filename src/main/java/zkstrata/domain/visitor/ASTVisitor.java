@@ -10,7 +10,7 @@ import zkstrata.exceptions.*;
 import zkstrata.parser.ast.types.*;
 import zkstrata.utils.ReflectionHelper;
 import zkstrata.utils.SchemaHelper;
-import zkstrata.domain.data.types.custom.Null;
+import zkstrata.domain.data.types.wrapper.Null;
 import zkstrata.domain.data.schemas.wrapper.Instance;
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
 import zkstrata.domain.data.schemas.wrapper.Witness;
