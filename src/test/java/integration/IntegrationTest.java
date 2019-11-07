@@ -70,6 +70,18 @@ public class IntegrationTest {
     }
 
     @Test
+    void Verifier_MiMCHash_Statement_Should_Succeed() {
+        String name = "mimchash";
+
+        assertDoesNotThrow(() -> {
+            String statement = getStatement(name);
+            Arguments args = new Arguments(name, SOURCE, statement,
+                    Collections.emptyMap(), Collections.emptyMap(), Collections.emptyMap());
+            Compiler.run(args);
+        });
+    }
+
+    @Test
     void Duplicate_Alias_Should_Throw() {
         String name = "duplicate_alias";
 
