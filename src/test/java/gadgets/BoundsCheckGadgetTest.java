@@ -51,6 +51,34 @@ public class BoundsCheckGadgetTest {
     }
 
     @Test
+    void Is_Equal_To() {
+        BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        assertTrue(boundsCheckGadget1.isEqualTo(boundsCheckGadget2));
+    }
+
+    @Test
+    void Is_Not_Equal_To_1() {
+        BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_2, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        assertFalse(boundsCheckGadget1.isEqualTo(boundsCheckGadget2));
+    }
+
+    @Test
+    void Is_Not_Equal_To_2() {
+        BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        assertFalse(boundsCheckGadget1.isEqualTo(boundsCheckGadget2));
+    }
+
+    @Test
+    void Is_Not_Equal_To_3() {
+        BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_53);
+        assertFalse(boundsCheckGadget1.isEqualTo(boundsCheckGadget2));
+    }
+
+    @Test
     void Lower_Bound_Too_Large() {
         InstanceVariable instanceVariable = new InstanceVariable(new Literal(SemanticsUtils.ED25519_PRIME_ORDER), null, DUMMY_POS);
         assertThrows(CompileTimeException.class, () -> {
