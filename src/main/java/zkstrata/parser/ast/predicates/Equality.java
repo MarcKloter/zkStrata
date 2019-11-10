@@ -20,4 +20,12 @@ public class Equality extends Predicate {
     public Value getRightHand() {
         return rightHand;
     }
+
+    public void setLeftHand(Value leftHand) {
+        this.leftHand = leftHand;
+    }
+
+    public void setRightHand(Value rightHand) {
+        this.rightHand = rightHand;
+    }
 }

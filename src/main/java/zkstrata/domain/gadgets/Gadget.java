@@ -10,9 +10,9 @@ public interface Gadget<T extends Gadget> {
     /**
      * Initializes fields of this gadget annotated with {@link Type} according to the given source.
      *
-     * @param source {@link Map} containing the field name and {@link Variable} pairs
+     * @param source {@link Map} containing the field name {@link String} and value {@link Object} pairs
      */
-    void initFrom(Map<String, Variable> source);
+    void initFrom(Map<String, Object> source);
 
     List<Variable> getVariables();
 

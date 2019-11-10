@@ -15,11 +15,11 @@ import java.util.stream.Collectors;
 public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget<T> {
 
     @Override
-    public void initFrom(Map<String, Variable> sourceFields) {
-        for (Map.Entry<String, Variable> source : sourceFields.entrySet()) {
+    public void initFrom(Map<String, Object> sourceFields) {
+        for (Map.Entry<String, Object> source : sourceFields.entrySet()) {
             try {
                 Field destination = this.getClass().getDeclaredField(source.getKey());
-                Variable destinationValue = source.getValue();
+                Object destinationValue = source.getValue();
                 checkType(destination, destinationValue);
                 if (destinationValue.getClass() == Null.class)
                     destinationValue = null;
@@ -35,7 +35,15 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
         this.performChecks();
     }
 
-    private void checkType(Field field, Variable variable) {
+    private void checkType(Field field, Object value) {
+        if (value instanceof Variable)
+            checkTypeAnnotation(field, (Variable) value);
+        else if (!field.getType().isAssignableFrom(value.getClass()))
+            throw new InternalCompilerException("Type mismatch for field %s in gadget %s and its AST predicate.",
+                    field.getName(), field.getDeclaringClass().getSimpleName());
+    }
+
+    private void checkTypeAnnotation(Field field, Variable variable) {
         Type annotation = field.getAnnotation(Type.class);
 
         if (annotation == null)

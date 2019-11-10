@@ -26,4 +26,16 @@ public class BoundsCheck extends Predicate {
     public Value getMax() {
         return max;
     }
+
+    public void setValue(Value value) {
+        this.value = value;
+    }
+
+    public void setMin(Value min) {
+        this.min = min;
+    }
+
+    public void setMax(Value max) {
+        this.max = max;
+    }
 }

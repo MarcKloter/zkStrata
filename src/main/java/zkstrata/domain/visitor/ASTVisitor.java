@@ -8,6 +8,7 @@ import zkstrata.domain.data.accessors.SchemaAccessor;
 import zkstrata.domain.data.accessors.ValueAccessor;
 import zkstrata.exceptions.*;
 import zkstrata.parser.ast.types.*;
+import zkstrata.utils.BinaryTree;
 import zkstrata.utils.ReflectionHelper;
 import zkstrata.utils.SchemaHelper;
 import zkstrata.domain.data.types.wrapper.Null;
@@ -23,6 +24,8 @@ import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.Subject;
 import zkstrata.parser.ast.predicates.Predicate;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -120,7 +123,6 @@ public class ASTVisitor {
         }
     }
 
-    // TODO: refactor?
     private Gadget visitPredicate(Predicate predicate) {
         Set<Class<? extends Gadget>> gadgets = ReflectionHelper.getAllGadgets();
 
@@ -131,21 +133,10 @@ public class ASTVisitor {
                 throw new InternalCompilerException("Missing @AstElement annotation in %s.", gadget);
 
             if (from.value() == predicate.getClass()) {
+                Map<String, Object> sourceValues = getSourceValues(predicate);
                 try {
-                    // TODO: change this to use a parameterized constructor
                     Gadget instance = gadget.getConstructor().newInstance();
-
-                    Field[] sourceFields = predicate.getClass().getDeclaredFields();
-                    Map<String, Variable> sourceValues = new HashMap<>();
-
-                    for (Field source : sourceFields) {
-                        source.setAccessible(true);
-                        Value sourceValue = (Value) source.get(predicate);
-                        sourceValues.put(source.getName(), visitType(sourceValue));
-                    }
-
                     instance.initFrom(sourceValues);
-
                     return instance;
                 } catch (NoSuchMethodException e) {
                     throw new InternalCompilerException("Gadget %s is missing a default constructor.", gadget);
@@ -158,15 +149,46 @@ public class ASTVisitor {
         throw new InternalCompilerException("Missing gadget implementation for predicate: %s", predicate.getClass());
     }
 
-    private Variable visitType(Value type) {
-        if (type == null) {
-            return new Null();
-        } else {
-            if (Literal.class.isAssignableFrom(type.getClass()))
-                return visitLiteral((Literal) type);
-            if (type.getClass().equals(Identifier.class))
-                return visitIdentifier((Identifier) type);
+    private Map<String, Object> getSourceValues(Predicate predicate) {
+        Map<String, Object> values = new HashMap<>();
+
+        Field[] fields = predicate.getClass().getDeclaredFields();
+        for (Field field : fields) {
+            try {
+                Object value = new PropertyDescriptor(field.getName(), predicate.getClass()).getReadMethod().invoke(predicate);
+                values.put(field.getName(), visitPredicateElement(value));
+            } catch (IntrospectionException e) {
+                throw new InternalCompilerException("Error while calling the getter method for field %s in predicate %s. "
+                        + "Ensure the predicate class has all getter and setter methods for its properties.",
+                        field.getName(), predicate.getClass().getSimpleName());
+            } catch (ReflectiveOperationException e) {
+                throw new InternalCompilerException("Invalid getter method for field %s in predicate %s.",
+                        predicate.getClass().getSimpleName(), field.getName());
+            }
         }
+
+        return values;
+    }
+
+    private Object visitPredicateElement(Object element) {
+        if (element == null)
+            return new Null();
+
+        if (element instanceof Value)
+            return visitType((Value) element);
+
+        if (element instanceof BinaryTree)
+            return visitBinaryTree((BinaryTree) element);
+
+        throw new InternalCompilerException("Unimplemented element %s in AST.", element.getClass());
+    }
+
+    private Variable visitType(Value type) {
+        if (Literal.class.isAssignableFrom(type.getClass()))
+            return visitLiteral((Literal) type);
+
+        if (type.getClass().equals(Identifier.class))
+            return visitIdentifier((Identifier) type);
 
         throw new InternalCompilerException("Unimplemented type %s in AST.", type.getClass());
     }
@@ -198,6 +220,22 @@ public class ASTVisitor {
         } else {
             throw new CompileTimeException(String.format("Missing declaration for subject alias `%s`.",
                     subject), pinPosition(identifier));
+        }
+    }
+
+    private BinaryTree<Variable> visitBinaryTree(BinaryTree binaryTree) {
+        return new BinaryTree<>(visitBinaryTreeNode(binaryTree.getRoot()));
+    }
+
+    private BinaryTree.Node<Variable> visitBinaryTreeNode(BinaryTree.Node node) {
+        if (!node.isLeaf()) {
+            return new BinaryTree.Node<>(visitBinaryTreeNode(node.getLeft()), visitBinaryTreeNode(node.getRight()));
+        } else {
+            if (node.getValue() instanceof Value)
+                return new BinaryTree.Node<>(visitType((Value) node.getValue()));
+            else
+                throw new InternalCompilerException("Expected BinaryTree.Node of class Value, found %s.",
+                        node.getValue().getClass().getSimpleName());
         }
     }
 
