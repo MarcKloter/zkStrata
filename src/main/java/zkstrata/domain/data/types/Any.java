@@ -1,4 +1,4 @@
 package zkstrata.domain.data.types;
 
-public class Any {
+public interface Any {
 }
