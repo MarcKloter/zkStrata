@@ -27,7 +27,6 @@ public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
     private Variable image;
 
     public MiMCHashGadget() {
-
     }
 
     public MiMCHashGadget(WitnessVariable preimage, Variable image) {

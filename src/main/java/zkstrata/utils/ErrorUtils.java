@@ -16,7 +16,7 @@ public class ErrorUtils {
 
     /**
      * Sanitizes the given String.
-     * Required to remove specific symbols from inputs to ensure erroneous symbols get underlined properly.
+     * Required to remove control characters from inputs to ensure erroneous symbols can be underlined properly.
      */
     public static String sanitize(String s) {
         StringBuilder buf = new StringBuilder();

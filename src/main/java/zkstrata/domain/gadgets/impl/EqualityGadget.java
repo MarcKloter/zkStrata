@@ -27,7 +27,6 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
     private Variable rightHand;
 
     public EqualityGadget() {
-
     }
 
     public EqualityGadget(Variable leftHand, Variable rightHand) {

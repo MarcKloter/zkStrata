@@ -19,7 +19,6 @@ import zkstrata.parser.ast.predicates.BoundsCheck;
 import zkstrata.utils.SemanticsUtils;
 
 import java.math.BigInteger;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -40,7 +39,6 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     private InstanceVariable max;
 
     public BoundsCheckGadget() {
-
     }
 
     public BoundsCheckGadget(WitnessVariable value, InstanceVariable min, InstanceVariable max) {
