@@ -49,6 +49,12 @@ public class StatementBuilder {
         return this;
     }
 
+    public StatementBuilder mimcHash(String preimage, String image) {
+        predicates.add(String.format("%s IS PREIMAGE OF %s", preimage, image));
+
+        return this;
+    }
+
     public String build() {
         TextStringBuilder builder = new TextStringBuilder();
         builder.append(PREFIX);

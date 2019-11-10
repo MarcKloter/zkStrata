@@ -9,6 +9,7 @@ import zkstrata.parser.ParseTreeVisitor;
 import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.predicates.BoundsCheck;
 import zkstrata.parser.ast.predicates.Equality;
+import zkstrata.parser.ast.predicates.MiMCHash;
 import zkstrata.parser.ast.predicates.Predicate;
 import zkstrata.utils.StatementBuilder;
 
@@ -21,6 +22,7 @@ public class ParseTreeVisitorTest {
     private static final String INVALID_SYMBOL = "%";
     private static final String IDENTIFIER = "alias.identifier";
     private static final String STRING_LITERAL = "StringLiteral";
+    private static final String HEX_LITERAL = "0x01bd94c871b2d21926cf4f1c9e2fcbca8ece3353a0aac7cea8d507a9ad30afe2";
     private static final BigInteger INT_LITERAL_1 = BigInteger.valueOf(5);
     private static final BigInteger INT_LITERAL_2 = BigInteger.valueOf(20);
 
@@ -64,7 +66,7 @@ public class ParseTreeVisitorTest {
                 .subject(SCHEMA, ALIAS, true)
                 .boundsCheck(IDENTIFIER, INT_LITERAL_1, INT_LITERAL_2)
                 .build();
-        AbstractSyntaxTree ast = new ParseTreeVisitor().parse("test", statement);
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
         assertEquals(1, ast.getPredicates().size());
 
         Predicate predicate = ast.getPredicates().get(0);
@@ -74,6 +76,23 @@ public class ParseTreeVisitorTest {
         assertEquals(IDENTIFIER, boundsCheck.getValue().getValue());
         assertEquals(INT_LITERAL_1, boundsCheck.getMin().getValue());
         assertEquals(INT_LITERAL_2, boundsCheck.getMax().getValue());
+    }
+
+    @Test
+    void MiMCHash_Is_Parsed_Correctly_1() {
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .mimcHash(IDENTIFIER, HEX_LITERAL)
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        assertEquals(1, ast.getPredicates().size());
+
+        Predicate predicate = ast.getPredicates().get(0);
+        assertEquals(MiMCHash.class, predicate.getClass());
+
+        MiMCHash mimcHash = (MiMCHash) predicate;
+        assertEquals(IDENTIFIER, mimcHash.getPreimage().getValue());
+        assertEquals(HEX_LITERAL, mimcHash.getImage().getValue());
     }
 
     @Test
