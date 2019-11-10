@@ -16,16 +16,14 @@ public class BinaryTreeTest {
     private static final BinaryTree<String> TREE_2A = new BinaryTree<>(new BinaryTree.Node<>(LEAF_1, new BinaryTree.Node<>(LEAF_3, LEAF_2)));
     private static final BinaryTree<String> TREE_2B = new BinaryTree<>(new BinaryTree.Node<>(LEAF_1, new BinaryTree.Node<>(LEAF_3, LEAF_2)));
     private static final BinaryTree<String> TREE_3A = new BinaryTree<>(new BinaryTree.Node<>(new BinaryTree.Node<>(LEAF_1, LEAF_4), LEAF_2));
-    private static final BinaryTree<String> TREE_3B = new BinaryTree<>(new BinaryTree.Node<>(new BinaryTree.Node<>(LEAF_1, LEAF_4), LEAF_2));
+    private static final BinaryTree<String> TREE_3B = new BinaryTree<>(new BinaryTree.Node<>(new BinaryTree.Node<>(null, LEAF_4), LEAF_2));
     private static final BinaryTree<String> TREE_4A = new BinaryTree<>(new BinaryTree.Node<>(LEAF_1, LEAF_4));
-    private static final BinaryTree<String> TREE_4B = new BinaryTree<>(new BinaryTree.Node<>(LEAF_1, LEAF_4));
+    private static final BinaryTree<String> TREE_4B = new BinaryTree<>(new BinaryTree.Node<>(LEAF_1, null));
 
     @Test
     void Equals_Null() {
         assertNotEquals(TREE_1A, null);
         assertNotEquals(TREE_2A, null);
-        assertNotEquals(TREE_3A, null);
-        assertNotEquals(TREE_4A, null);
     }
 
     @Test
@@ -38,15 +36,17 @@ public class BinaryTreeTest {
     void Equals() {
         assertEquals(TREE_1A, TREE_1B);
         assertEquals(TREE_2A, TREE_2B);
-        assertEquals(TREE_3A, TREE_3B);
-        assertEquals(TREE_4A, TREE_4B);
+    }
+
+    @Test
+    void Not_Equals() {
+        assertNotEquals(TREE_3A, TREE_3B);
+        assertNotEquals(TREE_4A, TREE_4B);
     }
 
     @Test
     void HashCode() {
         assertEquals(TREE_1A.hashCode(), TREE_1B.hashCode());
         assertEquals(TREE_2A.hashCode(), TREE_2B.hashCode());
-        assertEquals(TREE_3A.hashCode(), TREE_3B.hashCode());
-        assertEquals(TREE_4A.hashCode(), TREE_4B.hashCode());
     }
 }
