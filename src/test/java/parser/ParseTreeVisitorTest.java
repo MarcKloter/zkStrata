@@ -78,6 +78,40 @@ public class ParseTreeVisitorTest {
     }
 
     @Test
+    void BoundsCheck_Is_Parsed_Correctly_2() {
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .boundsCheck(IDENTIFIER, INT_LITERAL_1, null)
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        assertEquals(1, ast.getPredicates().size());
+
+        Predicate predicate = ast.getPredicates().get(0);
+        assertEquals(BoundsCheck.class, predicate.getClass());
+
+        BoundsCheck boundsCheck = (BoundsCheck) predicate;
+        assertEquals(IDENTIFIER, boundsCheck.getValue().getValue());
+        assertEquals(INT_LITERAL_1, boundsCheck.getMin().getValue());
+    }
+
+    @Test
+    void BoundsCheck_Is_Parsed_Correctly_3() {
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .boundsCheck(IDENTIFIER, null, INT_LITERAL_2)
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        assertEquals(1, ast.getPredicates().size());
+
+        Predicate predicate = ast.getPredicates().get(0);
+        assertEquals(BoundsCheck.class, predicate.getClass());
+
+        BoundsCheck boundsCheck = (BoundsCheck) predicate;
+        assertEquals(IDENTIFIER, boundsCheck.getValue().getValue());
+        assertEquals(INT_LITERAL_2, boundsCheck.getMax().getValue());
+    }
+
+    @Test
     void MiMCHash_Is_Parsed_Correctly_1() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
