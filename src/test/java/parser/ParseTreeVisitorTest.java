@@ -2,15 +2,14 @@ package parser;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static zkstrata.utils.StatementBuilder.*;
+import static zkstrata.utils.StatementBuilder.integerLiteral;
 
 import org.junit.jupiter.api.Test;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.parser.ParseTreeVisitor;
 import zkstrata.parser.ast.AbstractSyntaxTree;
-import zkstrata.parser.ast.predicates.BoundsCheck;
-import zkstrata.parser.ast.predicates.Equality;
-import zkstrata.parser.ast.predicates.MiMCHash;
-import zkstrata.parser.ast.predicates.Predicate;
+import zkstrata.parser.ast.predicates.*;
+import zkstrata.utils.BinaryTree;
 import zkstrata.utils.StatementBuilder;
 
 import java.math.BigInteger;
@@ -93,6 +92,76 @@ public class ParseTreeVisitorTest {
         MiMCHash mimcHash = (MiMCHash) predicate;
         assertEquals(IDENTIFIER, mimcHash.getPreimage().getValue());
         assertEquals(HEX_LITERAL, mimcHash.getImage().getValue());
+    }
+
+    @Test
+    void MerkleTree_Is_Parsed_Correctly_1() {
+        BinaryTree<String> tree = new BinaryTree<>(new BinaryTree.Node<>(
+                new BinaryTree.Node<>(new BinaryTree.Node<>(stringLiteral(STRING_LITERAL)), new BinaryTree.Node<>(IDENTIFIER)),
+                new BinaryTree.Node<>(new BinaryTree.Node<>(HEX_LITERAL), new BinaryTree.Node<>(integerLiteral(INT_LITERAL_1)))
+        ));
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .merkleTree(HEX_LITERAL, tree)
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        assertEquals(1, ast.getPredicates().size());
+
+        Predicate predicate = ast.getPredicates().get(0);
+        assertEquals(MerkleTree.class, predicate.getClass());
+
+        MerkleTree merkleTree = (MerkleTree) predicate;
+        assertEquals(HEX_LITERAL, merkleTree.getRoot().getValue());
+        assertEquals(STRING_LITERAL, merkleTree.getTree().getRoot().getLeft().getLeft().getValue().getValue());
+        assertEquals(IDENTIFIER, merkleTree.getTree().getRoot().getLeft().getRight().getValue().getValue());
+        assertEquals(HEX_LITERAL, merkleTree.getTree().getRoot().getRight().getLeft().getValue().getValue());
+        assertEquals(INT_LITERAL_1, merkleTree.getTree().getRoot().getRight().getRight().getValue().getValue());
+    }
+
+    @Test
+    void MerkleTree_Is_Parsed_Correctly_2() {
+        BinaryTree<String> tree = new BinaryTree<>(new BinaryTree.Node<>(
+                new BinaryTree.Node<>(new BinaryTree.Node<>(stringLiteral(STRING_LITERAL)), new BinaryTree.Node<>(IDENTIFIER)),
+                new BinaryTree.Node<>(integerLiteral(INT_LITERAL_1))
+        ));
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .merkleTree(HEX_LITERAL, tree)
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        assertEquals(1, ast.getPredicates().size());
+
+        Predicate predicate = ast.getPredicates().get(0);
+        assertEquals(MerkleTree.class, predicate.getClass());
+
+        MerkleTree merkleTree = (MerkleTree) predicate;
+        assertEquals(HEX_LITERAL, merkleTree.getRoot().getValue());
+        assertEquals(STRING_LITERAL, merkleTree.getTree().getRoot().getLeft().getLeft().getValue().getValue());
+        assertEquals(IDENTIFIER, merkleTree.getTree().getRoot().getLeft().getRight().getValue().getValue());
+        assertEquals(INT_LITERAL_1, merkleTree.getTree().getRoot().getRight().getValue().getValue());
+    }
+
+    @Test
+    void MerkleTree_Is_Parsed_Correctly_3() {
+        BinaryTree<String> tree = new BinaryTree<>(new BinaryTree.Node<>(
+                new BinaryTree.Node<>(IDENTIFIER),
+                new BinaryTree.Node<>(new BinaryTree.Node<>(HEX_LITERAL), new BinaryTree.Node<>(integerLiteral(INT_LITERAL_1)))
+        ));
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .merkleTree(HEX_LITERAL, tree)
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        assertEquals(1, ast.getPredicates().size());
+
+        Predicate predicate = ast.getPredicates().get(0);
+        assertEquals(MerkleTree.class, predicate.getClass());
+
+        MerkleTree merkleTree = (MerkleTree) predicate;
+        assertEquals(HEX_LITERAL, merkleTree.getRoot().getValue());
+        assertEquals(IDENTIFIER, merkleTree.getTree().getRoot().getLeft().getValue().getValue());
+        assertEquals(HEX_LITERAL, merkleTree.getTree().getRoot().getRight().getLeft().getValue().getValue());
+        assertEquals(INT_LITERAL_1, merkleTree.getTree().getRoot().getRight().getRight().getValue().getValue());
     }
 
     @Test

@@ -1,0 +1,8 @@
+PROOF FOR
+    passport_ch AS pass
+THAT
+    0x0e65ad60f91829a76f08c39e4eec78c82dd0686c733ec5afc25ca28ae4628898 IS MERKLE ROOT OF (pass.firstName, pass.firstName)
+AND
+    0x03c07481b4b3ab394b6c79fa463f300ce2e9447cb1eef2b815146c26836076d1 IS MERKLE ROOT OF ((pass.firstName, pass.firstName), pass.lastName)
+AND
+    0x0b33a0e69996bf60542d94951136e4246b15591e3e47d7aeb1a7822ee96101c8 IS MERKLE ROOT OF ((pass.firstName, pass.firstName), (pass.lastName, pass.lastName))

@@ -55,6 +55,24 @@ public class StatementBuilder {
         return this;
     }
 
+    public StatementBuilder merkleTree(String root, BinaryTree<String> binaryTree) {
+        StringBuilder stringBuilder = new StringBuilder();
+        visitMerkleTree(binaryTree.getRoot(), stringBuilder);
+        predicates.add(String.format("%s IS MERKLE ROOT OF %s", root, stringBuilder.toString()));
+        return this;
+    }
+
+    private void visitMerkleTree(BinaryTree.Node<String> node, StringBuilder stringBuilder) {
+        if (!node.isLeaf()) {
+            stringBuilder.append('(');
+            visitMerkleTree(node.getLeft(), stringBuilder);
+            stringBuilder.append(", ");
+            visitMerkleTree(node.getRight(), stringBuilder);
+            stringBuilder.append(')');
+        } else
+            stringBuilder.append(node.getValue());
+    }
+
     public String build() {
         TextStringBuilder builder = new TextStringBuilder();
         builder.append(PREFIX);
