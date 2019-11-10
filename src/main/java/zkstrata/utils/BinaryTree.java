@@ -1,5 +1,7 @@
 package zkstrata.utils;
 
+import java.util.Objects;
+
 public class BinaryTree<T> {
     private Node<T> root;
 
@@ -20,6 +22,11 @@ public class BinaryTree<T> {
             return false;
 
         return getRoot().equals(((BinaryTree) obj).getRoot());
+    }
+
+    @Override
+    public int hashCode() {
+        return root.hashCode();
     }
 
     public static class Node<T> {
@@ -71,6 +78,14 @@ public class BinaryTree<T> {
                 return getValue().equals(((Node) obj).getValue());
             else
                 return getLeft().equals(((Node) obj).getLeft()) && getRight().equals(((Node) obj).getRight());
+        }
+
+        @Override
+        public int hashCode() {
+            if (isLeaf())
+                return getValue().hashCode();
+            else
+                return Objects.hash(getLeft(), getRight());
         }
     }
 }
