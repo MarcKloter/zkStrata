@@ -79,6 +79,13 @@ public class EqualityGadgetTest {
     }
 
     @Test
+    void Is_Not_Equal_To() {
+        EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, WITNESS_VAR_2);
+        assertFalse(equalityGadget1.isEqualTo(equalityGadget2));
+    }
+
+    @Test
     void Parity_Implication_1() {
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, WITNESS_VAR_1);
