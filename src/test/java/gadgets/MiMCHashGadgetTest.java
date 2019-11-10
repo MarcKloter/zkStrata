@@ -14,8 +14,7 @@ import zkstrata.utils.SemanticsUtils;
 import java.math.BigInteger;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MiMCHashGadgetTest {
     private static final Position.Absolute DUMMY_POS = new Position.Absolute("src", "stmt", "t", 1, 1);
@@ -46,6 +45,27 @@ public class MiMCHashGadgetTest {
         assertThrows(CompileTimeException.class, () -> {
             new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_IMAGE_NEG);
         });
+    }
+
+    @Test
+    void Is_Equal_To() {
+        MiMCHashGadget miMCHashGadget1 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_IMAGE_1);
+        MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_IMAGE_1);
+        assertTrue(miMCHashGadget1.isEqualTo(miMCHashGadget2));
+    }
+
+    @Test
+    void Is_Not_Equal_To_1() {
+        MiMCHashGadget miMCHashGadget1 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_IMAGE_1);
+        MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_2, INSTANCE_VAR_IMAGE_1);
+        assertFalse(miMCHashGadget1.isEqualTo(miMCHashGadget2));
+    }
+
+    @Test
+    void Is_Not_Equal_To_2() {
+        MiMCHashGadget miMCHashGadget1 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_IMAGE_2);
+        MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_IMAGE_1);
+        assertFalse(miMCHashGadget1.isEqualTo(miMCHashGadget2));
     }
 
     @Test
