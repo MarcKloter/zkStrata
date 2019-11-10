@@ -34,17 +34,25 @@ public class EqualityGadgetTest {
     @Test
     void Instance_Equals_Instance_Contradiction() {
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_41, INSTANCE_VAR_17);
-        assertThrows(CompileTimeException.class, () -> {
-            EqualityGadget.checkContradiction(equalityGadget);
-        });
+        assertThrows(CompileTimeException.class, () -> EqualityGadget.checkContradiction(equalityGadget));
     }
 
     @Test
-    void Instance_Equals_Instance_No_Contradiction() {
+    void Instance_Equals_Instance_No_Contradiction_1() {
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_41, INSTANCE_VAR_41);
-        assertDoesNotThrow(() -> {
-            EqualityGadget.checkContradiction(equalityGadget);
-        });
+        assertDoesNotThrow(() -> EqualityGadget.checkContradiction(equalityGadget));
+    }
+
+    @Test
+    void Instance_Equals_Instance_No_Contradiction_2() {
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_41);
+        assertDoesNotThrow(() -> EqualityGadget.checkContradiction(equalityGadget));
+    }
+
+    @Test
+    void Instance_Equals_Instance_No_Contradiction_3() {
+        EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_41, WITNESS_VAR_1);
+        assertDoesNotThrow(() -> EqualityGadget.checkContradiction(equalityGadget));
     }
 
     @Test
@@ -54,8 +62,20 @@ public class EqualityGadgetTest {
     }
 
     @Test
-    void Witness_Equals_Self_No_Substitution() {
+    void Witness_Equals_Self_No_Substitution_1() {
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        assertEquals(Set.of(equalityGadget), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
+    }
+
+    @Test
+    void Witness_Equals_Self_No_Substitution_2() {
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_41);
+        assertEquals(Set.of(equalityGadget), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
+    }
+
+    @Test
+    void Witness_Equals_Self_No_Substitution_3() {
+        EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_41, WITNESS_VAR_1);
         assertEquals(Set.of(equalityGadget), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
     }
 
@@ -66,15 +86,34 @@ public class EqualityGadgetTest {
     }
 
     @Test
-    void Instance_Equals_Instance_No_Substitution() {
+    void Instance_Equals_Instance_No_Substitution_1() {
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_17, INSTANCE_VAR_41);
         assertEquals(Set.of(equalityGadget), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
     }
 
     @Test
-    void Is_Equal_To() {
+    void Instance_Equals_Instance_No_Substitution_2() {
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_41);
+        assertEquals(Set.of(equalityGadget), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
+    }
+
+    @Test
+    void Instance_Equals_Instance_No_Substitution_3() {
+        EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_17, WITNESS_VAR_2);
+        assertEquals(Set.of(equalityGadget), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
+    }
+
+    @Test
+    void Is_Equal_To_1() {
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, WITNESS_VAR_1);
+        assertTrue(equalityGadget1.isEqualTo(equalityGadget2));
+    }
+
+    @Test
+    void Is_Equal_To_2() {
+        EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         assertTrue(equalityGadget1.isEqualTo(equalityGadget2));
     }
 
@@ -147,8 +186,6 @@ public class EqualityGadgetTest {
 
     @Test
     void Type_Mismatch() {
-        assertThrows(CompileTimeException.class, () -> {
-            new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_STRING);
-        });
+        assertThrows(CompileTimeException.class, () -> new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_STRING));
     }
 }
