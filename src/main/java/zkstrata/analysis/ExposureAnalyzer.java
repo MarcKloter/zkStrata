@@ -20,13 +20,13 @@ import java.util.Map;
 public class ExposureAnalyzer {
     private static final Logger LOGGER = LogManager.getLogger(ExposureAnalyzer.class);
 
-
     private ExposureAnalyzer() {
         throw new IllegalStateException("Utility class");
     }
 
     public static void process(Statement statement, Arguments args) {
         Map<String, ValueAccessor> witnessData = args.getWitnessData();
+        Map<String, ValueAccessor> metaData = args.getMetaData();
         Map<String, ValueAccessor> instanceData = args.getInstanceData();
 
         List<String> susceptibleData = new ArrayList<>();
@@ -60,10 +60,12 @@ public class ExposureAnalyzer {
 
                         if (variable instanceof InstanceVariable) {
                             ValueAccessor instance = instanceData.getOrDefault(alias, null);
-                            String source = instance.getSource();
-                            if (susceptibleData.contains(source))
-                                checkList.computeIfAbsent(String.format("%s-%s", source, selector), e -> new VariableExposure())
-                                        .markInstance((InstanceVariable) variable);
+                            if (instance != null) {
+                                String source = instance.getSource();
+                                if (susceptibleData.contains(source))
+                                    checkList.computeIfAbsent(String.format("%s-%s", source, selector), e -> new VariableExposure())
+                                            .markInstance((InstanceVariable) variable);
+                            }
                         }
                     }
                 }

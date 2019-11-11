@@ -10,6 +10,7 @@ public class Arguments {
     private String source;
     private String statement;
     private Map<String, ValueAccessor> witnessData;
+    private Map<String, ValueAccessor> metaData;
     private Map<String, ValueAccessor> instanceData;
     private Map<String, Schema> schemas;
 
@@ -18,6 +19,7 @@ public class Arguments {
             String source,
             String statement,
             Map<String, ValueAccessor> witnessData,
+            Map<String, ValueAccessor> metaData,
             Map<String, ValueAccessor> instanceData,
             Map<String, Schema> schemas
     ) {
@@ -25,6 +27,7 @@ public class Arguments {
         this.source = source;
         this.statement = statement;
         this.witnessData = witnessData;
+        this.metaData = metaData;
         this.instanceData = instanceData;
         this.schemas = schemas;
     }
@@ -43,6 +46,10 @@ public class Arguments {
 
     public Map<String, ValueAccessor> getWitnessData() {
         return witnessData;
+    }
+
+    public Map<String, ValueAccessor> getMetaData() {
+        return metaData;
     }
 
     public Map<String, ValueAccessor> getInstanceData() {

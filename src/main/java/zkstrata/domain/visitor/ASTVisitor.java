@@ -34,6 +34,7 @@ public class ASTVisitor {
 
     private String parentAlias;
     private Map<String, ValueAccessor> witnessData;
+    private Map<String, ValueAccessor> metaData;
     private Map<String, ValueAccessor> instanceData;
     private Map<String, Schema> schemas;
 
@@ -44,12 +45,14 @@ public class ASTVisitor {
     public ASTVisitor(
             AbstractSyntaxTree ast,
             Map<String, ValueAccessor> witnessData,
+            Map<String, ValueAccessor> metaData,
             Map<String, ValueAccessor> instanceData,
             Map<String, Schema> schemas,
             String parentAlias
     ) {
         this.ast = ast;
         this.witnessData = witnessData;
+        this.metaData = metaData;
         this.instanceData = instanceData;
         this.schemas = schemas;
         this.subjects = new MapListener<>(new HashMap<>());
@@ -59,10 +62,11 @@ public class ASTVisitor {
     public ASTVisitor(
             AbstractSyntaxTree ast,
             Map<String, ValueAccessor> witnessData,
+            Map<String, ValueAccessor> metaData,
             Map<String, ValueAccessor> instanceData,
             Map<String, Schema> schemas
     ) {
-        this(ast, witnessData, instanceData, schemas, null);
+        this(ast, witnessData, metaData, instanceData, schemas, null);
     }
 
     public Statement visitStatement() {
@@ -111,7 +115,7 @@ public class ASTVisitor {
                         pinPosition(subject.getAlias()));
 
             ValueAccessor accessor = witnessData.getOrDefault(alias, new SchemaAccessor(alias, schema));
-            return new Witness(alias, schema, accessor);
+            return new Witness(alias, schema, accessor, metaData.get(alias));
         } else {
             ValueAccessor accessor = instanceData.get(alias);
 
@@ -119,7 +123,7 @@ public class ASTVisitor {
                 throw new CompileTimeException(String.format("Missing instance data for subject %s.", alias),
                         pinPosition(subject.getAlias()));
 
-            return new Instance(alias, schema, accessor);
+            return new Instance(alias, schema, accessor, metaData.get(alias));
         }
     }
 

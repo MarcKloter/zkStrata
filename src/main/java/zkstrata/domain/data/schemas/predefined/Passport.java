@@ -1,6 +1,7 @@
 package zkstrata.domain.data.schemas.predefined;
 
 import zkstrata.domain.data.schemas.AbstractSchema;
+import zkstrata.domain.data.schemas.metadata.MerkleTree;
 
 import java.math.BigInteger;
 
@@ -9,24 +10,15 @@ public class Passport extends AbstractSchema {
     private String firstName;
     private String lastName;
     private Date dateOfBirth;
-    private String placeOfBirth;
-    private Date issuedOn;
     private Date expiresOn;
 
-    private BigInteger count; // TODO: remove
-    private BigInteger count2; // TODO: remove
-    private BigInteger count3; // TODO: remove
-    private BigInteger count4; // TODO: remove
-    private BigInteger count5; // TODO: remove
-    private DriversLicense owner; // TODO: remove
-
-    private String hash;
+    private MerkleTree metaData;
 
     @Override
     public String getStatement() {
-        return "PROOF FOR THIS THAT self.firstName IS EQUAL TO 'John'";
-        /*return "PROOF FOR THIS THAT this.hash IS MERKLE ROOT OF (((firstName, lastName), (dateOfBirth, placeOfBirth)), " +
-                "((issuedOn, expiresOn), (count, owner)))";*/
+        return "PROOF FOR THIS THAT self.metaData.rootHash IS MERKLE ROOT OF " +
+                "(((self.firstName, self.lastName), (self.dateOfBirth.day, self.dateOfBirth.month)), " +
+                "((self.dateOfBirth.year, self.expiresOn.day), (self.expiresOn.month, self.expiresOn.year)))";
     }
 
     @Override

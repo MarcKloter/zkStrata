@@ -11,8 +11,6 @@ public class DriversLicense extends AbstractSchema {
     private Date dateOfBirth;
     private String category;
 
-    private Passport test; // TODO: remove
-
     @Override
     public String getIdentifier() {
         return "drivers_license_ch";

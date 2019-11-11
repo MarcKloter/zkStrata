@@ -28,6 +28,7 @@ public class Compiler {
         ASTVisitor astVisitor = new ASTVisitor(
                 ast,
                 args.getWitnessData(),
+                args.getMetaData(),
                 args.getInstanceData(),
                 args.getSchemas()
         );
@@ -59,6 +60,7 @@ public class Compiler {
                 ASTVisitor astVisitor = new ASTVisitor(
                         ast,
                         args.getWitnessData(),
+                        args.getMetaData(),
                         args.getInstanceData(),
                         args.getSchemas(),
                         alias

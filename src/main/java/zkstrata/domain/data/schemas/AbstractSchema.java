@@ -27,7 +27,6 @@ public abstract class AbstractSchema implements Schema {
                 if (Schema.class.isAssignableFrom(type)) {
                     schema = type.asSubclass(Schema.class);
                 } else {
-                    // TODO: add test case for this
                     String msg = String.format("Cannot access %s because it is not a schema.", accessor);
                     throw new IllegalArgumentException(msg);
                 }

@@ -53,10 +53,11 @@ public class CommandLineInterface {
         String statementFile = getStatementFile(cmd);
         String statement = getStatement(cmd);
         HashMap<String, ValueAccessor> witnessFiles = getWitnessData(cmd);
+        HashMap<String, ValueAccessor> metadataFiles = getMetaData(cmd);
         HashMap<String, Schema> schemaFiles = getSchemas(cmd);
         HashMap<String, ValueAccessor> instanceFiles = getInstanceData(cmd);
 
-        return new Arguments(statementName, statementFile, statement, witnessFiles, instanceFiles, schemaFiles);
+        return new Arguments(statementName, statementFile, statement, witnessFiles, metadataFiles, instanceFiles, schemaFiles);
     }
 
     /**
@@ -150,13 +151,28 @@ public class CommandLineInterface {
         return witnessData;
     }
 
+    private HashMap<String, ValueAccessor> getMetaData(CommandLine cmd) {
+        HashMap<String, ValueAccessor> witnessData = new HashMap<>();
+        if (cmd.hasOption("meta-data")) {
+            for (String metadata : cmd.getOptionValues("meta-data")) {
+                String[] parts = metadata.split("=");
+                if (parts.length != 2) {
+                    String msg = String.format("Malformed metadata provided as argument: %s", metadata);
+                    throw new IllegalArgumentException(msg);
+                }
+                witnessData.put(parts[0], new JsonAccessor(parts[1]));
+            }
+        }
+        return witnessData;
+    }
+
     private HashMap<String, ValueAccessor> getInstanceData(CommandLine cmd) {
         HashMap<String, ValueAccessor> instanceData = new HashMap<>();
         if (cmd.hasOption("instance-data")) {
-            for (String witness : cmd.getOptionValues("instance-data")) {
-                String[] parts = witness.split("=");
+            for (String instance : cmd.getOptionValues("instance-data")) {
+                String[] parts = instance.split("=");
                 if (parts.length != 2) {
-                    String msg = String.format("Malformed instance data provided as argument: %s", witness);
+                    String msg = String.format("Malformed instance data provided as argument: %s", instance);
                     throw new IllegalArgumentException(msg);
                 }
                 instanceData.put(parts[0], new JsonAccessor(parts[1]));

@@ -5,4 +5,8 @@ THAT
 AND
     pass.lastName IS EQUAL TO 'Doe'
 AND
-    pass.placeOfBirth IS EQUAL TO 'Timbuktu'
+    pass.dateOfBirth.day IS EQUAL TO 12
+AND
+    pass.dateOfBirth.month IS EQUAL TO 6
+AND
+    pass.dateOfBirth.year IS EQUAL TO 1980

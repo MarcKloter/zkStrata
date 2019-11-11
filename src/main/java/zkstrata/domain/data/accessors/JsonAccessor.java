@@ -5,6 +5,7 @@ import org.json.JSONObject;
 import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.Value;
+import zkstrata.domain.data.types.custom.HexLiteral;
 
 import java.io.IOException;
 import java.math.BigInteger;
@@ -32,10 +33,10 @@ public class JsonAccessor implements ValueAccessor {
         Object object = this.jsonObject;
         for (String key : selector.getSelectors()) {
             if (object instanceof JSONObject)
-                    if(((JSONObject) object).has(key))
-                        object = ((JSONObject) object).get(key);
-                    else
-                        return null;
+                if (((JSONObject) object).has(key))
+                    object = ((JSONObject) object).get(key);
+                else
+                    return null;
             else
                 return null;
         }
@@ -48,6 +49,9 @@ public class JsonAccessor implements ValueAccessor {
 
         if (object instanceof Integer)
             return new Literal(BigInteger.valueOf((Integer) object));
+
+        if (object instanceof String && ((String) object).startsWith("0x"))
+            return new HexLiteral((String) object);
 
         return new Literal(object);
     }

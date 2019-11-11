@@ -7,4 +7,8 @@ THAT
 AND
     pass_w.lastName IS EQUAL TO pass_i.lastName
 AND
-    pass_w.placeOfBirth IS EQUAL TO pass_i.placeOfBirth
+    pass_w.dateOfBirth.day IS EQUAL TO pass_i.dateOfBirth.day
+AND
+    pass_w.dateOfBirth.month IS EQUAL TO pass_i.dateOfBirth.month
+AND
+    pass_w.dateOfBirth.year IS EQUAL TO pass_i.dateOfBirth.year

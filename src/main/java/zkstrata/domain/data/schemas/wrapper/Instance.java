@@ -12,11 +12,11 @@ import zkstrata.exceptions.Position;
  * Wrapper class to mark a {@link Schema} as instance wide (to all participants, usually publicly) known.
  */
 public class Instance extends AbstractStructuredData<InstanceVariable> {
-    public Instance(String alias, Schema schema, ValueAccessor accessor) {
-        super(alias, schema, accessor);
+    public Instance(String alias, Schema schema, ValueAccessor accessor, ValueAccessor metaData) {
+        super(alias, schema, accessor, metaData);
 
         if (accessor == null) {
-            String msg = String.format("Missing instance data for %s.", alias);
+            String msg = String.format("Missing instance data for `%s`.", alias);
             throw new IllegalArgumentException(msg);
         }
     }
@@ -28,7 +28,7 @@ public class Instance extends AbstractStructuredData<InstanceVariable> {
 
     @Override
     public InstanceVariable getVariable(Selector selector, Position.Absolute position) {
-        Literal value = (Literal) resolve(getSchema(), selector, getAccessor());
+        Literal value = (Literal) resolve(getSchema(), selector);
         return new InstanceVariable(value, new Reference(value.getType(), getAlias(), selector), position);
     }
 }
