@@ -1,6 +1,6 @@
 PROOF FOR
-            passport_ch AS pass_w
+             passport_ch AS pass_w
 AND
-    PUBLIC  passport_ch AS pass_i
+    INSTANCE passport_ch AS pass_i
 THAT
     pass_w.firstName IS EQUAL TO pass_i.firstName
