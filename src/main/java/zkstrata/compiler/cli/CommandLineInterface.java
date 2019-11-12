@@ -53,11 +53,10 @@ public class CommandLineInterface {
         String statementFile = getStatementFile(cmd);
         String statement = getStatement(cmd);
         HashMap<String, ValueAccessor> witnessFiles = getWitnessData(cmd);
-        HashMap<String, ValueAccessor> metadataFiles = getMetaData(cmd);
         HashMap<String, Schema> schemaFiles = getSchemas(cmd);
         HashMap<String, ValueAccessor> instanceFiles = getInstanceData(cmd);
 
-        return new Arguments(statementName, statementFile, statement, witnessFiles, metadataFiles, instanceFiles, schemaFiles);
+        return new Arguments(statementName, statementFile, statement, witnessFiles, instanceFiles, schemaFiles);
     }
 
     /**
@@ -143,21 +142,6 @@ public class CommandLineInterface {
                 String[] parts = witness.split("=");
                 if (parts.length != 2) {
                     String msg = String.format("Malformed witness data provided as argument: %s", witness);
-                    throw new IllegalArgumentException(msg);
-                }
-                witnessData.put(parts[0], new JsonAccessor(parts[1]));
-            }
-        }
-        return witnessData;
-    }
-
-    private HashMap<String, ValueAccessor> getMetaData(CommandLine cmd) {
-        HashMap<String, ValueAccessor> witnessData = new HashMap<>();
-        if (cmd.hasOption("meta-data")) {
-            for (String metadata : cmd.getOptionValues("meta-data")) {
-                String[] parts = metadata.split("=");
-                if (parts.length != 2) {
-                    String msg = String.format("Malformed metadata provided as argument: %s", metadata);
                     throw new IllegalArgumentException(msg);
                 }
                 witnessData.put(parts[0], new JsonAccessor(parts[1]));

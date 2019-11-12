@@ -20,7 +20,6 @@ import java.util.Map;
 public class IntegrationTest {
     private static final String STATEMENTS = "statements/";
     private static final String INSTANCE_DATA = "src/test/resources/instance-data/";
-    private static final String META_DATA = "src/test/resources/meta-data/";
     private static final String WITNESS_DATA = "src/test/resources/witness-data/";
     private static final String SCHEMAS = "src/test/resources/schemas/";
     private static final String ZKSTRATA_EXT = ".zkstrata";
@@ -29,10 +28,9 @@ public class IntegrationTest {
     private static final String SOURCE = "test";
 
     private static final ValueAccessor WITNESS_PASSPORT_JSON = new JsonAccessor(WITNESS_DATA + "passport" + JSON_EXT);
-    private static final ValueAccessor WITNESS_PASSPORT_METADATA_JSON = new JsonAccessor(META_DATA + "passport" + JSON_EXT);
     private static final ValueAccessor INSTANCE_PASSPORT_JSON = new JsonAccessor(INSTANCE_DATA + "passport" + JSON_EXT);
 
-    private static final Map<String, ValueAccessor> DEFAULT_METADATA = Map.of("pass", WITNESS_PASSPORT_METADATA_JSON);
+    private static final Map<String, ValueAccessor> DEFAULT_METADATA = Map.of("pass", INSTANCE_PASSPORT_JSON);
 
     private String getStatement(String name) throws IOException {
         InputStream inputStream = IntegrationTest.class.getClassLoader().getResourceAsStream(STATEMENTS + name + ZKSTRATA_EXT);
@@ -46,7 +44,7 @@ public class IntegrationTest {
         assertDoesNotThrow(() -> {
             String statement = getStatement(name);
             Arguments args = new Arguments(name, SOURCE, statement,
-                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap(), Collections.emptyMap());
+                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap());
             Compiler.run(args);
         });
     }
@@ -58,7 +56,7 @@ public class IntegrationTest {
         assertDoesNotThrow(() -> {
             String statement = getStatement(name);
             Arguments args = new Arguments(name, SOURCE, statement,
-                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap(), Collections.emptyMap());
+                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap());
             Compiler.run(args);
         });
     }
@@ -70,7 +68,7 @@ public class IntegrationTest {
         assertDoesNotThrow(() -> {
             String statement = getStatement(name);
             Arguments args = new Arguments(name, SOURCE, statement,
-                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap(), Collections.emptyMap());
+                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap());
             Compiler.run(args);
         });
     }
@@ -82,7 +80,7 @@ public class IntegrationTest {
         assertDoesNotThrow(() -> {
             String statement = getStatement(name);
             Arguments args = new Arguments(name, SOURCE, statement,
-                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap(), Collections.emptyMap());
+                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap());
             Compiler.run(args);
         });
     }
@@ -94,7 +92,7 @@ public class IntegrationTest {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             String statement = getStatement(name);
             Arguments args = new Arguments(name, SOURCE, statement,
-                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap(), Collections.emptyMap());
+                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap());
             Compiler.run(args);
         });
 
@@ -108,7 +106,7 @@ public class IntegrationTest {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             String statement = getStatement(name);
             Arguments args = new Arguments(name, SOURCE, statement,
-                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap(), Collections.emptyMap());
+                    Collections.emptyMap(), DEFAULT_METADATA, Collections.emptyMap());
             Compiler.run(args);
         });
 
@@ -116,21 +114,35 @@ public class IntegrationTest {
     }
 
     @Test
-    void Schema_Statement_Default_Should_Succeed() {
+    void Validation_Rule_Default_Should_Succeed() {
         String name = "default";
         String schema_name = "passport_ch";
-        String schema_file = SCHEMAS + "default_schema_statement" + SCHEMA_EXT;
+        String schema_file = SCHEMAS + "default_validation_rule" + SCHEMA_EXT;
 
         assertDoesNotThrow(() -> {
             String statement = getStatement(name);
             Arguments args = new Arguments(name, SOURCE, statement, Collections.emptyMap(), Collections.emptyMap(),
-                    Collections.emptyMap(), Map.of(schema_name, new JsonSchema(schema_file, schema_name)));
+                    Map.of(schema_name, new JsonSchema(schema_file, schema_name)));
             Compiler.run(args);
         });
     }
 
     @Test
-    void Schema_Statement_Contradiction_Should_Throw() {
+    void Validation_Rule_Missing_Instance_Should_Throw() {
+        String name = "equality";
+
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            String statement = getStatement(name);
+            Arguments args = new Arguments(name, SOURCE, statement, Collections.emptyMap(), Collections.emptyMap(),
+                    Collections.emptyMap());
+            Compiler.run(args);
+        });
+
+        System.out.println(exception.getMessage());
+    }
+
+    @Test
+    void Validation_Rule_Contradiction_Should_Throw() {
         String name = "default";
         String schema_name = "passport_ch";
         String schema_file = SCHEMAS + "statement_default_contradiction" + SCHEMA_EXT;
@@ -138,7 +150,7 @@ public class IntegrationTest {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             String statement = getStatement(name);
             Arguments args = new Arguments(name, SOURCE, statement, Collections.emptyMap(), Collections.emptyMap(),
-                    Collections.emptyMap(), Map.of(schema_name, new JsonSchema(schema_file, schema_name)));
+                    Map.of(schema_name, new JsonSchema(schema_file, schema_name)));
             Compiler.run(args);
         });
 
@@ -153,8 +165,8 @@ public class IntegrationTest {
             String statement = getStatement(name);
             Arguments args = new Arguments(name, SOURCE, statement,
                     Map.of("pass_w", WITNESS_PASSPORT_JSON),
-                    Map.of("pass_w", WITNESS_PASSPORT_METADATA_JSON, "pass_i", WITNESS_PASSPORT_METADATA_JSON),
-                    Map.of("pass_i", WITNESS_PASSPORT_JSON), Collections.emptyMap());
+                    Map.of("pass_w", INSTANCE_PASSPORT_JSON, "pass_i", WITNESS_PASSPORT_JSON),
+                    Collections.emptyMap());
             Compiler.run(args);
         });
 
@@ -169,8 +181,8 @@ public class IntegrationTest {
             String statement = getStatement(name);
             Arguments args = new Arguments(name, SOURCE, statement,
                     Map.of("pass_w", WITNESS_PASSPORT_JSON),
-                    Map.of("pass_w", WITNESS_PASSPORT_METADATA_JSON, "pass_i", WITNESS_PASSPORT_METADATA_JSON),
-                    Map.of("pass_i", INSTANCE_PASSPORT_JSON), Collections.emptyMap());
+                    Map.of("pass_w", INSTANCE_PASSPORT_JSON, "pass_i", INSTANCE_PASSPORT_JSON),
+                    Collections.emptyMap());
             Compiler.run(args);
         });
     }

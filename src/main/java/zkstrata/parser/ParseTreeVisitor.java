@@ -129,6 +129,7 @@ public class ParseTreeVisitor {
             List<Subject> subjects = ctx.subjects().subject()
                     .stream()
                     .map(subject -> subject.accept(subjectVisitor))
+                    .flatMap(List::stream)
                     .collect(Collectors.toList());
 
             PredicateVisitor predicateVisitor = new PredicateVisitor(this.rules);
@@ -141,7 +142,7 @@ public class ParseTreeVisitor {
         }
     }
 
-    private class SubjectVisitor extends zkStrataBaseVisitor<Subject> {
+    private class SubjectVisitor extends zkStrataBaseVisitor<List<Subject>> {
         private String parentSchema;
 
         SubjectVisitor(String parentSchema) {
@@ -149,7 +150,7 @@ public class ParseTreeVisitor {
         }
 
         @Override
-        public Subject visitSubject(zkStrata.SubjectContext ctx) {
+        public List<Subject> visitSubject(zkStrata.SubjectContext ctx) {
             if (ctx.K_THIS() != null)
                 return handleThis(ctx);
 
@@ -158,14 +159,19 @@ public class ParseTreeVisitor {
             Subject subject = new Subject(isWitness);
             subject.setSchema(ctx.schema_name().getText(), ParserUtils.getPosition(ctx.schema_name().getStart()));
             subject.setAlias(ctx.alias().getText(), ParserUtils.getPosition(ctx.alias().getStart()));
-            return subject;
+            return List.of(subject);
         }
 
-        private Subject handleThis(zkStrata.SubjectContext ctx) {
-            Subject subject = new Subject(true);
-            subject.setSchema(parentSchema, ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
-            subject.setAlias("self", ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
-            return subject;
+        private List<Subject> handleThis(zkStrata.SubjectContext ctx) {
+            Subject witness = new Subject(true);
+            witness.setSchema(parentSchema, ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+            witness.setAlias("private", ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+
+            Subject instance = new Subject(false);
+            instance.setSchema(parentSchema, ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+            instance.setAlias("public", ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+
+            return List.of(witness, instance);
         }
     }
 

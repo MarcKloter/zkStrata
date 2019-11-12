@@ -31,10 +31,10 @@ import java.util.*;
 
 public class ASTVisitor {
     private static final Logger LOGGER = LogManager.getLogger(ASTVisitor.class);
+    private static final List<String> reservedAliases = List.of("private", "public");
 
     private String parentAlias;
     private Map<String, ValueAccessor> witnessData;
-    private Map<String, ValueAccessor> metaData;
     private Map<String, ValueAccessor> instanceData;
     private Map<String, Schema> schemas;
 
@@ -45,14 +45,12 @@ public class ASTVisitor {
     public ASTVisitor(
             AbstractSyntaxTree ast,
             Map<String, ValueAccessor> witnessData,
-            Map<String, ValueAccessor> metaData,
             Map<String, ValueAccessor> instanceData,
             Map<String, Schema> schemas,
             String parentAlias
     ) {
         this.ast = ast;
         this.witnessData = witnessData;
-        this.metaData = metaData;
         this.instanceData = instanceData;
         this.schemas = schemas;
         this.subjects = new MapListener<>(new HashMap<>());
@@ -62,11 +60,10 @@ public class ASTVisitor {
     public ASTVisitor(
             AbstractSyntaxTree ast,
             Map<String, ValueAccessor> witnessData,
-            Map<String, ValueAccessor> metaData,
             Map<String, ValueAccessor> instanceData,
             Map<String, Schema> schemas
     ) {
-        this(ast, witnessData, metaData, instanceData, schemas, null);
+        this(ast, witnessData, instanceData, schemas, null);
     }
 
     public Statement visitStatement() {
@@ -95,9 +92,10 @@ public class ASTVisitor {
     private StructuredData visitSubject(Subject subject) {
         String alias = subject.getAlias().getName();
 
-        if (alias.equals("self")) {
+        if (reservedAliases.contains(alias)) {
             if (parentAlias == null)
-                throw new CompileTimeException("Reserved word `self` used as alias.", pinPosition(subject.getAlias()));
+                throw new CompileTimeException(String.format("Reserved word `%s` used as alias.", alias),
+                        pinPosition(subject.getAlias()));
 
             alias = parentAlias;
         }
@@ -115,16 +113,9 @@ public class ASTVisitor {
                         pinPosition(subject.getAlias()));
 
             ValueAccessor accessor = witnessData.getOrDefault(alias, new SchemaAccessor(alias, schema));
-            return new Witness(alias, schema, accessor, metaData.get(alias));
-        } else {
-            ValueAccessor accessor = instanceData.get(alias);
-
-            if (accessor == null)
-                throw new CompileTimeException(String.format("Missing instance data for subject %s.", alias),
-                        pinPosition(subject.getAlias()));
-
-            return new Instance(alias, schema, accessor, metaData.get(alias));
-        }
+            return new Witness(alias, schema, accessor);
+        } else
+            return new Instance(alias, schema, instanceData.get(alias), instanceData.get(alias));
     }
 
     private Gadget visitPredicate(Predicate predicate) {

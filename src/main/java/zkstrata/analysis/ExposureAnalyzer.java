@@ -26,7 +26,6 @@ public class ExposureAnalyzer {
 
     public static void process(Statement statement, Arguments args) {
         Map<String, ValueAccessor> witnessData = args.getWitnessData();
-        Map<String, ValueAccessor> metaData = args.getMetaData();
         Map<String, ValueAccessor> instanceData = args.getInstanceData();
 
         List<String> susceptibleData = new ArrayList<>();

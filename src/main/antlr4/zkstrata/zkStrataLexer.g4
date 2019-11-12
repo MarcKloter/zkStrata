@@ -8,8 +8,7 @@ K_AND                 : A N D ;
 K_EQUAL               : E Q U A L ;
 K_FOR                 : F O R ;
 K_GREATER             : G R E A T E R ;
-K_INSTANCE            : I N S T A N C E
-                      | P U B L I C ;
+K_INSTANCE            : I N S T A N C E ;
 K_IS                  : I S ;
 K_LESS                : L E S S ;
 K_MERKLE              : M E R K L E ;

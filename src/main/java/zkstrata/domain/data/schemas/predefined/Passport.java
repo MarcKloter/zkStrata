@@ -1,9 +1,7 @@
 package zkstrata.domain.data.schemas.predefined;
 
 import zkstrata.domain.data.schemas.AbstractSchema;
-import zkstrata.domain.data.schemas.metadata.MerkleTree;
-
-import java.math.BigInteger;
+import zkstrata.domain.data.types.custom.HexLiteral;
 
 @Schema(name = "passport_ch")
 public class Passport extends AbstractSchema {
@@ -11,14 +9,13 @@ public class Passport extends AbstractSchema {
     private String lastName;
     private Date dateOfBirth;
     private Date expiresOn;
-
-    private MerkleTree metaData;
+    private HexLiteral rootHash;
 
     @Override
     public String getStatement() {
-        return "PROOF FOR THIS THAT self.metaData.rootHash IS MERKLE ROOT OF " +
-                "(((self.firstName, self.lastName), (self.dateOfBirth.day, self.dateOfBirth.month)), " +
-                "((self.dateOfBirth.year, self.expiresOn.day), (self.expiresOn.month, self.expiresOn.year)))";
+        return "PROOF FOR THIS THAT public.rootHash IS MERKLE ROOT OF " +
+                "(((private.firstName, private.lastName), (private.dateOfBirth.day, private.dateOfBirth.month)), " +
+                "((private.dateOfBirth.year, private.expiresOn.day), (private.expiresOn.month, private.expiresOn.year)))";
     }
 
     @Override

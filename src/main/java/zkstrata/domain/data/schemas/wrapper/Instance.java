@@ -6,6 +6,7 @@ import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.Reference;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
+import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.Position;
 
 /**
@@ -13,12 +14,7 @@ import zkstrata.exceptions.Position;
  */
 public class Instance extends AbstractStructuredData<InstanceVariable> {
     public Instance(String alias, Schema schema, ValueAccessor accessor, ValueAccessor metaData) {
-        super(alias, schema, accessor, metaData);
-
-        if (accessor == null) {
-            String msg = String.format("Missing instance data for `%s`.", alias);
-            throw new IllegalArgumentException(msg);
-        }
+        super(alias, schema, accessor);
     }
 
     @Override
@@ -28,6 +24,9 @@ public class Instance extends AbstractStructuredData<InstanceVariable> {
 
     @Override
     public InstanceVariable getVariable(Selector selector, Position.Absolute position) {
+        if (getAccessor() == null)
+            throw new CompileTimeException(String.format("Missing instance data for `%s`.", getAlias()), position);
+
         Literal value = (Literal) resolve(getSchema(), selector);
         return new InstanceVariable(value, new Reference(value.getType(), getAlias(), selector), position);
     }

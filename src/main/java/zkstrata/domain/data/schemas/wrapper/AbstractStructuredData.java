@@ -8,13 +8,11 @@ public abstract class AbstractStructuredData<T extends Variable> implements Stru
     private String alias;
     private Schema schema;
     private ValueAccessor accessor;
-    private ValueAccessor metaData;
 
-    AbstractStructuredData(String alias, Schema schema, ValueAccessor accessor, ValueAccessor metaData) {
+    AbstractStructuredData(String alias, Schema schema, ValueAccessor accessor) {
         this.alias = alias;
         this.schema = schema;
         this.accessor = accessor;
-        this.metaData = metaData;
     }
 
     @Override
@@ -30,9 +28,5 @@ public abstract class AbstractStructuredData<T extends Variable> implements Stru
     @Override
     public ValueAccessor getAccessor() {
         return accessor;
-    }
-
-    public ValueAccessor getMetaData() {
-        return metaData;
     }
 }

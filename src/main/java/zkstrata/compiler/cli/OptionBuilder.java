@@ -28,15 +28,6 @@ public class OptionBuilder {
 
         options.addOption(
                 Option.builder()
-                        .longOpt("meta-data")
-                        .hasArgs()
-                        .argName("alias=file")
-                        .desc("files containing metadata for confidential information")
-                        .build()
-        );
-
-        options.addOption(
-                Option.builder()
                         .longOpt("instance-data")
                         .hasArgs()
                         .argName("alias=file")
