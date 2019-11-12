@@ -23,9 +23,9 @@ public class ErrorListener extends BaseErrorListener {
         else if (e instanceof NoViableAltException
                 || e instanceof MissingTokenException
                 || e instanceof UnwantedTokenException)
-            unexpectedToken(recognizer, (Token) offendingSymbol, line, charPositionInLine);
+            unexpectedToken((Token) offendingSymbol, line, charPositionInLine);
         else if (e instanceof InputMismatchException)
-            unexpectedInput(recognizer, (Token) offendingSymbol, line, charPositionInLine);
+            unexpectedInput((Token) offendingSymbol, line, charPositionInLine);
         else
             throw new InternalCompilerException("Unknown RecognitionException %s", e.getClass());
     }
@@ -37,12 +37,12 @@ public class ErrorListener extends BaseErrorListener {
         throw new ParserException(message, new Position.Relative(symbol, line, relativePosition));
     }
 
-    private void unexpectedToken(Recognizer<?, ?> recognizer, Token token, int line, int position) {
+    private void unexpectedToken(Token token, int line, int position) {
         String message = String.format("Unexpected token %s.", token.getText());
         throw new ParserException(message, new Position.Relative(token.getText(), line, position));
     }
 
-    private void unexpectedInput(Recognizer<?, ?> recognizer, Token token, int line, int position) {
+    private void unexpectedInput(Token token, int line, int position) {
         String message = String.format("Unexpected input %s.", token.getText());
         throw new ParserException(message, new Position.Relative(token.getText(), line, position));
     }
