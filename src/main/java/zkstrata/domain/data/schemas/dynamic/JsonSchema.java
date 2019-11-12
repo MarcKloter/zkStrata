@@ -52,7 +52,7 @@ public class JsonSchema extends AbstractSchema {
     }
 
     @Override
-    public String getStatement() {
+    public String getValidationRule() {
         Value statement = accessor.getValue(new Selector(List.of("statement")));
 
         if (statement == null)

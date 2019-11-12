@@ -46,7 +46,7 @@ public abstract class AbstractSchema implements Schema {
     }
 
     @Override
-    public String getStatement() {
+    public String getValidationRule() {
         return null;
     }
 

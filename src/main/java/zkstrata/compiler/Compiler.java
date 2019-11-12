@@ -33,8 +33,8 @@ public class Compiler {
         );
         Statement statement = astVisitor.visitStatement();
 
-        List<Statement> supplementaryStatements = checkSupplementaryStatements(statement.getSubjects(), args);
-        supplementaryStatements.forEach(supp -> statement.addGadgets(supp.getGadgets()));
+        List<Statement> validationRules = checkValidationRules(statement.getSubjects(), args);
+        validationRules.forEach(stmt -> statement.addGadgets(stmt.getGadgets()));
 
 
         if(args.hasWitnessData())
@@ -43,19 +43,19 @@ public class Compiler {
         new CodeGenerator(args.getName()).run(statement.getGadgets(), args.hasWitnessData());
     }
 
-    private static List<Statement> checkSupplementaryStatements(Map<String, StructuredData> subjects, Arguments args) {
-        List<Statement> supplementaryStatements = new ArrayList<>();
+    private static List<Statement> checkValidationRules(Map<String, StructuredData> subjects, Arguments args) {
+        List<Statement> validationRules = new ArrayList<>();
 
         for (Map.Entry<String, StructuredData> subject : subjects.entrySet()) {
-            if (subject.getValue().isWitness() && subject.getValue().getSchema().getStatement() != null) {
+            if (subject.getValue().isWitness() && subject.getValue().getSchema().getValidationRule() != null) {
                 String alias = subject.getKey();
                 String source = subject.getValue().getSchema().getSource();
                 String schema = subject.getValue().getSchema().getIdentifier();
 
-                LOGGER.debug("Processing supplementary statement of alias {} (schema: {}, source: {})", alias, schema, source);
+                LOGGER.debug("Processing validation rule of alias {} (schema: {}, source: {})", alias, schema, source);
 
                 ParseTreeVisitor grammarParser = new ParseTreeVisitor();
-                AbstractSyntaxTree ast = grammarParser.parse(source, subject.getValue().getSchema().getStatement(), schema);
+                AbstractSyntaxTree ast = grammarParser.parse(source, subject.getValue().getSchema().getValidationRule(), schema);
                 ASTVisitor astVisitor = new ASTVisitor(
                         ast,
                         args.getWitnessData(),
@@ -63,10 +63,10 @@ public class Compiler {
                         args.getSchemas(),
                         alias
                 );
-                supplementaryStatements.add(astVisitor.visitStatement());
+                validationRules.add(astVisitor.visitStatement());
             }
         }
 
-        return supplementaryStatements;
+        return validationRules;
     }
 }

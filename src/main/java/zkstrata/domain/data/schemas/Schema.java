@@ -6,5 +6,5 @@ public interface Schema {
     Class<?> getType(Selector selector);
     String getIdentifier();
     String getSource();
-    String getStatement();
+    String getValidationRule();
 }
