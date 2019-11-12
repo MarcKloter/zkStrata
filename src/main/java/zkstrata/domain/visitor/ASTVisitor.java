@@ -236,7 +236,8 @@ public class ASTVisitor {
 
     private void checkUnusedSubjects() {
         for (String alias : subjects.getUnusedKeySet()) {
-            LOGGER.warn("Removing unused subject '{}'", alias);
+            if (!reservedAliases.contains(alias))
+                LOGGER.warn("Removing unused subject '{}'", alias);
         }
     }
 
