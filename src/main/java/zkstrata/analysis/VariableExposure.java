@@ -1,6 +1,7 @@
 package zkstrata.analysis;
 
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
+import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.exceptions.CompileTimeException;
 
@@ -10,13 +11,13 @@ public class VariableExposure {
     private WitnessVariable witness = null;
     private InstanceVariable instance = null;
 
-    public void markWitness(WitnessVariable witnessVariable) {
-        this.witness = witnessVariable;
-        this.checkExposure();
-    }
+    public void mark(Variable variable) {
+        if (variable instanceof WitnessVariable)
+            this.witness = (WitnessVariable) variable;
 
-    public void markInstance(InstanceVariable instanceVariable) {
-        this.instance = instanceVariable;
+        if (variable instanceof InstanceVariable)
+            this.instance = (InstanceVariable) variable;
+
         this.checkExposure();
     }
 

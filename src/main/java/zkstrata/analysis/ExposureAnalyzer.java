@@ -16,7 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-// TODO: Quality of Life Feature to help the prover
+/**
+ * The exposure analyzer performs a check on the prover side to ensure there is no data accidentally being exposed.
+ * <p>
+ * If there is a witness and instance variable for the same field of the same source (e.g. file), the exposure analyzer
+ * will throw an exception.
+ */
 public class ExposureAnalyzer {
     private static final Logger LOGGER = LogManager.getLogger(ExposureAnalyzer.class);
 
@@ -28,6 +33,73 @@ public class ExposureAnalyzer {
         Map<String, ValueAccessor> witnessData = args.getWitnessData();
         Map<String, ValueAccessor> instanceData = args.getInstanceData();
 
+        List<String> susceptibleData = getSusceptibleData(witnessData, instanceData);
+
+        if (susceptibleData.isEmpty())
+            return;
+
+        Map<String, VariableExposure> checkList = new HashMap<>();
+
+        for (Gadget gadget : statement.getGadgets()) {
+            for (Object variable : gadget.getVariables()) {
+                if (variable instanceof Variable)
+                    markVariable((Variable) variable, susceptibleData, checkList, witnessData, instanceData);
+            }
+        }
+    }
+
+    /**
+     * Checks whether the given {@code variable} is part of a source listed in {@code susceptibleData} and marks the
+     * variable in the {@code checkList} if this is the case.
+     *
+     * @param variable        {@link Variable} to check
+     * @param susceptibleData {@link List} of aliases used as confidential and public data source at the same time
+     * @param checkList       {@link Map} of source to {@link VariableExposure} objects
+     * @param witnessData     {@link Map} of source to {@link ValueAccessor} of confidential data
+     * @param instanceData    {@link Map} of source to {@link ValueAccessor} of public data
+     */
+    private static void markVariable(
+            Variable variable,
+            List<String> susceptibleData,
+            Map<String, VariableExposure> checkList,
+            Map<String, ValueAccessor> witnessData,
+            Map<String, ValueAccessor> instanceData
+    ) {
+        if (variable.getReference() != null) {
+            String alias = variable.getReference().getSubject();
+            Selector selector = variable.getReference().getSelector();
+            if (variable instanceof WitnessVariable) {
+                ValueAccessor witness = witnessData.getOrDefault(alias, null);
+                String source = witness.getSource();
+                if (susceptibleData.contains(source))
+                    checkList.computeIfAbsent(String.format("%s-%s", source, selector), e ->
+                            new VariableExposure()).mark(variable);
+            }
+
+            if (variable instanceof InstanceVariable) {
+                ValueAccessor instance = instanceData.getOrDefault(alias, null);
+                if (instance != null) {
+                    String source = instance.getSource();
+                    if (susceptibleData.contains(source))
+                        checkList.computeIfAbsent(String.format("%s-%s", source, selector), e ->
+                                new VariableExposure()).mark(variable);
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks the given lists of witness and instance sources for overlap (sources that are being used as confidential
+     * and public data source at the same time).
+     *
+     * @param witnessData  {@link Map} of source to {@link ValueAccessor} of confidential data
+     * @param instanceData {@link Map} of source to {@link ValueAccessor} of public data
+     * @return {@link List} of sources used as confidential and public data source at the same time
+     */
+    private static List<String> getSusceptibleData(
+            Map<String, ValueAccessor> witnessData,
+            Map<String, ValueAccessor> instanceData
+    ) {
         List<String> susceptibleData = new ArrayList<>();
 
         for (Map.Entry<String, ValueAccessor> witness : witnessData.entrySet()) {
@@ -40,35 +112,6 @@ public class ExposureAnalyzer {
             }
         }
 
-        if (!susceptibleData.isEmpty()) {
-            Map<String, VariableExposure> checkList = new HashMap<>();
-
-            for (Gadget gadget : statement.getGadgets()) {
-                for (Object variable : gadget.getVariables()) {
-                    if (variable instanceof Variable
-                            && ((Variable) variable).getReference() != null) {
-                        String alias = ((Variable) variable).getReference().getSubject();
-                        Selector selector = ((Variable) variable).getReference().getSelector();
-                        if (variable instanceof WitnessVariable) {
-                            ValueAccessor witness = witnessData.getOrDefault(alias, null);
-                            String source = witness.getSource();
-                            if (susceptibleData.contains(source))
-                                checkList.computeIfAbsent(String.format("%s-%s", source, selector), e -> new VariableExposure())
-                                        .markWitness((WitnessVariable) variable);
-                        }
-
-                        if (variable instanceof InstanceVariable) {
-                            ValueAccessor instance = instanceData.getOrDefault(alias, null);
-                            if (instance != null) {
-                                String source = instance.getSource();
-                                if (susceptibleData.contains(source))
-                                    checkList.computeIfAbsent(String.format("%s-%s", source, selector), e -> new VariableExposure())
-                                            .markInstance((InstanceVariable) variable);
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        return susceptibleData;
     }
 }
