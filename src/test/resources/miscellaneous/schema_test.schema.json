@@ -1,0 +1,15 @@
+{
+  "title": "schema_test",
+  "type": "object",
+  "properties": {
+    "invalid": {
+      "type": 15,
+      "description": "Invalid type as the type property is not a string."
+    },
+    "unknown": {
+      "type": "unknown",
+      "description": "Unknown type property as it's not a primitive JSON type."
+    }
+  },
+  "validationRule": 12
+}
