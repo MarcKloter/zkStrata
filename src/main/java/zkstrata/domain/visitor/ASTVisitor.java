@@ -1,5 +1,6 @@
 package zkstrata.domain.visitor;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zkstrata.domain.Statement;
@@ -141,11 +142,13 @@ public class ASTVisitor {
         Field[] fields = predicate.getClass().getDeclaredFields();
         for (Field field : fields) {
             try {
-                Object value = new PropertyDescriptor(field.getName(), predicate.getClass()).getReadMethod().invoke(predicate);
-                values.put(field.getName(), visitPredicateElement(value));
+                String fieldName = field.getName();
+                Object value = new PropertyDescriptor(fieldName, predicate.getClass(), "get" +
+                        StringUtils.capitalize(fieldName), null).getReadMethod().invoke(predicate);
+                values.put(fieldName, visitPredicateElement(value));
             } catch (IntrospectionException e) {
                 throw new InternalCompilerException("Error while calling the getter method for field %s in predicate %s. "
-                        + "Ensure the predicate class has all getter and setter methods for its properties.",
+                        + "Ensure the predicate class defines getter methods for all its fields.",
                         field.getName(), predicate.getClass().getSimpleName());
             } catch (ReflectiveOperationException e) {
                 throw new InternalCompilerException("Invalid getter method for field %s in predicate %s.",

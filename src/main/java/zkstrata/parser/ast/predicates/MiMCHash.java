@@ -20,12 +20,4 @@ public class MiMCHash extends Predicate {
     public Value getImage() {
         return image;
     }
-
-    public void setPreimage(Value preimage) {
-        this.preimage = preimage;
-    }
-
-    public void setImage(Value image) {
-        this.image = image;
-    }
 }

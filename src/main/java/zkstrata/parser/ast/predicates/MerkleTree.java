@@ -21,12 +21,4 @@ public class MerkleTree extends Predicate {
     public BinaryTree<Value> getTree() {
         return tree;
     }
-
-    public void setRoot(Value root) {
-        this.root = root;
-    }
-
-    public void setTree(BinaryTree<Value> tree) {
-        this.tree = tree;
-    }
 }
