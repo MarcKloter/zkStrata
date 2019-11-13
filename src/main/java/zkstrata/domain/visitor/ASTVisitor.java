@@ -147,12 +147,12 @@ public class ASTVisitor {
                         StringUtils.capitalize(fieldName), null).getReadMethod().invoke(predicate);
                 values.put(fieldName, visitPredicateElement(value));
             } catch (IntrospectionException e) {
-                throw new InternalCompilerException("Error while calling the getter method for field %s in predicate %s. "
-                        + "Ensure the predicate class defines getter methods for all its fields.",
+                throw new InternalCompilerException("Unable to call getter method for field %s in predicate %s. "
+                        + "Ensure the predicate class defines public getter methods for all its fields.",
                         field.getName(), predicate.getClass().getSimpleName());
             } catch (ReflectiveOperationException e) {
                 throw new InternalCompilerException("Invalid getter method for field %s in predicate %s.",
-                        predicate.getClass().getSimpleName(), field.getName());
+                        field.getName(), predicate.getClass().getSimpleName());
             }
         }
 

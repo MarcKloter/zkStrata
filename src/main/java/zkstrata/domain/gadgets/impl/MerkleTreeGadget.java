@@ -32,8 +32,7 @@ public class MerkleTreeGadget extends AbstractGadget<MerkleTreeGadget> {
 
         this.performChecks();
     }
-
-    // TODO: All instance variables warning (we don't know whether this fails or succeeds)
+// TODO: All instance variables warning (we don't know whether this fails or succeeds)
 
     @Override
     public void performChecks() {
@@ -70,5 +69,13 @@ public class MerkleTreeGadget extends AbstractGadget<MerkleTreeGadget> {
             args.put(key, node.getValue());
             stringBuilder.append(String.format("%%(%s)", key));
         }
+    }
+
+    public InstanceVariable getRoot() {
+        return root;
+    }
+
+    public BinaryTree<Variable> getTree() {
+        return tree;
     }
 }

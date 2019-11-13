@@ -53,14 +53,6 @@ public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
             throw new CompileTimeException("Contradiction.", Set.of(hg1.getImage(), hg2.getImage()));
     }
 
-    public WitnessVariable getPreimage() {
-        return preimage;
-    }
-
-    public Variable getImage() {
-        return image;
-    }
-
     @Override
     public void performChecks() {
         if (this.image instanceof InstanceVariable) {
@@ -84,5 +76,13 @@ public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
                 Map.entry("image", image)
         );
         return new TargetFormat("HASH %(image) %(preimage)", args);
+    }
+
+    public WitnessVariable getPreimage() {
+        return preimage;
+    }
+
+    public Variable getImage() {
+        return image;
     }
 }

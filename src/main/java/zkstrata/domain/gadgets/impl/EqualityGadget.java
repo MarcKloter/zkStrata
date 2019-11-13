@@ -21,17 +21,17 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
     private static final Logger LOGGER = LogManager.getLogger(EqualityGadget.class);
 
     @Type({Any.class})
-    private Variable leftHand;
+    private Variable left;
 
     @Type({Any.class})
-    private Variable rightHand;
+    private Variable right;
 
     public EqualityGadget() {
     }
 
-    public EqualityGadget(Variable leftHand, Variable rightHand) {
-        this.leftHand = leftHand;
-        this.rightHand = rightHand;
+    public EqualityGadget(Variable left, Variable right) {
+        this.left = left;
+        this.right = right;
 
         this.performChecks();
     }
@@ -101,32 +101,32 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
         return Collections.emptyList();
     }
 
-    public Variable getLeft() {
-        return leftHand;
-    }
-
-    public Variable getRight() {
-        return rightHand;
-    }
-
     @Override
     public void performChecks() {
-        if (leftHand.getType() != rightHand.getType())
-            throw new CompileTimeException("Type mismatch.", Set.of(this.leftHand, this.rightHand));
+        if (left.getType() != right.getType())
+            throw new CompileTimeException("Type mismatch.", Set.of(this.left, this.right));
     }
 
     @Override
     public boolean isEqualTo(EqualityGadget other) {
-        return (leftHand.equals(other.leftHand) && rightHand.equals(other.rightHand)) ||
-                (rightHand.equals(other.leftHand)) && leftHand.equals(other.rightHand);
+        return (left.equals(other.left) && right.equals(other.right)) ||
+                (right.equals(other.left)) && left.equals(other.right);
     }
 
     @Override
     public TargetFormat toTargetFormat() {
         Map<String, Variable> args = Map.ofEntries(
-                Map.entry("leftHand", leftHand),
-                Map.entry("rightHand", rightHand)
+                Map.entry("left", left),
+                Map.entry("right", right)
         );
-        return new TargetFormat("EQUALS %(leftHand) %(rightHand)", args);
+        return new TargetFormat("EQUALS %(left) %(right)", args);
+    }
+
+    public Variable getLeft() {
+        return left;
+    }
+
+    public Variable getRight() {
+        return right;
     }
 }

@@ -1,5 +1,6 @@
 package zkstrata.domain.gadgets;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.TextStringBuilder;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Null;
@@ -8,6 +9,8 @@ import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.optimizer.Substitution;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -68,11 +71,17 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
         List<Variable> variables = new ArrayList<>();
         for (Field field : getTypeAnnotatedFields()) {
             try {
-                field.setAccessible(true);
-                variables.add((Variable) field.get(this));
-            } catch (IllegalAccessException e) {
-                throw new InternalCompilerException("Unable to access field %s in %s.",
+                String fieldName = field.getName();
+                Object value = new PropertyDescriptor(fieldName, this.getClass(), "get" +
+                        StringUtils.capitalize(fieldName), null).getReadMethod().invoke(this);
+                variables.add((Variable) value);
+            } catch (IntrospectionException e) {
+                throw new InternalCompilerException("Unable to call getter method for field %s in gadget %s. "
+                        + "Ensure the gadget class defines public getter methods for all its fields.",
                         field.getName(), this.getClass());
+            } catch (ReflectiveOperationException | ClassCastException e) {
+                throw new InternalCompilerException("Invalid getter method for field %s in gadget %s.",
+                        field.getName(), this.getClass().getSimpleName());
             }
         }
         return variables;

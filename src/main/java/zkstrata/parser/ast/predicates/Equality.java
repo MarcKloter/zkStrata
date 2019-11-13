@@ -4,20 +4,20 @@ import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.types.Value;
 
 public class Equality extends Predicate {
-    private Value leftHand;
-    private Value rightHand;
+    private Value left;
+    private Value right;
 
     public Equality(Value left, Value right, Position position) {
         super(position);
-        this.leftHand = left;
-        this.rightHand = right;
+        this.left = left;
+        this.right = right;
     }
 
-    public Value getLeftHand() {
-        return leftHand;
+    public Value getLeft() {
+        return left;
     }
 
-    public Value getRightHand() {
-        return rightHand;
+    public Value getRight() {
+        return right;
     }
 }

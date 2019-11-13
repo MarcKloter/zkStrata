@@ -123,18 +123,6 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
         return (BigInteger) max.getValue().getValue();
     }
 
-    public WitnessVariable getValue() {
-        return value;
-    }
-
-    public InstanceVariable getMin() {
-        return min;
-    }
-
-    public InstanceVariable getMax() {
-        return max;
-    }
-
     // TODO: optimizer: check min == 1 --> replace by equals 0
 
     @Override
@@ -167,5 +155,17 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
                 Map.entry("max", max)
         );
         return new TargetFormat("BOUND %(value) %(min) %(max)", args);
+    }
+
+    public WitnessVariable getValue() {
+        return value;
+    }
+
+    public InstanceVariable getMin() {
+        return min;
+    }
+
+    public InstanceVariable getMax() {
+        return max;
     }
 }

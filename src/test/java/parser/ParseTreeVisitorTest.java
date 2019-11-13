@@ -41,8 +41,8 @@ public class ParseTreeVisitorTest {
         assertEquals(Equality.class, predicate.getClass());
 
         Equality equality = (Equality) predicate;
-        assertEquals(IDENTIFIER, equality.getLeftHand().getValue());
-        assertEquals(STRING_LITERAL, equality.getRightHand().getValue());
+        assertEquals(IDENTIFIER, equality.getLeft().getValue());
+        assertEquals(STRING_LITERAL, equality.getRight().getValue());
     }
 
     @Test
@@ -58,8 +58,8 @@ public class ParseTreeVisitorTest {
         assertEquals(Equality.class, predicate.getClass());
 
         Equality equality = (Equality) predicate;
-        assertEquals(INT_LITERAL_1, equality.getLeftHand().getValue());
-        assertEquals(IDENTIFIER, equality.getRightHand().getValue());
+        assertEquals(INT_LITERAL_1, equality.getLeft().getValue());
+        assertEquals(IDENTIFIER, equality.getRight().getValue());
     }
 
     @Test
