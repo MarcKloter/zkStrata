@@ -19,7 +19,9 @@ public class ParseTreeVisitorTest {
     private static final String SCHEMA = "schema";
     private static final String PARENT_SCHEMA = null;
     private static final String ALIAS = "alias";
-    private static final String INVALID_SYMBOL = "%";
+    private static final String UNEXPECTED_SYMBOL = "%";
+    private static final String UNEXPECTED_TOKEN = "FOR";
+    private static final String MISSING_TOKEN = "";
     private static final String IDENTIFIER = "alias.identifier";
     private static final String STRING_LITERAL = "StringLiteral";
     private static final String HEX_LITERAL = "0x01bd94c871b2d21926cf4f1c9e2fcbca8ece3353a0aac7cea8d507a9ad30afe2";
@@ -200,9 +202,33 @@ public class ParseTreeVisitorTest {
     }
 
     @Test
-    void Invalid_Symbol_Should_Fail() {
-        assertThrows(CompileTimeException.class, () -> {
-            new ParseTreeVisitor().parse(SOURCE, INVALID_SYMBOL, PARENT_SCHEMA);
+    void Unexpected_Symbol_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            new ParseTreeVisitor().parse(SOURCE, UNEXPECTED_SYMBOL, PARENT_SCHEMA);
         });
+
+        System.out.println(exception.getMessage());
+    }
+
+    @Test
+    void Unexpected_Token_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            new ParseTreeVisitor().parse(SOURCE, UNEXPECTED_TOKEN, PARENT_SCHEMA);
+        });
+
+        System.out.println(exception.getMessage());
+    }
+
+    @Test
+    void Unexpected_Input_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            String statement = new StatementBuilder()
+                    .subject(SCHEMA, ALIAS, true)
+                    .mimcHash(MISSING_TOKEN, HEX_LITERAL)
+                    .build();
+            new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
+        });
+
+        System.out.println(exception.getMessage());
     }
 }
