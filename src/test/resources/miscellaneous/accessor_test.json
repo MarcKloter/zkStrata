@@ -1,0 +1,12 @@
+{
+  "string": "John",
+  "number": 42,
+  "hexString": "0xabcdef",
+  "array": [
+    "element0", "element1", "element2"
+  ],
+  "object": {
+    "property0": "value0",
+    "property1": "value1"
+  }
+}
