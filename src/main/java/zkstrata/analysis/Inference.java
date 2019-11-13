@@ -8,24 +8,24 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Inference {
-    private Set<Gadget> premises;
+    private Set<Gadget> assumptions;
     private Gadget conclusion;
     private Set<Inference> derivedFrom;
 
-    public Inference(Set<Gadget> premises, Gadget conclusion, Set<Inference> derivedFrom) {
-        this.premises = premises;
+    public Inference(Set<Gadget> assumptions, Gadget conclusion, Set<Inference> derivedFrom) {
+        this.assumptions = assumptions;
         this.conclusion = conclusion;
         this.derivedFrom = derivedFrom;
     }
 
     public static Inference from(Set<Inference> premises, Gadget conclusion) {
-        return new Inference(premises.stream().map(Inference::getPremises)
+        return new Inference(premises.stream().map(Inference::getAssumptions)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet()), conclusion, premises);
     }
 
-    public Set<Gadget> getPremises() {
-        return premises;
+    public Set<Gadget> getAssumptions() {
+        return assumptions;
     }
 
     public Gadget getConclusion() {
@@ -46,8 +46,8 @@ public class Inference {
         if (!conclusion.equals(other.conclusion))
             return false;
 
-        for (Gadget premise : other.getPremises()) {
-            if (!premises.contains(premise))
+        for (Gadget premise : other.getAssumptions()) {
+            if (!assumptions.contains(premise))
                 return false;
         }
 
@@ -62,16 +62,16 @@ public class Inference {
         if (getClass() != obj.getClass())
             return false;
 
-        if (conclusion == null || premises == null)
+        if (conclusion == null || assumptions == null)
             return false;
 
         Inference other = (Inference) obj;
 
-        return conclusion.equals(other.getConclusion()) && premises.equals(other.getPremises());
+        return conclusion.equals(other.getConclusion()) && assumptions.equals(other.getAssumptions());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(premises, conclusion);
+        return Objects.hash(assumptions, conclusion);
     }
 }

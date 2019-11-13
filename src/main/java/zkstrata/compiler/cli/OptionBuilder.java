@@ -4,10 +4,14 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 
 public class OptionBuilder {
-    public static Options build() {
-        Options options = new Options();
+    private Options options = new Options();
 
-        options.addOption(
+    public Options build() {
+        return this.options;
+    }
+
+    public OptionBuilder withLongOpts() {
+        this.options.addOption(
                 Option.builder()
                         .longOpt("statement")
                         .hasArg()
@@ -17,7 +21,7 @@ public class OptionBuilder {
                         .build()
         );
 
-        options.addOption(
+        this.options.addOption(
                 Option.builder()
                         .longOpt("witness-data")
                         .hasArgs()
@@ -26,7 +30,7 @@ public class OptionBuilder {
                         .build()
         );
 
-        options.addOption(
+        this.options.addOption(
                 Option.builder()
                         .longOpt("instance-data")
                         .hasArgs()
@@ -35,7 +39,7 @@ public class OptionBuilder {
                         .build()
         );
 
-        options.addOption(
+        this.options.addOption(
                 Option.builder()
                         .longOpt("schemas")
                         .hasArgs()
@@ -44,33 +48,36 @@ public class OptionBuilder {
                         .build()
         );
 
-        options.addOption(
+        this.options.addOption(
+                Option.builder()
+                        .longOpt("premises")
+                        .hasArgs()
+                        .argName("file")
+                        .desc("files containing already proven statements")
+                        .build()
+        );
+
+        this.options.addOption(
                 Option.builder()
                         .longOpt("verbose")
                         .desc("use verbose output")
                         .build()
         );
 
-        options.addOption(helpFlag());
-        options.addOption(versionFlag());
-
-        return options;
+        return this;
     }
 
-    public static Options buildFlagOptions() {
-        Options options = new Options();
-
-        options.addOption(helpFlag());
-        options.addOption(versionFlag());
-
-        return options;
+    public OptionBuilder withFlags() {
+        return this.withHelpFlag().withVersionFlag();
     }
 
-    private static Option helpFlag() {
-        return Option.builder().longOpt("help").desc("display this help and exit").build();
+    private OptionBuilder withHelpFlag() {
+        this.options.addOption(Option.builder().longOpt("help").desc("display this help and exit").build());
+        return this;
     }
 
-    private static Option versionFlag() {
-        return Option.builder().longOpt("version").desc("output version information and exit").build();
+    private OptionBuilder withVersionFlag() {
+        this.options.addOption(Option.builder().longOpt("version").desc("output version information and exit").build());
+        return this;
     }
 }

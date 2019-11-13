@@ -15,13 +15,17 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import static zkstrata.compiler.Arguments.Statement;
 
 public class CommandLineInterface {
     private Options options;
 
     public CommandLineInterface() {
-        this.options = OptionBuilder.build();
+        this.options = new OptionBuilder().withLongOpts().withFlags().build();
     }
 
     /**
@@ -49,14 +53,16 @@ public class CommandLineInterface {
         if (cmd.hasOption("verbose"))
             setVerbose();
 
-        String statementName = getStatementName(cmd);
-        String statementFile = getStatementFile(cmd);
-        String statement = getStatement(cmd);
+        String file = getStatementFile(cmd);
+        String name = getStatementName(file);
+        Statement statement = new Statement(file, getStatement(file));
+        List<Statement> premises = getPremises(cmd);
+
         HashMap<String, ValueAccessor> witnessFiles = getWitnessData(cmd);
         HashMap<String, Schema> schemaFiles = getSchemas(cmd);
         HashMap<String, ValueAccessor> instanceFiles = getInstanceData(cmd);
 
-        return new Arguments(statementName, statementFile, statement, witnessFiles, instanceFiles, schemaFiles);
+        return new Arguments(name, statement, premises, witnessFiles, instanceFiles, schemaFiles);
     }
 
     /**
@@ -67,7 +73,7 @@ public class CommandLineInterface {
      */
     private void checkFlags(String[] args) throws ParseException {
         CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse(OptionBuilder.buildFlagOptions(), args, true);
+        CommandLine cmd = parser.parse(new OptionBuilder().withFlags().build(), args, true);
 
         if (cmd.hasOption("help"))
             printHelp();
@@ -107,12 +113,11 @@ public class CommandLineInterface {
         return cmd.getOptionValue("statement");
     }
 
-    private String getStatementName(CommandLine cmd) {
-        return FilenameUtils.getBaseName(getStatementFile(cmd));
+    private String getStatementName(String file) {
+        return FilenameUtils.getBaseName(file);
     }
 
-    private String getStatement(CommandLine cmd) {
-        String file = getStatementFile(cmd);
+    private String getStatement(String file) {
         try {
             return Files.readString(Path.of(file), StandardCharsets.UTF_8);
         } catch (IOException e) {
@@ -163,5 +168,14 @@ public class CommandLineInterface {
             }
         }
         return instanceData;
+    }
+
+    private List<Statement> getPremises(CommandLine cmd) {
+        List<Statement> premises = new ArrayList<>();
+        if (cmd.hasOption("premises"))
+            for (String file : cmd.getOptionValues("premises"))
+                premises.add(new Statement(file, getStatement(file)));
+
+        return premises;
     }
 }

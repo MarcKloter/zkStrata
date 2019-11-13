@@ -10,5 +10,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface Implication {
-    Class<? extends Gadget>[] premise();
+    Class<? extends Gadget>[] assumption();
 }

@@ -49,7 +49,7 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
         this.performChecks();
     }
 
-    @Implication(premise = {EqualityGadget.class, BoundsCheckGadget.class})
+    @Implication(assumption = {EqualityGadget.class, BoundsCheckGadget.class})
     public static Optional<Gadget> implyBounds(EqualityGadget eq, BoundsCheckGadget bc) {
         if (eq.getLeft().equals(bc.getValue()) && eq.getRight() instanceof WitnessVariable)
             return Optional.of(new BoundsCheckGadget((WitnessVariable) eq.getRight(), bc.getMin(), bc.getMax()));

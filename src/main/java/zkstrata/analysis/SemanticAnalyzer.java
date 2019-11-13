@@ -30,14 +30,19 @@ public class SemanticAnalyzer {
         this.contradictionRules = ReflectionHelper.getMethodsAnnotatedWith(Contradiction.class);
     }
 
+    // TODO: Herleitungs-History wäre interessant (Implication Object) --> vor allem in Fehlermeldung
+
     public void process(Statement statement) {
-        LOGGER.debug("Starting analysis on {} gadgets", statement.getGadgets().size());
+        List<Gadget> gadgets = new ArrayList<>(statement.getGadgets());
+        statement.getPremises().forEach(premise -> gadgets.addAll(premise.getGadgets()));
+
+        LOGGER.debug("Starting semantic analysis on {} gadgets", gadgets.size());
 
         this.inferences = new HashSet<>();
         this.inferenceMapping = new HashMap<>();
 
         // find inferences by executing methods annotated with @Implication
-        findImplications(statement);
+        findImplications(gadgets);
 
         // check for semantic errors by executing methods annotated with @Contradiction
         checkContradictions();
@@ -75,9 +80,9 @@ public class SemanticAnalyzer {
         }
     }
 
-    private void findImplications(Statement statement) {
+    private void findImplications(List<Gadget> gadgets) {
         // represent gadgets assembled from statements as inferences of themselves
-        Map<WitnessVariable, Set<Inference>> newInferences = processInferences(statement.getGadgets().stream()
+        Map<WitnessVariable, Set<Inference>> newInferences = processInferences(gadgets.stream()
                 .map(g -> new Inference(Set.of(g), g, Collections.emptySet()))
                 .collect(Collectors.toSet()));
 
@@ -85,8 +90,8 @@ public class SemanticAnalyzer {
             Set<Inference> round = new HashSet<>();
 
             for (Map.Entry<WitnessVariable, Set<Inference>> newInference : newInferences.entrySet())
-                for (Inference premise : newInference.getValue())
-                    round.addAll(runImplicationRules(premise, inferenceMapping.getOrDefault(newInference.getKey(), Collections.emptySet())));
+                for (Inference assumption : newInference.getValue())
+                    round.addAll(runImplicationRules(assumption, inferenceMapping.getOrDefault(newInference.getKey(), Collections.emptySet())));
 
             newInferences = processInferences(simplify(round));
         }
@@ -113,24 +118,24 @@ public class SemanticAnalyzer {
                 .collect(Collectors.toSet());
     }
 
-    private Set<Inference> runImplicationRules(Inference premise, Set<Inference> premises) {
-        Map<Gadget, Inference> premiseMapping = premises.stream().collect(Collectors.toMap(Inference::getConclusion, i -> i));
-        Class<? extends Gadget> type = premise.getConclusion().getClass();
+    private Set<Inference> runImplicationRules(Inference assumption, Set<Inference> assumptions) {
+        Map<Gadget, Inference> assumptionMapping = assumptions.stream().collect(Collectors.toMap(Inference::getConclusion, i -> i));
+        Class<? extends Gadget> type = assumption.getConclusion().getClass();
 
         Set<Inference> newInferences = new HashSet<>();
         for (Method implicationRule : implicationRules) {
-            List<Class<? extends Gadget>> context = new ArrayList<>(List.of(implicationRule.getAnnotation(Implication.class).premise()));
+            List<Class<? extends Gadget>> context = new ArrayList<>(List.of(implicationRule.getAnnotation(Implication.class).assumption()));
             if (context.contains(type)) {
                 int index = context.indexOf(type);
                 context.remove(index);
 
-                List<List<Gadget>> contextCombinations = CombinatoricsUtils.getCombinations(context, premiseMapping.keySet());
+                List<List<Gadget>> contextCombinations = CombinatoricsUtils.getCombinations(context, assumptionMapping.keySet());
                 for (List<Gadget> contextCombination : contextCombinations) {
-                    contextCombination.add(index, premise.getConclusion());
+                    contextCombination.add(index, assumption.getConclusion());
                     invokeImplication(implicationRule, contextCombination.toArray())
                             .ifPresent(g -> newInferences.add(
                                     Inference.from(contextCombination.stream()
-                                            .map(premiseMapping::get)
+                                            .map(assumptionMapping::get)
                                             .filter(Objects::nonNull)
                                             .collect(Collectors.toSet()), g)
                             ));

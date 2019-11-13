@@ -36,7 +36,7 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
         this.performChecks();
     }
 
-    @Implication(premise = {EqualityGadget.class, EqualityGadget.class})
+    @Implication(assumption = {EqualityGadget.class, EqualityGadget.class})
     public static Optional<Gadget> implyEquality(EqualityGadget eq1, EqualityGadget eq2) {
         List<Variable> parity = getParity(eq1, eq2);
         if (new HashSet<>(parity).size() == 2)
