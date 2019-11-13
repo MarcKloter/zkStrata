@@ -88,6 +88,14 @@ public class MiMCHashGadgetTest {
     }
 
     @Test
+    void Equal_No_Contradiction() {
+        MiMCHashGadget miMCHashGadget = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_IMAGE_1);
+        assertDoesNotThrow(() -> {
+            MiMCHashGadget.checkContradiction(miMCHashGadget, miMCHashGadget);
+        });
+    }
+
+    @Test
     void Different_Preimage_No_Contradiction() {
         MiMCHashGadget miMCHashGadget1 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_IMAGE_1);
         MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_2, INSTANCE_VAR_IMAGE_1);
