@@ -1,0 +1,4 @@
+PROOF FOR
+    INSTANCE passport_ch AS pass_i
+THAT
+    pass_i.firstName IS EQUAL TO 'John'

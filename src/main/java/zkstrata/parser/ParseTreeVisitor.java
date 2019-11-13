@@ -56,10 +56,6 @@ public class ParseTreeVisitor {
         return visitor.visit(tree);
     }
 
-    public AbstractSyntaxTree parse(String source, String statement) {
-        return parse(source, statement, null);
-    }
-
     public static class TypeVisitor extends zkStrataBaseVisitor<Value> {
         @Override
         public Value visitWitness_var(zkStrata.Witness_varContext ctx) {

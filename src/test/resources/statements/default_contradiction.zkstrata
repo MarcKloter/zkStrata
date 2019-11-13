@@ -1,4 +1,4 @@
 PROOF FOR
     passport_ch AS pass
 THAT
-    pass.firstName IS EQUAL TO 'John'
+    pass.firstName IS EQUAL TO 'Jane'

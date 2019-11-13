@@ -12,14 +12,13 @@ public class CommandLineInterfaceTest {
     private static final String TEST_RESOURCES = "src/test/resources/";
     private static final String NAME = "default";
     private static final String STATEMENT_FILE = TEST_RESOURCES + "statements/" + NAME + ".zkstrata";
-    private static final String WITNESS_FILE = TEST_RESOURCES + "witness-data/passport.json";
-    private static final String INSTANCE_FILE = TEST_RESOURCES + "instance-data/passport.json";
+    private static final String WITNESS_FILE = TEST_RESOURCES + "data/passport.json";
+    private static final String INSTANCE_FILE = TEST_RESOURCES + "data/passport_instance.json";
     private static final String SCHEMA_FILE = TEST_RESOURCES + "schemas/passport_ch.schema.json";
 
     private static final String INSTANCE_ALIAS = "pass_instance";
     private static final String WITNESS_ALIAS = "pass";
     private static final String SCHEMA = "passport_ch";
-    private static final String DEFAULT_STATEMENT = "PROOF FOR passport_ch AS pass THAT pass.firstName IS EQUAL TO 'John'";
 
     @Test
     void Check_Long_Args() {
@@ -36,8 +35,8 @@ public class CommandLineInterfaceTest {
         CommandLineInterface cli = new CommandLineInterface();
         Arguments arguments = cli.parse(command);
         assertEquals(NAME, arguments.getName());
-        assertEquals(STATEMENT_FILE, arguments.getSource());
-        assertEquals(DEFAULT_STATEMENT, arguments.getStatement());
+        assertEquals(STATEMENT_FILE, arguments.getStatement().getSource());
+        assertNotNull(arguments.getStatement().getValue());
         assertEquals(JsonAccessor.class, arguments.getInstanceData().get(INSTANCE_ALIAS).getClass());
         assertEquals(JsonSchema.class, arguments.getSchemas().get(SCHEMA).getClass());
         assertEquals(JsonAccessor.class, arguments.getWitnessData().get(WITNESS_ALIAS).getClass());

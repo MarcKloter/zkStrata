@@ -57,15 +57,6 @@ public class ASTVisitor {
         this.parentAlias = parentAlias;
     }
 
-    public ASTVisitor(
-            AbstractSyntaxTree ast,
-            Map<String, ValueAccessor> witnessData,
-            Map<String, ValueAccessor> instanceData,
-            Map<String, Schema> schemas
-    ) {
-        this(ast, witnessData, instanceData, schemas, null);
-    }
-
     public Statement visitStatement() {
         LOGGER.debug("Starting visit of AST for {}", ast.getSource());
 

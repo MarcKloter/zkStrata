@@ -17,6 +17,7 @@ import java.math.BigInteger;
 public class ParseTreeVisitorTest {
     private static final String SOURCE = "test";
     private static final String SCHEMA = "schema";
+    private static final String PARENT_SCHEMA = null;
     private static final String ALIAS = "alias";
     private static final String INVALID_SYMBOL = "%";
     private static final String IDENTIFIER = "alias.identifier";
@@ -31,7 +32,7 @@ public class ParseTreeVisitorTest {
                 .subject(SCHEMA, ALIAS, true)
                 .equality(IDENTIFIER, stringLiteral(STRING_LITERAL))
                 .build();
-        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
 
         Predicate predicate = ast.getPredicates().get(0);
@@ -48,7 +49,7 @@ public class ParseTreeVisitorTest {
                 .subject(SCHEMA, ALIAS, true)
                 .equality(integerLiteral(INT_LITERAL_1), IDENTIFIER)
                 .build();
-        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
 
         Predicate predicate = ast.getPredicates().get(0);
@@ -65,7 +66,7 @@ public class ParseTreeVisitorTest {
                 .subject(SCHEMA, ALIAS, true)
                 .boundsCheck(IDENTIFIER, INT_LITERAL_1, INT_LITERAL_2)
                 .build();
-        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
 
         Predicate predicate = ast.getPredicates().get(0);
@@ -83,7 +84,7 @@ public class ParseTreeVisitorTest {
                 .subject(SCHEMA, ALIAS, true)
                 .boundsCheck(IDENTIFIER, INT_LITERAL_1, null)
                 .build();
-        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
 
         Predicate predicate = ast.getPredicates().get(0);
@@ -100,7 +101,7 @@ public class ParseTreeVisitorTest {
                 .subject(SCHEMA, ALIAS, true)
                 .boundsCheck(IDENTIFIER, null, INT_LITERAL_2)
                 .build();
-        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
 
         Predicate predicate = ast.getPredicates().get(0);
@@ -117,7 +118,7 @@ public class ParseTreeVisitorTest {
                 .subject(SCHEMA, ALIAS, true)
                 .mimcHash(IDENTIFIER, HEX_LITERAL)
                 .build();
-        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
 
         Predicate predicate = ast.getPredicates().get(0);
@@ -138,7 +139,7 @@ public class ParseTreeVisitorTest {
                 .subject(SCHEMA, ALIAS, true)
                 .merkleTree(HEX_LITERAL, tree)
                 .build();
-        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
 
         Predicate predicate = ast.getPredicates().get(0);
@@ -162,7 +163,7 @@ public class ParseTreeVisitorTest {
                 .subject(SCHEMA, ALIAS, true)
                 .merkleTree(HEX_LITERAL, tree)
                 .build();
-        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
 
         Predicate predicate = ast.getPredicates().get(0);
@@ -185,7 +186,7 @@ public class ParseTreeVisitorTest {
                 .subject(SCHEMA, ALIAS, true)
                 .merkleTree(HEX_LITERAL, tree)
                 .build();
-        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement);
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
 
         Predicate predicate = ast.getPredicates().get(0);
@@ -201,7 +202,7 @@ public class ParseTreeVisitorTest {
     @Test
     void Invalid_Symbol_Should_Fail() {
         assertThrows(CompileTimeException.class, () -> {
-            new ParseTreeVisitor().parse(SOURCE, INVALID_SYMBOL);
+            new ParseTreeVisitor().parse(SOURCE, INVALID_SYMBOL, PARENT_SCHEMA);
         });
     }
 }
