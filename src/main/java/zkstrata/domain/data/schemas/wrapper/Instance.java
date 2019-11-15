@@ -13,7 +13,7 @@ import zkstrata.exceptions.Position;
  * Wrapper class to mark a {@link Schema} as instance wide (to all participants, usually publicly) known.
  */
 public class Instance extends AbstractStructuredData<InstanceVariable> {
-    public Instance(String alias, Schema schema, ValueAccessor accessor, ValueAccessor metaData) {
+    public Instance(String alias, Schema schema, ValueAccessor accessor) {
         super(alias, schema, accessor);
     }
 

@@ -107,7 +107,7 @@ public class ASTVisitor {
             ValueAccessor accessor = witnessData.getOrDefault(alias, new SchemaAccessor(alias, schema));
             return new Witness(alias, schema, accessor);
         } else
-            return new Instance(alias, schema, instanceData.get(alias), instanceData.get(alias));
+            return new Instance(alias, schema, instanceData.get(alias));
     }
 
     private Gadget visitPredicate(Predicate predicate) {
