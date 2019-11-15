@@ -16,11 +16,7 @@ import java.util.stream.Collectors;
 public class MiMCHashParser implements PredicateParser {
     @Override
     public MiMCHash parse(ParserRuleContext ctx) {
-        ParseTreeVisitor.TypeVisitor typeVisitor = new ParseTreeVisitor.TypeVisitor();
-        List<Value> values = ctx.children.stream()
-                .map(child -> child.accept(typeVisitor))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        List<Value> values = ParserUtils.getValues(ctx);
         return new MiMCHash(values.get(0), values.get(1), ParserUtils.getPosition(ctx.getStart()));
     }
 }

@@ -17,11 +17,7 @@ import java.util.stream.Collectors;
 public class EqualityParser implements PredicateParser {
     @Override
     public Equality parse(ParserRuleContext ctx) {
-        ParseTreeVisitor.TypeVisitor typeVisitor = new TypeVisitor();
-        List<Value> values = ctx.children.stream()
-                .map(child -> child.accept(typeVisitor))
-                .filter(Objects::nonNull)
-                .collect(Collectors.toList());
+        List<Value> values = ParserUtils.getValues(ctx);
         return new Equality(values.get(0), values.get(1), ParserUtils.getPosition(ctx.getStart()));
     }
 }
