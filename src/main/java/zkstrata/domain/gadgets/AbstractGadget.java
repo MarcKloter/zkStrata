@@ -16,7 +16,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget<T> {
-
     @Override
     public void initFrom(Map<String, Object> sourceFields) {
         for (Map.Entry<String, Object> source : sourceFields.entrySet()) {
@@ -69,12 +68,13 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
     @Override
     public List<Variable> getVariables() {
         List<Variable> variables = new ArrayList<>();
+
         for (Field field : getTypeAnnotatedFields()) {
             try {
                 String fieldName = field.getName();
                 Object value = new PropertyDescriptor(fieldName, this.getClass(), "get" +
                         StringUtils.capitalize(fieldName), null).getReadMethod().invoke(this);
-                variables.add((Variable) value);
+                processValue(value, variables);
             } catch (IntrospectionException e) {
                 throw new InternalCompilerException("Unable to call getter method for field %s in gadget %s. "
                         + "Ensure the gadget class defines public getter methods for all its fields.",
@@ -84,7 +84,16 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
                         field.getName(), this.getClass().getSimpleName());
             }
         }
+
         return variables;
+    }
+
+    private void processValue(Object value, List<Variable> variables) {
+        if (Collection.class.isAssignableFrom(value.getClass()))
+            for (Object element : ((Collection) value))
+                processValue(element, variables);
+        else
+            variables.add((Variable) value);
     }
 
     private Set<Field> getTypeAnnotatedFields() {
@@ -136,7 +145,10 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
         if (getClass() != obj.getClass())
             return false;
 
-        return isEqualTo((T) obj);
+        @SuppressWarnings("unchecked")
+        boolean result = isEqualTo((T) obj);
+
+        return result;
     }
 
     @Override

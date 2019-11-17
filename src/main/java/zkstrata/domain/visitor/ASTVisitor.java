@@ -163,6 +163,9 @@ public class ASTVisitor {
         if (element == null)
             return new Null();
 
+        if (Collection.class.isAssignableFrom(element.getClass()))
+            return visitCollection((Collection) element);
+
         if (element instanceof Value)
             return visitType((Value) element);
 
@@ -196,6 +199,40 @@ public class ASTVisitor {
             return new zkstrata.domain.data.types.custom.HexLiteral(((HexLiteral) literal).getValue());
 
         return new zkstrata.domain.data.types.Literal(literal.getValue());
+    }
+
+    private Collection<Object> visitCollection(Collection collection) {
+        Collection<Object> result = createNewInstanceOf(collection.getClass());
+        for (Object object : collection) {
+            Object element = visitPredicateElement(object);
+            if (!result.add(element) && element instanceof Traceable) {
+                Traceable traceable = (Traceable) element;
+
+                throw new CompileTimeException("Duplicate element.",
+                        List.of(pinPosition(getEqualTraceable(traceable, result)), pinPosition((Traceable) element)));
+            }
+        }
+
+        return result;
+    }
+
+    private Traceable getEqualTraceable(Traceable traceable, Collection collection) {
+        for (Object object : collection)
+            if (traceable.equals(object))
+                return (Traceable) object;
+
+        throw new InternalCompilerException("The provided collection does not contain the requested element.");
+    }
+
+    private Collection<Object> createNewInstanceOf(Class<? extends Collection> clazz) {
+        try {
+            @SuppressWarnings("unchecked")
+            Collection<Object> instance = clazz.getConstructor().newInstance();
+            return instance;
+        } catch (ReflectiveOperationException e) {
+            throw new InternalCompilerException("Unable to create a new instance of collection %s using the default "
+                    + "constructor.", clazz);
+        }
     }
 
     /**

@@ -62,4 +62,16 @@ public class GadgetBaseTest {
             Compiler.run(args);
         });
     }
+
+    @Test
+    void SetMembership_Statement_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("setmembership")
+                    .withInstance("pass1", "passport.metadata")
+                    .withInstance("pass2", "passport.metadata")
+                    .build();
+            Compiler.run(args);
+        });
+    }
 }
