@@ -27,17 +27,6 @@ public class BoundsCheckParser implements PredicateParser {
             return new BoundsCheck(values.get(0), values.get(2), values.get(1), ParserUtils.getPosition(ctx.getStart()));
         }
 
-
-        if (boundsCheckContext.less_than() != null) {
-            List<Value> values = ParserUtils.getValues(boundsCheckContext.less_than());
-            return new BoundsCheck(values.get(0), null, values.get(1), ParserUtils.getPosition(ctx.getStart()));
-        }
-
-        if (boundsCheckContext.greater_than() != null) {
-            List<Value> values = ParserUtils.getValues(boundsCheckContext.greater_than());
-            return new BoundsCheck(values.get(0), values.get(1), null, ParserUtils.getPosition(ctx.getStart()));
-        }
-
         throw new InternalCompilerException("Unknown bounds_check rule.");
     }
 }

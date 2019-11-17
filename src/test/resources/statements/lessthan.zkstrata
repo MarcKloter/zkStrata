@@ -1,0 +1,6 @@
+PROOF FOR
+    passport_ch AS pass
+THAT
+    pass.dateOfBirth.year IS LESS THAN pass.expiresOn.year
+AND
+    pass.dateOfBirth.month IS GREATER THAN pass.expiresOn.month

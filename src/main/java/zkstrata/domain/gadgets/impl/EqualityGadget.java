@@ -81,7 +81,8 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
      *
      * @param eq1 {@link EqualityGadget} to check
      * @param eq2 {@link EqualityGadget} to check
-     * @return {@link List} containing two variables if the given gadgets have a common witness variable, empty list otherwise.
+     * @return {@link List} containing two variables if the given gadgets have a common witness variable,
+     * empty list otherwise.
      */
     private static List<Variable> getParity(EqualityGadget eq1, EqualityGadget eq2) {
         if (eq1.getLeft() instanceof WitnessVariable) {
@@ -99,6 +100,24 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
         }
 
         return Collections.emptyList();
+    }
+
+    /**
+     * Checks whether the given {@link WitnessVariable} is part of the provided {@link EqualityGadget},
+     * If so, returns the {@link Variable} that the {@code var} is equal to, empty {@link Optional} otherwise.
+     *
+     * @param eq  {@link EqualityGadget} to analyze
+     * @param var {@link WitnessVariable} to check for
+     * @return {@link Optional} containing a {@link Variable} the given {@link WitnessVariable} is equal to
+     */
+    public static Optional<Variable> getEqual(EqualityGadget eq, WitnessVariable var) {
+        if (eq.getLeft() instanceof WitnessVariable && eq.getLeft().equals(var))
+            return Optional.of(eq.getRight());
+
+        if (eq.getRight() instanceof WitnessVariable && eq.getRight().equals(var))
+            return Optional.of(eq.getLeft());
+
+        return Optional.empty();
     }
 
     @Override

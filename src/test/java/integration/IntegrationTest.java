@@ -10,50 +10,6 @@ import zkstrata.utils.ArgumentsBuilder;
 
 public class IntegrationTest {
     @Test
-    void Equality_Statement_Should_Succeed() {
-        assertDoesNotThrow(() -> {
-            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
-                    .withStatement("equality")
-                    .withInstance("pass", "passport.metadata")
-                    .build();
-            Compiler.run(args);
-        });
-    }
-
-    @Test
-    void BoundsCheck_Statement_Should_Succeed() {
-        assertDoesNotThrow(() -> {
-            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
-                    .withStatement("boundscheck")
-                    .withInstance("pass", "passport.metadata")
-                    .build();
-            Compiler.run(args);
-        });
-    }
-
-    @Test
-    void MiMCHash_Statement_Should_Succeed() {
-        assertDoesNotThrow(() -> {
-            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
-                    .withStatement("mimchash")
-                    .withInstance("pass", "passport.metadata")
-                    .build();
-            Compiler.run(args);
-        });
-    }
-
-    @Test
-    void MerkleTree_Statement_Should_Succeed() {
-        assertDoesNotThrow(() -> {
-            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
-                    .withStatement("merkletree")
-                    .withInstance("pass", "passport.metadata")
-                    .build();
-            Compiler.run(args);
-        });
-    }
-
-    @Test
     void Duplicate_Alias_Should_Throw() {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
