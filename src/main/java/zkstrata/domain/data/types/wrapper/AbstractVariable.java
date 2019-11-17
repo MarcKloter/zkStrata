@@ -1,5 +1,7 @@
 package zkstrata.domain.data.types.wrapper;
 
+import zkstrata.analysis.TypeConstraintsChecker;
+import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.Reference;
 import zkstrata.domain.data.types.Value;
 import zkstrata.exceptions.Position;
@@ -13,6 +15,9 @@ public abstract class AbstractVariable extends AbstractTraceable implements Vari
         super(position);
         this.value = value;
         this.reference = reference;
+
+        if (Literal.class.isAssignableFrom(value.getClass()))
+            TypeConstraintsChecker.process((Literal) value, position);
     }
 
     @Override

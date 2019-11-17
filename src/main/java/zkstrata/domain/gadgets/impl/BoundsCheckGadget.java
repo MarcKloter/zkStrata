@@ -16,7 +16,7 @@ import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.BoundsCheck;
-import zkstrata.utils.SemanticsUtils;
+import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
 import java.util.Map;
@@ -27,7 +27,7 @@ import java.util.Set;
 public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     private static final Logger LOGGER = LogManager.getLogger(BoundsCheckGadget.class);
     private static final BigInteger MIN = BigInteger.ZERO;
-    private static final BigInteger MAX = SemanticsUtils.ED25519_MAX_VALUE;
+    private static final BigInteger MAX = Constants.UNSIGNED_64BIT_MAX;
 
     @Type({BigInteger.class})
     private WitnessVariable value;
@@ -137,14 +137,6 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
 
         if (this.max == null)
             this.max = InstanceVariable.of(MAX);
-
-        if (getMinValue().compareTo(MIN) < 0 || getMinValue().compareTo(MAX) > 0)
-            throw new CompileTimeException(String.format("The lower bound must be in the range between %s and %s.",
-                    MIN, MAX), this.max);
-
-        if (getMaxValue().compareTo(MIN) < 0 || getMaxValue().compareTo(MAX) > 0)
-            throw new CompileTimeException(String.format("The upper bound must be in the range between %s and %s.",
-                    MIN, MAX), this.max);
     }
 
     @Override

@@ -9,7 +9,7 @@ import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.impl.MiMCHashGadget;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.Position;
-import zkstrata.utils.SemanticsUtils;
+import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -34,7 +34,7 @@ public class MiMCHashGadgetTest {
 
     @Test
     void Image_Too_Large() {
-        InstanceVariable instanceVariable = new InstanceVariable(new HexLiteral(SemanticsUtils.ED25519_PRIME_ORDER), null, DUMMY_POS);
+        InstanceVariable instanceVariable = new InstanceVariable(new HexLiteral(Constants.ED25519_PRIME_ORDER), null, DUMMY_POS);
         assertThrows(CompileTimeException.class, () -> {
             new MiMCHashGadget(WITNESS_VAR_1, instanceVariable);
         });

@@ -10,7 +10,7 @@ import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.parser.ast.predicates.MerkleTree;
 import zkstrata.utils.BinaryTree;
-import zkstrata.utils.SemanticsUtils;
+import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
 import java.util.HashMap;
@@ -37,10 +37,10 @@ public class MerkleTreeGadget extends AbstractGadget<MerkleTreeGadget> {
     @Override
     public void performChecks() {
         BigInteger image = (BigInteger) ((this.root.getValue()).getValue());
-        if (image.compareTo(SemanticsUtils.ED25519_MAX_VALUE) > 0
+        if (image.compareTo(Constants.ED25519_MAX_VALUE) > 0
                 || image.compareTo(BigInteger.ZERO) < 0)
             throw new CompileTimeException(String.format("Invalid root MiMC hash image. Images must be of prime order %s.",
-                    SemanticsUtils.ED25519_PRIME_ORDER), this.root);
+                    Constants.ED25519_PRIME_ORDER), this.root);
     }
 
     @Override

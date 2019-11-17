@@ -43,7 +43,7 @@ public class ReflectionHelper {
     public static Set<Method> getMethodsAnnotatedWith(Class<? extends Annotation> clazz) {
         Reflections reflections = new Reflections(
                 new ConfigurationBuilder()
-                        .setUrls(ClasspathHelper.forPackage("zkstrata.domain.gadgets.impl"))
+                        .setUrls(ClasspathHelper.forPackage("zkstrata"))
                         .setScanners(new MethodAnnotationsScanner())
         );
 

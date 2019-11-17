@@ -12,7 +12,7 @@ import zkstrata.domain.gadgets.AstElement;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.parser.ast.predicates.MiMCHash;
-import zkstrata.utils.SemanticsUtils;
+import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
 import java.util.Map;
@@ -57,10 +57,10 @@ public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
     public void performChecks() {
         if (this.image instanceof InstanceVariable) {
             BigInteger image = (BigInteger) (((HexLiteral) this.image.getValue()).getValue());
-            if (image.compareTo(SemanticsUtils.ED25519_MAX_VALUE) > 0
+            if (image.compareTo(Constants.ED25519_MAX_VALUE) > 0
                     || image.compareTo(BigInteger.ZERO) < 0)
                 throw new CompileTimeException(String.format("Invalid MiMC hash image. Images must be of prime order %s.",
-                        SemanticsUtils.ED25519_PRIME_ORDER), this.image);
+                        Constants.ED25519_PRIME_ORDER), this.image);
         }
     }
 
