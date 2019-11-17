@@ -17,6 +17,10 @@ import java.util.Set;
  * This class enforces constraints placed on types defined by zkStrata.
  */
 public class TypeConstraintsChecker {
+    private TypeConstraintsChecker() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static void process(Literal literal, Position.Absolute position) {
         Set<Method> typeConstraints = ReflectionHelper.getMethodsAnnotatedWith(TypeConstraint.class);
 
