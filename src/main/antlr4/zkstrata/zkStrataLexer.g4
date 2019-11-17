@@ -11,6 +11,7 @@ K_GREATER             : G R E A T E R ;
 K_INSTANCE            : I N S T A N C E ;
 K_IS                  : I S ;
 K_LESS                : L E S S ;
+K_MEMBER              : M E M B E R ;
 K_MERKLE              : M E R K L E ;
 K_OF                  : O F ;
 K_PREIMAGE            : P R E I M A G E ;

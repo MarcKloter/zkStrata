@@ -6,7 +6,9 @@ import BoundsCheck,
        Equality,
        Inequality,
        MerkleTree,
-       MiMCHash;
+       MiMCHash,
+       Comparison,
+       SetMembership;
 
 statement           : K_PROOF K_FOR subjects K_THAT predicates EOF ;
 predicates          : predicate_clause (joint predicate_clause)* (joint)? ;
@@ -36,4 +38,6 @@ predicate_clause    : bounds_check
                     | merkle_tree
                     | mimc_hash
                     | equality
-                    | inequality ;
+                    | inequality
+                    | comparison
+                    | set_membership ;
