@@ -45,8 +45,6 @@ public class MerkleTreeGadgetTest {
 
     private static final BinaryTree<Variable> TREE_1 = new BinaryTree<>(new BinaryTree.Node<>(new BinaryTree.Node<>(LEAF_1, LEAF_4), new BinaryTree.Node<>(LEAF_3, LEAF_2)));
     private static final BinaryTree<Variable> TREE_2 = new BinaryTree<>(new BinaryTree.Node<>(LEAF_1, new BinaryTree.Node<>(LEAF_3, LEAF_2)));
-    private static final BinaryTree<Variable> TREE_3 = new BinaryTree<>(new BinaryTree.Node<>(new BinaryTree.Node<>(LEAF_1, LEAF_4), LEAF_2));
-    private static final BinaryTree<Variable> TREE_4 = new BinaryTree<>(new BinaryTree.Node<>(LEAF_1, LEAF_4));
 
     @Test
     void Root_Too_Large() {
@@ -83,5 +81,4 @@ public class MerkleTreeGadgetTest {
         MerkleTreeGadget merkleTreeGadget2 = new MerkleTreeGadget(INSTANCE_VAR_ROOT_2, TREE_2);
         assertFalse(merkleTreeGadget1.isEqualTo(merkleTreeGadget2));
     }
-
 }
