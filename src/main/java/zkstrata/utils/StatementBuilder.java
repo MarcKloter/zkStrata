@@ -5,6 +5,7 @@ import org.apache.commons.text.TextStringBuilder;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 public class StatementBuilder {
     private static final String PREFIX = "PROOF FOR ";
@@ -71,6 +72,24 @@ public class StatementBuilder {
             stringBuilder.append(')');
         } else
             stringBuilder.append(node.getValue());
+    }
+
+    public StatementBuilder lessThan(String left, String right) {
+        predicates.add(String.format("%s IS LESS THAN %s", left, right));
+
+        return this;
+    }
+
+    public StatementBuilder greaterThan(String left, String right) {
+        predicates.add(String.format("%s IS GREATER THAN %s", left, right));
+
+        return this;
+    }
+
+    public StatementBuilder setMembership(String member, Set<String> set) {
+        predicates.add(String.format("%s IS MEMBER OF (%s)", member, String.join(", ", set)));
+
+        return this;
     }
 
     public String build() {

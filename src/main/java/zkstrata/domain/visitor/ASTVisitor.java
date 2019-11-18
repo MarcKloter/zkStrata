@@ -3,6 +3,7 @@ package zkstrata.domain.visitor;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import zkstrata.compiler.Arguments;
 import zkstrata.domain.Statement;
 import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.accessors.SchemaAccessor;
@@ -34,31 +35,25 @@ public class ASTVisitor {
     private static final Logger LOGGER = LogManager.getLogger(ASTVisitor.class);
     private static final List<String> reservedAliases = List.of("private", "public");
 
-    private String parentAlias;
-    private Map<String, ValueAccessor> witnessData;
-    private Map<String, ValueAccessor> instanceData;
-    private Map<String, Schema> schemas;
-
-    private MapListener<String, StructuredData> subjects;
+    private final String parentAlias;
+    private final Map<String, ValueAccessor> witnessData;
+    private final Map<String, ValueAccessor> instanceData;
+    private final Map<String, Schema> schemas;
+    private final MapListener<String, StructuredData> subjects;
 
     private AbstractSyntaxTree ast;
 
-    public ASTVisitor(
-            AbstractSyntaxTree ast,
-            Map<String, ValueAccessor> witnessData,
-            Map<String, ValueAccessor> instanceData,
-            Map<String, Schema> schemas,
-            String parentAlias
-    ) {
-        this.ast = ast;
-        this.witnessData = witnessData;
-        this.instanceData = instanceData;
-        this.schemas = schemas;
+    public ASTVisitor(Arguments args, String parentAlias) {
+        this.witnessData = args.getWitnessData();
+        this.instanceData = args.getInstanceData();
+        this.schemas = args.getSchemas();
         this.subjects = new MapListener<>(new HashMap<>());
         this.parentAlias = parentAlias;
     }
 
-    public Statement visitStatement() {
+    public Statement visit(AbstractSyntaxTree ast) {
+        this.ast = ast;
+
         LOGGER.debug("Starting visit of AST for {}", ast.getSource());
 
         for (Subject subject : ast.getSubjects()) {
@@ -209,7 +204,7 @@ public class ASTVisitor {
                 Traceable traceable = (Traceable) element;
 
                 throw new CompileTimeException("Duplicate element.",
-                        List.of(pinPosition(getEqualTraceable(traceable, result)), pinPosition((Traceable) element)));
+                        Set.of(pinPosition(getEqualTraceable(traceable, result)), pinPosition((Traceable) element)));
             }
         }
 

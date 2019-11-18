@@ -1,6 +1,8 @@
 package gadgets;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.Reference;
@@ -11,7 +13,6 @@ import zkstrata.domain.gadgets.impl.BoundsCheckGadget;
 import zkstrata.domain.gadgets.impl.EqualityGadget;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.Position;
-import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
 import java.util.List;
@@ -21,18 +22,27 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class BoundsCheckGadgetTest {
-    private static final Position.Absolute DUMMY_POS = new Position.Absolute("src", "stmt", "t", 1, 1);
+    private static final Position.Absolute MOCK_POS = Mockito.mock(Position.Absolute.class);
 
-    private static final InstanceVariable INSTANCE_VAR_17 = new InstanceVariable(new Literal(BigInteger.valueOf(17)), null, DUMMY_POS);
-    private static final InstanceVariable INSTANCE_VAR_29 = new InstanceVariable(new Literal(BigInteger.valueOf(29)), null, DUMMY_POS);
-    private static final InstanceVariable INSTANCE_VAR_41 = new InstanceVariable(new Literal(BigInteger.valueOf(41)), null, DUMMY_POS);
-    private static final InstanceVariable INSTANCE_VAR_53 = new InstanceVariable(new Literal(BigInteger.valueOf(53)), null, DUMMY_POS);
+    private static final InstanceVariable INSTANCE_VAR_17 = new InstanceVariable(new Literal(BigInteger.valueOf(17)), null, MOCK_POS);
+    private static final InstanceVariable INSTANCE_VAR_29 = new InstanceVariable(new Literal(BigInteger.valueOf(29)), null, MOCK_POS);
+    private static final InstanceVariable INSTANCE_VAR_41 = new InstanceVariable(new Literal(BigInteger.valueOf(41)), null, MOCK_POS);
+    private static final InstanceVariable INSTANCE_VAR_53 = new InstanceVariable(new Literal(BigInteger.valueOf(53)), null, MOCK_POS);
 
     private static final Reference REF_1 = new Reference(BigInteger.class, "alias1", new Selector(List.of("selector1")));
     private static final Reference REF_2 = new Reference(BigInteger.class, "alias2", new Selector(List.of("selector2")));
 
-    private static final WitnessVariable WITNESS_VAR_1 = new WitnessVariable(REF_1, REF_1, DUMMY_POS);
-    private static final WitnessVariable WITNESS_VAR_2 = new WitnessVariable(REF_2, REF_2, DUMMY_POS);
+    private static final WitnessVariable WITNESS_VAR_1 = new WitnessVariable(REF_1, REF_1, MOCK_POS);
+    private static final WitnessVariable WITNESS_VAR_2 = new WitnessVariable(REF_2, REF_2, MOCK_POS);
+
+    @BeforeAll
+    static void init() {
+        Mockito.when(MOCK_POS.getLine()).thenReturn(1);
+        Mockito.when(MOCK_POS.getPosition()).thenReturn(0);
+        Mockito.when(MOCK_POS.getSource()).thenReturn(EqualityGadgetTest.class.getSimpleName());
+        Mockito.when(MOCK_POS.getStatement()).thenReturn("");
+        Mockito.when(MOCK_POS.getTarget()).thenReturn("");
+    }
 
     @Test
     void Is_Equal_To() {

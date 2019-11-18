@@ -5,7 +5,7 @@ import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.exceptions.CompileTimeException;
 
-import java.util.Set;
+import java.util.List;
 
 public class VariableExposure {
     private WitnessVariable witness = null;
@@ -24,6 +24,6 @@ public class VariableExposure {
     private void checkExposure() {
         if (witness != null && instance != null)
             throw new CompileTimeException("Value is being used as witness and instance data simultaneously.",
-                    Set.of(witness, instance));
+                    List.of(witness, instance));
     }
 }

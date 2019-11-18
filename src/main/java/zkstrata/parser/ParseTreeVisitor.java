@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static zkstrata.parser.ast.Subject.*;
+
 /**
  * Transforms a zkStrata statement ({@link String}) into a parse tree ({@link ParseTree}) using ANTLR.
  * Then visits this parse tree to form an abstract syntax tree ({@link AbstractSyntaxTree}).
@@ -101,7 +103,8 @@ public class ParseTreeVisitor {
                 case zkStrataLexer.INTEGER_LITERAL:
                     return new IntegerLiteral(node.getText(), ParserUtils.getPosition(ctx.getStart()));
                 default:
-                    throw new InternalCompilerException("The literal with type index %s is defined in the grammar but not implemented by the parse tree visitor.", node.getSymbol().getType());
+                    throw new InternalCompilerException("The literal with type index %s is defined in the grammar" +
+                            "but not implemented by the parse tree visitor.", node.getSymbol().getType());
             }
         }
     }
@@ -152,20 +155,20 @@ public class ParseTreeVisitor {
 
             // check whether the instance keyword is present
             boolean isWitness = ctx.K_INSTANCE() == null;
-            Subject subject = new Subject(isWitness);
-            subject.setSchema(ctx.schema_name().getText(), ParserUtils.getPosition(ctx.schema_name().getStart()));
-            subject.setAlias(ctx.alias().getText(), ParserUtils.getPosition(ctx.alias().getStart()));
-            return List.of(subject);
+            Schema schema = new Schema(ctx.schema_name().getText(), ParserUtils.getPosition(ctx.schema_name().getStart()));
+            Alias alias = new Alias(ctx.alias().getText(), ParserUtils.getPosition(ctx.alias().getStart()));
+
+            return List.of(new Subject(schema, alias, isWitness));
         }
 
         private List<Subject> handleThis(zkStrata.SubjectContext ctx) {
-            Subject witness = new Subject(true);
-            witness.setSchema(parentSchema, ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
-            witness.setAlias("private", ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+            Schema schema = new Schema(parentSchema, ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
 
-            Subject instance = new Subject(false);
-            instance.setSchema(parentSchema, ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
-            instance.setAlias("public", ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+            Alias privateAlias = new Alias("private", ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+            Subject witness = new Subject(schema, privateAlias, true);
+
+            Alias publicAlias = new Alias("public", ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+            Subject instance = new Subject(schema, publicAlias, false);
 
             return List.of(witness, instance);
         }

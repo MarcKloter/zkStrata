@@ -49,15 +49,9 @@ public class Compiler {
                 parentSchema
         );
 
-        ASTVisitor astVisitor = new ASTVisitor(
-                ast,
-                args.getWitnessData(),
-                args.getInstanceData(),
-                args.getSchemas(),
-                parentAlias
-        );
+        ASTVisitor astVisitor = new ASTVisitor(args, parentAlias);
 
-        return astVisitor.visitStatement();
+        return astVisitor.visit(ast);
     }
 
     private static List<Statement> parseValidationRules(Map<String, StructuredData> subjects, Arguments args) {

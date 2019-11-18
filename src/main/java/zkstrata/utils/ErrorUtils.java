@@ -3,10 +3,7 @@ package zkstrata.utils;
 import org.apache.commons.text.TextStringBuilder;
 import zkstrata.exceptions.Position;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ErrorUtils {
@@ -14,28 +11,7 @@ public class ErrorUtils {
         throw new IllegalStateException("Utility class");
     }
 
-    /**
-     * Sanitizes the given String.
-     * Required to remove control characters from inputs to ensure erroneous symbols can be underlined properly.
-     */
-    public static String sanitize(String s) {
-        StringBuilder buf = new StringBuilder();
-        for (char c : s.toCharArray()) {
-            if (c == '\t') buf.append(" ");
-            else if (c == '\u000B') buf.append(" ");
-            else buf.append(c);
-        }
-        return buf.toString();
-    }
-
-    public static String underline(Position.Absolute position) {
-        TextStringBuilder builder = new TextStringBuilder();
-        processSource(builder, position.getSource());
-        processLine(builder, sanitize(position.getStatement()), List.of(position), position.getLine());
-        return builder.build();
-    }
-
-    public static String underline(List<Position.Absolute> positions) {
+    public static String underline(Set<Position.Absolute> positions) {
         TextStringBuilder builder = new TextStringBuilder();
         Map<String, String> statements = positions.stream()
                 .collect(Collectors.toMap(Position.Absolute::getSource, Position.Absolute::getStatement, (s1, s2) -> s1));
@@ -67,6 +43,20 @@ public class ErrorUtils {
         builder.append(prefix);
         builder.append(source);
         builder.appendNewLine();
+    }
+
+    /**
+     * Sanitizes the given String.
+     * Required to remove control characters from inputs to ensure erroneous symbols can be underlined properly.
+     */
+    private static String sanitize(String s) {
+        StringBuilder buf = new StringBuilder();
+        for (char c : s.toCharArray()) {
+            if (c == '\t') buf.append(" ");
+            else if (c == '\u000B') buf.append(" ");
+            else buf.append(c);
+        }
+        return buf.toString();
     }
 
     /**

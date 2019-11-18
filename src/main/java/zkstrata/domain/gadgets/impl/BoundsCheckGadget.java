@@ -19,6 +19,7 @@ import zkstrata.parser.ast.predicates.BoundsCheck;
 import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -64,17 +65,17 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     public static void checkContradiction1(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
         if (bc1.getValue().equals(bc2.getValue())) {
             if (bc1.getMinValue().compareTo(bc2.getMaxValue()) > 0)
-                throw new CompileTimeException("Contradiction.", Set.of(bc1.getMin(), bc2.getMax()));
+                throw new CompileTimeException("Contradiction.", List.of(bc1.getMin(), bc2.getMax()));
 
             if (bc1.getMaxValue().compareTo(bc2.getMinValue()) < 0)
-                throw new CompileTimeException("Contradiction.", Set.of(bc1.getMax(), bc2.getMin()));
+                throw new CompileTimeException("Contradiction.", List.of(bc1.getMax(), bc2.getMin()));
         }
     }
 
     @Contradiction(propositions = {BoundsCheckGadget.class})
     public static void checkContradiction2(BoundsCheckGadget bc) {
         if (bc.getMinValue().compareTo(bc.getMaxValue()) > 0)
-            throw new CompileTimeException("Contradiction.", Set.of(bc.getMin(), bc.getMax()));
+            throw new CompileTimeException("Contradiction.", List.of(bc.getMin(), bc.getMax()));
     }
 
     /*

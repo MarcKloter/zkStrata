@@ -15,8 +15,8 @@ import zkstrata.parser.ast.predicates.MiMCHash;
 import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @AstElement(MiMCHash.class)
 public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
@@ -50,7 +50,7 @@ public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
                 && hg1.getImage() instanceof InstanceVariable
                 && hg2.getImage() instanceof InstanceVariable
                 && !hg1.getImage().equals(hg2.getImage()))
-            throw new CompileTimeException("Contradiction.", Set.of(hg1.getImage(), hg2.getImage()));
+            throw new CompileTimeException("Contradiction.", List.of(hg1.getImage(), hg2.getImage()));
     }
 
     @Override

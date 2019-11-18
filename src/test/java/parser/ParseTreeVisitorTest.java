@@ -9,10 +9,12 @@ import zkstrata.exceptions.CompileTimeException;
 import zkstrata.parser.ParseTreeVisitor;
 import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.predicates.*;
+import zkstrata.parser.ast.types.Value;
 import zkstrata.utils.BinaryTree;
 import zkstrata.utils.StatementBuilder;
 
 import java.math.BigInteger;
+import java.util.Set;
 
 public class ParseTreeVisitorTest {
     private static final String SOURCE = "test";
@@ -22,7 +24,8 @@ public class ParseTreeVisitorTest {
     private static final String UNEXPECTED_SYMBOL = "%";
     private static final String UNEXPECTED_TOKEN = "FOR";
     private static final String MISSING_TOKEN = "";
-    private static final String IDENTIFIER = "alias.identifier";
+    private static final String IDENTIFIER_1 = "alias.identifier1";
+    private static final String IDENTIFIER_2 = "alias.identifier2";
     private static final String STRING_LITERAL = "StringLiteral";
     private static final String HEX_LITERAL = "0x01bd94c871b2d21926cf4f1c9e2fcbca8ece3353a0aac7cea8d507a9ad30afe2";
     private static final BigInteger INT_LITERAL_1 = BigInteger.valueOf(5);
@@ -32,7 +35,7 @@ public class ParseTreeVisitorTest {
     void Equality_Is_Parsed_Correctly_1() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
-                .equality(IDENTIFIER, stringLiteral(STRING_LITERAL))
+                .equality(IDENTIFIER_1, stringLiteral(STRING_LITERAL))
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
@@ -41,7 +44,7 @@ public class ParseTreeVisitorTest {
         assertEquals(Equality.class, predicate.getClass());
 
         Equality equality = (Equality) predicate;
-        assertEquals(IDENTIFIER, equality.getLeft().getValue());
+        assertEquals(IDENTIFIER_1, equality.getLeft().getValue());
         assertEquals(STRING_LITERAL, equality.getRight().getValue());
     }
 
@@ -49,7 +52,7 @@ public class ParseTreeVisitorTest {
     void Equality_Is_Parsed_Correctly_2() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
-                .equality(integerLiteral(INT_LITERAL_1), IDENTIFIER)
+                .equality(integerLiteral(INT_LITERAL_1), IDENTIFIER_1)
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
@@ -59,14 +62,14 @@ public class ParseTreeVisitorTest {
 
         Equality equality = (Equality) predicate;
         assertEquals(INT_LITERAL_1, equality.getLeft().getValue());
-        assertEquals(IDENTIFIER, equality.getRight().getValue());
+        assertEquals(IDENTIFIER_1, equality.getRight().getValue());
     }
 
     @Test
     void BoundsCheck_Is_Parsed_Correctly_1() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
-                .boundsCheck(IDENTIFIER, INT_LITERAL_1, INT_LITERAL_2)
+                .boundsCheck(IDENTIFIER_1, INT_LITERAL_1, INT_LITERAL_2)
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
@@ -75,7 +78,7 @@ public class ParseTreeVisitorTest {
         assertEquals(BoundsCheck.class, predicate.getClass());
 
         BoundsCheck boundsCheck = (BoundsCheck) predicate;
-        assertEquals(IDENTIFIER, boundsCheck.getValue().getValue());
+        assertEquals(IDENTIFIER_1, boundsCheck.getValue().getValue());
         assertEquals(INT_LITERAL_1, boundsCheck.getMin().getValue());
         assertEquals(INT_LITERAL_2, boundsCheck.getMax().getValue());
     }
@@ -84,7 +87,7 @@ public class ParseTreeVisitorTest {
     void BoundsCheck_Is_Parsed_Correctly_2() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
-                .boundsCheck(IDENTIFIER, INT_LITERAL_1, null)
+                .boundsCheck(IDENTIFIER_1, INT_LITERAL_1, null)
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
@@ -93,7 +96,7 @@ public class ParseTreeVisitorTest {
         assertEquals(BoundsCheck.class, predicate.getClass());
 
         BoundsCheck boundsCheck = (BoundsCheck) predicate;
-        assertEquals(IDENTIFIER, boundsCheck.getValue().getValue());
+        assertEquals(IDENTIFIER_1, boundsCheck.getValue().getValue());
         assertEquals(INT_LITERAL_1, boundsCheck.getMin().getValue());
     }
 
@@ -101,7 +104,7 @@ public class ParseTreeVisitorTest {
     void BoundsCheck_Is_Parsed_Correctly_3() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
-                .boundsCheck(IDENTIFIER, null, INT_LITERAL_2)
+                .boundsCheck(IDENTIFIER_1, null, INT_LITERAL_2)
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
@@ -110,7 +113,7 @@ public class ParseTreeVisitorTest {
         assertEquals(BoundsCheck.class, predicate.getClass());
 
         BoundsCheck boundsCheck = (BoundsCheck) predicate;
-        assertEquals(IDENTIFIER, boundsCheck.getValue().getValue());
+        assertEquals(IDENTIFIER_1, boundsCheck.getValue().getValue());
         assertEquals(INT_LITERAL_2, boundsCheck.getMax().getValue());
     }
 
@@ -118,7 +121,7 @@ public class ParseTreeVisitorTest {
     void MiMCHash_Is_Parsed_Correctly_1() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
-                .mimcHash(IDENTIFIER, HEX_LITERAL)
+                .mimcHash(IDENTIFIER_1, HEX_LITERAL)
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
@@ -127,14 +130,14 @@ public class ParseTreeVisitorTest {
         assertEquals(MiMCHash.class, predicate.getClass());
 
         MiMCHash mimcHash = (MiMCHash) predicate;
-        assertEquals(IDENTIFIER, mimcHash.getPreimage().getValue());
+        assertEquals(IDENTIFIER_1, mimcHash.getPreimage().getValue());
         assertEquals(HEX_LITERAL, mimcHash.getImage().getValue());
     }
 
     @Test
     void MerkleTree_Is_Parsed_Correctly_1() {
         BinaryTree<String> tree = new BinaryTree<>(new BinaryTree.Node<>(
-                new BinaryTree.Node<>(new BinaryTree.Node<>(stringLiteral(STRING_LITERAL)), new BinaryTree.Node<>(IDENTIFIER)),
+                new BinaryTree.Node<>(new BinaryTree.Node<>(stringLiteral(STRING_LITERAL)), new BinaryTree.Node<>(IDENTIFIER_1)),
                 new BinaryTree.Node<>(new BinaryTree.Node<>(HEX_LITERAL), new BinaryTree.Node<>(integerLiteral(INT_LITERAL_1)))
         ));
         String statement = new StatementBuilder()
@@ -150,7 +153,7 @@ public class ParseTreeVisitorTest {
         MerkleTree merkleTree = (MerkleTree) predicate;
         assertEquals(HEX_LITERAL, merkleTree.getRoot().getValue());
         assertEquals(STRING_LITERAL, merkleTree.getTree().getRoot().getLeft().getLeft().getValue().getValue());
-        assertEquals(IDENTIFIER, merkleTree.getTree().getRoot().getLeft().getRight().getValue().getValue());
+        assertEquals(IDENTIFIER_1, merkleTree.getTree().getRoot().getLeft().getRight().getValue().getValue());
         assertEquals(HEX_LITERAL, merkleTree.getTree().getRoot().getRight().getLeft().getValue().getValue());
         assertEquals(INT_LITERAL_1, merkleTree.getTree().getRoot().getRight().getRight().getValue().getValue());
     }
@@ -158,7 +161,7 @@ public class ParseTreeVisitorTest {
     @Test
     void MerkleTree_Is_Parsed_Correctly_2() {
         BinaryTree<String> tree = new BinaryTree<>(new BinaryTree.Node<>(
-                new BinaryTree.Node<>(new BinaryTree.Node<>(stringLiteral(STRING_LITERAL)), new BinaryTree.Node<>(IDENTIFIER)),
+                new BinaryTree.Node<>(new BinaryTree.Node<>(stringLiteral(STRING_LITERAL)), new BinaryTree.Node<>(IDENTIFIER_1)),
                 new BinaryTree.Node<>(integerLiteral(INT_LITERAL_1))
         ));
         String statement = new StatementBuilder()
@@ -174,14 +177,14 @@ public class ParseTreeVisitorTest {
         MerkleTree merkleTree = (MerkleTree) predicate;
         assertEquals(HEX_LITERAL, merkleTree.getRoot().getValue());
         assertEquals(STRING_LITERAL, merkleTree.getTree().getRoot().getLeft().getLeft().getValue().getValue());
-        assertEquals(IDENTIFIER, merkleTree.getTree().getRoot().getLeft().getRight().getValue().getValue());
+        assertEquals(IDENTIFIER_1, merkleTree.getTree().getRoot().getLeft().getRight().getValue().getValue());
         assertEquals(INT_LITERAL_1, merkleTree.getTree().getRoot().getRight().getValue().getValue());
     }
 
     @Test
     void MerkleTree_Is_Parsed_Correctly_3() {
         BinaryTree<String> tree = new BinaryTree<>(new BinaryTree.Node<>(
-                new BinaryTree.Node<>(IDENTIFIER),
+                new BinaryTree.Node<>(IDENTIFIER_1),
                 new BinaryTree.Node<>(new BinaryTree.Node<>(HEX_LITERAL), new BinaryTree.Node<>(integerLiteral(INT_LITERAL_1)))
         ));
         String statement = new StatementBuilder()
@@ -196,9 +199,62 @@ public class ParseTreeVisitorTest {
 
         MerkleTree merkleTree = (MerkleTree) predicate;
         assertEquals(HEX_LITERAL, merkleTree.getRoot().getValue());
-        assertEquals(IDENTIFIER, merkleTree.getTree().getRoot().getLeft().getValue().getValue());
+        assertEquals(IDENTIFIER_1, merkleTree.getTree().getRoot().getLeft().getValue().getValue());
         assertEquals(HEX_LITERAL, merkleTree.getTree().getRoot().getRight().getLeft().getValue().getValue());
         assertEquals(INT_LITERAL_1, merkleTree.getTree().getRoot().getRight().getRight().getValue().getValue());
+    }
+
+    @Test
+    void LessThan_Is_Parsed_Correctly_1() {
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .lessThan(IDENTIFIER_1, IDENTIFIER_2)
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
+        assertEquals(1, ast.getPredicates().size());
+
+        Predicate predicate = ast.getPredicates().get(0);
+        assertEquals(LessThan.class, predicate.getClass());
+
+        LessThan lessThan = (LessThan) predicate;
+        assertEquals(IDENTIFIER_1, lessThan.getLeft().getValue());
+        assertEquals(IDENTIFIER_2, lessThan.getRight().getValue());
+    }
+
+    @Test
+    void LessThan_Is_Parsed_Correctly_2() {
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .greaterThan(IDENTIFIER_1, IDENTIFIER_2)
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
+        assertEquals(1, ast.getPredicates().size());
+
+        Predicate predicate = ast.getPredicates().get(0);
+        assertEquals(LessThan.class, predicate.getClass());
+
+        LessThan lessThan = (LessThan) predicate;
+        assertEquals(IDENTIFIER_1, lessThan.getRight().getValue());
+        assertEquals(IDENTIFIER_2, lessThan.getLeft().getValue());
+    }
+
+    @Test
+    void SetMembership_Is_Parsed_Correctly_1() {
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .setMembership(IDENTIFIER_1, Set.of(integerLiteral(INT_LITERAL_1), HEX_LITERAL, IDENTIFIER_1))
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
+        assertEquals(1, ast.getPredicates().size());
+
+        Predicate predicate = ast.getPredicates().get(0);
+        assertEquals(SetMembership.class, predicate.getClass());
+
+        SetMembership setMembership = (SetMembership) predicate;
+        assertEquals(IDENTIFIER_1, setMembership.getMember().getValue());
+        Set<Object> set = Set.of(INT_LITERAL_1, HEX_LITERAL, IDENTIFIER_1);
+        for (Value value : setMembership.getSet())
+            assertTrue(set.contains(value.getValue()));
     }
 
     @Test

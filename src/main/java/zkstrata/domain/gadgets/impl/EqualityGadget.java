@@ -49,7 +49,7 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
     public static void checkContradiction(EqualityGadget eq) {
         if (eq.getLeft() instanceof InstanceVariable && eq.getRight() instanceof InstanceVariable
                 && !eq.getLeft().equals(eq.getRight()))
-            throw new CompileTimeException("Contradiction.", Set.of(eq.getLeft(), eq.getRight()));
+            throw new CompileTimeException("Contradiction.", List.of(eq.getLeft(), eq.getRight()));
     }
 
     @Substitution(target = {EqualityGadget.class})
@@ -123,7 +123,7 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
     @Override
     public void performChecks() {
         if (left.getType() != right.getType())
-            throw new CompileTimeException("Type mismatch.", Set.of(this.left, this.right));
+            throw new CompileTimeException("Type mismatch.", List.of(this.left, this.right));
     }
 
     @Override

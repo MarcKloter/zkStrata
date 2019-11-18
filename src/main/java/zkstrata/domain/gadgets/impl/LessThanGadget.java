@@ -43,8 +43,8 @@ public class LessThanGadget extends AbstractGadget<LessThanGadget> {
     public static void checkContradiction(EqualityGadget eq, LessThanGadget lt) {
         if (eq.getLeft().equals(lt.getLeft()) && eq.getRight().equals(lt.getRight())
                 || eq.getRight().equals(lt.getRight()) && eq.getRight().equals(lt.getLeft()))
-            throw new CompileTimeException("Contradiction.", List.of(eq.getLeft().getPosition(),
-                    eq.getRight().getPosition(), lt.getLeft().getPosition(), lt.getRight().getPosition()));
+            throw new CompileTimeException("Contradiction.",
+                    List.of(eq.getLeft(), eq.getRight(), lt.getLeft(), lt.getRight()));
     }
 
     @Substitution(target = LessThanGadget.class, context = {EqualityGadget.class, EqualityGadget.class})

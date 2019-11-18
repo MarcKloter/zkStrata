@@ -13,7 +13,7 @@ public class PremisesTest {
     @Test
     void Mixed_Statement_Should_Succeed() {
         assertDoesNotThrow(() -> {
-            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+            Arguments args = new ArgumentsBuilder(PremisesTest.class)
                     .withStatement("default")
                     .withPremise("equality")
                     .withPremise("boundscheck")
