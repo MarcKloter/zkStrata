@@ -13,7 +13,7 @@ import java.util.Set;
  */
 public class Statement {
     private Map<String, StructuredData> subjects;
-    private List<Gadget> gadgets;;
+    private List<Gadget> gadgets;
     private Set<Statement> premises;
     private Set<Inference> inferences;
 
