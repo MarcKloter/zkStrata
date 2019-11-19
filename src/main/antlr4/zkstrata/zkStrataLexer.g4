@@ -5,6 +5,7 @@ lexer grammar zkStrataLexer;
  */
 K_AS                  : A S ;
 K_AND                 : A N D ;
+K_COMPLIANT           : C O M P L I A N T ;
 K_EQUAL               : E Q U A L ;
 K_FOR                 : F O R ;
 K_GREATER             : G R E A T E R ;
@@ -22,6 +23,7 @@ K_THAT                : T H A T ;
 K_THIS                : T H I S ;
 K_TO                  : T O ;
 K_UNEQUAL             : U N E Q U A L ;
+K_WITNESS             : W I T N E S S ;
 
 /**
  * Separators

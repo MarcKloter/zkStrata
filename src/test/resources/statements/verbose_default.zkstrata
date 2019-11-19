@@ -1,0 +1,12 @@
+PROOF FOR
+    WITNESS pass_1 COMPLIANT TO passport_ch
+AND
+    pass_2 COMPLIANT TO passport_ch
+AND
+    INSTANCE pass_3 COMPLIANT TO passport_ch
+THAT
+    pass_1.firstName IS EQUAL TO 'John'
+AND
+    pass_2.firstName IS EQUAL TO 'John'
+AND
+    pass_3.firstName IS EQUAL TO 'John'

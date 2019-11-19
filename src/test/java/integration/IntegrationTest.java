@@ -98,4 +98,19 @@ public class IntegrationTest {
             Compiler.run(args);
         });
     }
+
+    @Test
+    void Verbose_Subject_Definition_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("verbose_default")
+                    .withWitness("pass_1", "passport")
+                    .withWitness("pass_2", "passport")
+                    .withInstance("pass_1", "passport.metadata")
+                    .withInstance("pass_2", "passport.metadata")
+                    .withInstance("pass_3", "passport_instance")
+                    .build();
+            Compiler.run(args);
+        });
+    }
 }

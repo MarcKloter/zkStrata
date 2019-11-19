@@ -14,6 +14,7 @@ statement           : K_PROOF K_FOR subjects K_THAT predicates EOF ;
 predicates          : predicate_clause (joint predicate_clause)* (joint)? ;
 subjects            : subject (joint subject)* (joint)? ;
 subject             : K_INSTANCE? schema_name K_AS alias
+                    | (K_WITNESS? | K_INSTANCE) alias K_COMPLIANT K_TO schema_name
                     | K_THIS ;
 
 witness_var         : referenced_value ;
