@@ -73,10 +73,10 @@ public class LessThanGadget extends AbstractGadget<LessThanGadget> {
 
     @Implication(assumption = {LessThanGadget.class, LessThanGadget.class})
     public static Optional<Gadget> implyTransitivity(LessThanGadget lt1, LessThanGadget lt2) {
-        if (lt1.getRight().equals(lt2.getLeft()))
+        if (lt1.getRight().equals(lt2.getLeft()) && !lt1.getLeft().equals(lt2.getRight()))
             return Optional.of(new LessThanGadget(lt1.getLeft(), lt2.getRight()));
 
-        if (lt1.getLeft().equals(lt2.getRight()))
+        if (lt1.getLeft().equals(lt2.getRight()) && !lt2.getLeft().equals(lt1.getRight()))
             return Optional.of(new LessThanGadget(lt2.getLeft(), lt1.getRight()));
 
         return Optional.empty();
@@ -85,11 +85,11 @@ public class LessThanGadget extends AbstractGadget<LessThanGadget> {
     @Implication(assumption = {LessThanGadget.class, EqualityGadget.class})
     public static Optional<Gadget> implyEquality(LessThanGadget lt, EqualityGadget eq) {
         Optional<Variable> left = EqualityGadget.getEqual(eq, lt.getLeft());
-        if (left.isPresent() && left.get() instanceof WitnessVariable)
+        if (left.isPresent() && left.get() instanceof WitnessVariable && !left.get().equals(lt.getRight()))
             return Optional.of(new LessThanGadget((WitnessVariable) left.get(), lt.getRight()));
 
         Optional<Variable> right = EqualityGadget.getEqual(eq, lt.getRight());
-        if (right.isPresent() && right.get() instanceof WitnessVariable)
+        if (right.isPresent() && right.get() instanceof WitnessVariable && !lt.getLeft().equals(right.get()))
             return Optional.of(new LessThanGadget(lt.getLeft(), (WitnessVariable) right.get()));
 
         return Optional.empty();

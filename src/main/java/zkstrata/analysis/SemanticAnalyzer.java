@@ -119,7 +119,8 @@ public class SemanticAnalyzer {
     }
 
     private Set<Inference> runImplicationRules(Inference assumption, Set<Inference> assumptions) {
-        Map<Gadget, Inference> assumptionMapping = assumptions.stream().collect(Collectors.toMap(Inference::getConclusion, i -> i));
+        Map<Gadget, List<Inference>> assumptionMapping = new HashMap<>();
+        assumptions.forEach(inference -> assumptionMapping.computeIfAbsent(inference.getConclusion(), s -> new ArrayList<>()).add(inference));
         Class<? extends Gadget> type = assumption.getConclusion().getClass();
 
         Set<Inference> newInferences = new HashSet<>();
@@ -133,12 +134,14 @@ public class SemanticAnalyzer {
                 for (List<Gadget> contextCombination : contextCombinations) {
                     contextCombination.add(index, assumption.getConclusion());
                     invokeImplication(implicationRule, contextCombination.toArray())
-                            .ifPresent(g -> newInferences.add(
-                                    Inference.from(contextCombination.stream()
+                            .ifPresent(g ->
+                                    CombinatoricsUtils.computeCartesianProduct(contextCombination.stream()
                                             .map(assumptionMapping::get)
-                                            .filter(Objects::nonNull)
-                                            .collect(Collectors.toSet()), g)
-                            ));
+                                            .collect(Collectors.toList()))
+                                            .forEach(list -> newInferences.add(
+                                                    Inference.from(new HashSet<>(list), g)
+                                            ))
+                            );
                 }
             }
         }

@@ -56,4 +56,39 @@ public class CombinatoricsUtils {
     public static List<List<Gadget>> getCombinations(List<Class<? extends Gadget>> pattern, Set<Gadget> inferences) {
         return getCombinations(pattern, new ArrayList<>(inferences));
     }
+
+
+    /**
+     * Calculates the cartesian product of the given list of lists {@code lists}.
+     * <p>
+     * Taken from: https://gist.github.com/max333/3cfafa146aeee29bee2a
+     *
+     * @param lists {@link List} of {@link List} to calculate the cartesian product for
+     * @return {@link List} of {@link List} containing the cartesian product of {@code lists}.
+     */
+    public static <T> List<List<T>> computeCartesianProduct(List<List<T>> lists) {
+        List<List<T>> currentCombinations = Arrays.asList(Arrays.asList());
+        for (List<T> list : lists) {
+            currentCombinations = appendElements(currentCombinations, list);
+        }
+        return currentCombinations;
+    }
+
+    /**
+     * Appends the given {@code extraElements} to every {@link List} in the provided {@code combinations}.
+     * <p>
+     * Taken from: https://gist.github.com/max333/3cfafa146aeee29bee2a
+     *
+     * @param combinations {@link List} of {@link List} to append elements to
+     * @param extraElements {@link List} of elements to append to each {@link List} in {@code combinations}
+     * @return {@link List} of {@link List} containing the {@code combinations} with {@code extraElements} appended.
+     */
+    private static <T> List<List<T>> appendElements(List<List<T>> combinations, List<T> extraElements) {
+        return combinations.stream().flatMap(oldCombination
+                -> extraElements.stream().map(extra -> {
+            List<T> combinationWithExtra = new ArrayList<>(oldCombination);
+            combinationWithExtra.add(extra);
+            return combinationWithExtra;
+        })).collect(Collectors.toList());
+    }
 }
