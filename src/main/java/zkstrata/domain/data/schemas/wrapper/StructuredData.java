@@ -29,11 +29,12 @@ public interface StructuredData<T extends Variable> {
             throw new IllegalArgumentException(msg);
         }
 
-        Class<?> type = schema.getType(selector);
+        Class<?> expectedType = schema.getType(selector);
 
-        if (type != value.getType()) {
-            String msg = String.format("The provided data for subject `%s` does not match the schema `%s`: Type mismatch.",
-                    getAlias(), schema.getClass().getSimpleName());
+        if (expectedType != value.getType()) {
+            String msg = String.format("The provided data for subject `%s` does not match the schema `%s`: "
+                    + "Type mismatch. Found: %s, expected: %s.", getAlias(), schema.getClass().getSimpleName(),
+                    value.getType().getSimpleName(), expectedType.getSimpleName());
             throw new IllegalArgumentException(msg);
         }
 

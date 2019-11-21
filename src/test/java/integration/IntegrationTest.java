@@ -40,6 +40,7 @@ public class IntegrationTest {
         assertDoesNotThrow(() -> {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
                     .withStatement("default")
+                    .withInstance("pass", "passport.metadata")
                     .withSchema("passport_ch", "default_validation_rule")
                     .build();
             Compiler.run(args);

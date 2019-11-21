@@ -4,6 +4,7 @@ import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.accessors.JsonAccessor;
 import zkstrata.domain.data.schemas.AbstractSchema;
 import zkstrata.domain.data.types.Value;
+import zkstrata.domain.data.types.custom.HexLiteral;
 import zkstrata.domain.data.types.wrapper.Null;
 
 import java.math.BigInteger;
@@ -21,8 +22,9 @@ public class JsonSchema extends AbstractSchema {
 
     @Override
     public Class<?> getType(Selector selector) {
+        List<String> selectors = selector.getSelectors();
         List<String> typeSelector = new ArrayList<>();
-        selector.getSelectors().forEach(curr -> {
+        selectors.forEach(curr -> {
             typeSelector.add("properties");
             typeSelector.add(curr);
         });
@@ -38,15 +40,20 @@ public class JsonSchema extends AbstractSchema {
         if (typeString.getType() != String.class) {
             String msg = String.format("Invalid type for property `%s` in schema %s. "
                             + "Each instance must be restricted to exactly one primitive type.",
-                    String.join(".", selector.getSelectors()), accessor.getSource());
+                    String.join(".", selectors), accessor.getSource());
             throw new IllegalArgumentException(msg);
         }
 
         try {
-            return JSONType.valueOf(typeString.toString().toUpperCase()).getType();
+            Class<?> type = JSONType.valueOf(typeString.toString().toUpperCase()).getType();
+
+            if (type == String.class && selectors.get(selectors.size() - 1).endsWith("_hex"))
+                return HexLiteral.class;
+
+            return type;
         } catch (IllegalArgumentException e) {
             String msg = String.format("Unknown type `%s` for property `%s` in schema %s.",
-                    typeString.toString(), String.join(".", selector.getSelectors()), accessor.getSource());
+                    typeString.toString(), String.join(".", selectors), accessor.getSource());
             throw new IllegalArgumentException(msg);
         }
     }

@@ -1,0 +1,16 @@
+{
+  "title": "schema_test_2",
+  "type": "object",
+  "properties": {
+    "string": {
+      "type": "string"
+    },
+    "number": {
+      "type": "number"
+    },
+    "string_hex": {
+      "type": "string",
+      "description": "Suffix _hex should cast a property of type string to custom type HexLiteral."
+    }
+  }
+}
