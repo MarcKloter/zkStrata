@@ -20,6 +20,17 @@ public class GadgetBaseTest {
     }
 
     @Test
+    void Inequality_Statement_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(GadgetBaseTest.class)
+                    .withStatement("inequality")
+                    .withInstance("pass", "passport.metadata")
+                    .build();
+            Compiler.run(args);
+        });
+    }
+
+    @Test
     void BoundsCheck_Statement_Should_Succeed() {
         assertDoesNotThrow(() -> {
             Arguments args = new ArgumentsBuilder(GadgetBaseTest.class)

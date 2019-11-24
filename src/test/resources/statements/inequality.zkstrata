@@ -1,0 +1,12 @@
+PROOF FOR
+    passport_ch AS pass
+THAT
+    pass.firstName IS UNEQUAL TO 'Jane'
+AND
+    pass.lastName IS UNEQUAL TO 'Smith'
+AND
+    pass.dateOfBirth.day IS UNEQUAL TO 13
+AND
+    pass.dateOfBirth.month IS UNEQUAL TO 7
+AND
+    pass.dateOfBirth.year IS UNEQUAL TO 1981
