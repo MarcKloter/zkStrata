@@ -32,6 +32,25 @@
     "placeOfBirth": {
       "type": "string",
       "description": "The owner's place of birth."
+    },
+    "expiresOn": {
+      "description": "The owner's date of birth.",
+      "type": "object",
+      "properties": {
+        "day": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 31
+        },
+        "month": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "year": {
+          "type": "number"
+        }
+      }
     }
   },
   "validationRule": "PROOF FOR THIS THAT private.firstName IS EQUAL TO 'John' AND private.dateOfBirth.year IS GREATER THAN 1900 AND private.dateOfBirth.month IS GREATER THAN 1 AND LESS THAN 12 AND private.dateOfBirth.day IS LESS THAN 15 AND private.dateOfBirth.year IS LESS THAN private.expiresOn.year AND private.firstName IS UNEQUAL TO 'Jane' AND private.firstName IS PREIMAGE OF 0x01bd94c871b2d21926cf4f1c9e2fcbca8ece3353a0aac7cea8d507a9ad30afe2 AND 12 IS MEMBER OF (private.dateOfBirth.month, private.dateOfBirth.day)"

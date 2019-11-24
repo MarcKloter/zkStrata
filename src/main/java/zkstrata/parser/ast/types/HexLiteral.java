@@ -14,9 +14,4 @@ public class HexLiteral extends Literal<String> {
     public String getValue() {
         return value;
     }
-
-    @Override
-    public String toString() {
-        return String.format("0x%s", value);
-    }
 }
