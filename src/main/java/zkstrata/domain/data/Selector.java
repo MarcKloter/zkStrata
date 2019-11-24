@@ -9,6 +9,10 @@ public class Selector {
         this.selectors = selectors;
     }
 
+    public Selector(String selector) {
+        this.selectors = List.of(selector);
+    }
+
     public List<String> getSelectors() {
         return this.selectors;
     }

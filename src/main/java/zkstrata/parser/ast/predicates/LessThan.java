@@ -2,6 +2,7 @@ package zkstrata.parser.ast.predicates;
 
 import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.types.Value;
+import zkstrata.utils.StatementBuilder;
 
 public class LessThan extends Predicate {
     private Value left;
@@ -19,5 +20,10 @@ public class LessThan extends Predicate {
 
     public Value getRight() {
         return right;
+    }
+
+    @Override
+    public void addTo(StatementBuilder statementBuilder) {
+        statementBuilder.lessThan(left.toString(), right.toString());
     }
 }

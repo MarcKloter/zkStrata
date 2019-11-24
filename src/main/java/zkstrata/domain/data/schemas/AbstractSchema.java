@@ -46,6 +46,11 @@ public abstract class AbstractSchema implements Schema {
     }
 
     @Override
+    public boolean hasValidationRule() {
+        return false;
+    }
+
+    @Override
     public String getValidationRule() {
         return null;
     }

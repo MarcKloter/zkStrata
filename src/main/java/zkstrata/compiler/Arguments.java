@@ -30,15 +30,13 @@ public class Arguments {
         this.schemas = schemas;
     }
 
-    public Arguments(String source, String statement, Arguments arguments) {
-        this(
-                arguments.getName(),
-                new Statement(source, statement),
-                arguments.getPremises(),
-                arguments.getWitnessData(),
-                arguments.getInstanceData(),
-                arguments.getSchemas()
-        );
+    public Arguments(Arguments arguments) {
+        this.name = arguments.getName();
+        this.statement = arguments.getStatement();
+        this.premises = arguments.getPremises();
+        this.witnessData = arguments.getWitnessData();
+        this.instanceData = arguments.getInstanceData();
+        this.schemas = arguments.getSchemas();
     }
 
     public String getName() {
@@ -47,6 +45,10 @@ public class Arguments {
 
     public Statement getStatement() {
         return statement;
+    }
+
+    public void setStatement(Statement statement) {
+        this.statement = statement;
     }
 
     public List<Statement> getPremises() {

@@ -1,6 +1,9 @@
 package zkstrata.utils;
 
 import org.apache.commons.text.TextStringBuilder;
+import zkstrata.parser.ast.AbstractSyntaxTree;
+import zkstrata.parser.ast.Subject;
+import zkstrata.parser.ast.predicates.Predicate;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -13,16 +16,29 @@ public class StatementBuilder {
     private static final String AND = " AND ";
     private static final String WITNESS = "";
     private static final String INSTANCE = "INSTANCE ";
+    private static final String THIS = "THIS";
 
     private List<String> subjects = new ArrayList<>();
     private List<String> predicates = new ArrayList<>();
+
+    public StatementBuilder() {
+
+    }
+
+    public StatementBuilder(AbstractSyntaxTree ast) {
+        for (Subject subject : ast.getSubjects())
+            subject(subject);
+
+        for (Predicate predicate : ast.getPredicates())
+            predicate.addTo(this);
+    }
 
     public static String stringLiteral(String string) {
         return String.format("'%s'", string);
     }
 
     public static String integerLiteral(BigInteger integer) {
-        return String.format("%s", integer.toString());
+        return String.format("%d", integer);
     }
 
     public StatementBuilder subject(String schema, String alias, boolean isWitness) {
@@ -31,17 +47,33 @@ public class StatementBuilder {
         return this;
     }
 
-    public StatementBuilder equality(String leftHand, String rightHand) {
-        predicates.add(String.format("%s IS EQUAL TO %s", leftHand, rightHand));
+    public StatementBuilder subject(Subject subject) {
+        if (subject.getSchema().getName().equals(THIS)) {
+            if (subject.isWitness())
+                subjects.add(THIS);
+        } else
+            subject(subject.getSchema().getName(), subject.getAlias().getName(), subject.isWitness());
 
         return this;
     }
 
-    public StatementBuilder boundsCheck(String value, BigInteger min, BigInteger max) {
+    public StatementBuilder equality(String left, String right) {
+        predicates.add(String.format("%s IS EQUAL TO %s", left, right));
+
+        return this;
+    }
+
+    public StatementBuilder inequality(String left, String right) {
+        predicates.add(String.format("%s IS UNEQUAL TO %s", left, right));
+
+        return this;
+    }
+
+    public StatementBuilder boundsCheck(String value, String min, String max) {
         if (min == null && max == null)
             return this;
         else if (min == null)
-            predicates.add(String.format("%s IS LESS THAN %d", value, max));
+            predicates.add(String.format("%s IS LESS THAN %s", value, max));
         else if (max == null)
             predicates.add(String.format("%s IS GREATER THAN %s", value, min));
         else
@@ -60,6 +92,7 @@ public class StatementBuilder {
         StringBuilder stringBuilder = new StringBuilder();
         visitMerkleTree(binaryTree.getRoot(), stringBuilder);
         predicates.add(String.format("%s IS MERKLE ROOT OF %s", root, stringBuilder.toString()));
+
         return this;
     }
 

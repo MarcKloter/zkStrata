@@ -2,8 +2,10 @@ package zkstrata.parser.ast.predicates;
 
 import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.types.Value;
+import zkstrata.utils.StatementBuilder;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SetMembership extends Predicate {
     private Value member;
@@ -21,5 +23,10 @@ public class SetMembership extends Predicate {
 
     public Set<Value> getSet() {
         return set;
+    }
+
+    @Override
+    public void addTo(StatementBuilder statementBuilder) {
+        statementBuilder.setMembership(member.toString(), set.stream().map(Value::toString).collect(Collectors.toSet()));
     }
 }

@@ -4,7 +4,12 @@ import zkstrata.domain.data.Selector;
 
 public interface Schema {
     Class<?> getType(Selector selector);
+
     String getIdentifier();
+
     String getSource();
+
+    boolean hasValidationRule();
+
     String getValidationRule();
 }

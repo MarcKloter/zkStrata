@@ -9,4 +9,9 @@ public abstract class Value<T> extends AbstractTraceable {
     public Value(Position position) {
         super(position);
     }
+
+    @Override
+    public String toString() {
+        return getValue().toString();
+    }
 }

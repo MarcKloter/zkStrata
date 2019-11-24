@@ -2,6 +2,7 @@ package zkstrata.parser.ast.predicates;
 
 import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.types.Value;
+import zkstrata.utils.StatementBuilder;
 
 public class BoundsCheck extends Predicate {
     private Value value;
@@ -25,5 +26,14 @@ public class BoundsCheck extends Predicate {
 
     public Value getMax() {
         return max;
+    }
+
+    @Override
+    public void addTo(StatementBuilder statementBuilder) {
+        statementBuilder.boundsCheck(
+                value.toString(),
+                min == null ? null : min.toString(),
+                max == null ? null : max.toString()
+        );
     }
 }

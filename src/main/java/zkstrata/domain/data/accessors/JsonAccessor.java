@@ -12,6 +12,9 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 public class JsonAccessor implements ValueAccessor {
     private String filename;
@@ -28,10 +31,18 @@ public class JsonAccessor implements ValueAccessor {
         }
     }
 
-    @Override
-    public Value getValue(Selector selector) {
+    public Set<String> getKeySet(List<String> selectors) {
+        Object object = getObject(selectors);
+
+        if (!(object instanceof JSONObject))
+            return Collections.emptySet();
+
+        return ((JSONObject) object).keySet();
+    }
+
+    public Object getObject(List<String> selectors) {
         Object object = this.jsonObject;
-        for (String key : selector.getSelectors()) {
+        for (String key : selectors) {
             if (object instanceof JSONObject)
                 if (((JSONObject) object).has(key))
                     object = ((JSONObject) object).get(key);
@@ -40,6 +51,15 @@ public class JsonAccessor implements ValueAccessor {
             else
                 return null;
         }
+        return object;
+    }
+
+    @Override
+    public Value getValue(Selector selector) {
+        Object object = getObject(selector.getSelectors());
+
+        if (object == null)
+            return null;
 
         if (object instanceof JSONObject)
             return null;

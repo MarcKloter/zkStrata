@@ -12,6 +12,11 @@ public class Passport extends AbstractSchema {
     private HexLiteral rootHash;
 
     @Override
+    public boolean hasValidationRule() {
+        return true;
+    }
+
+    @Override
     public String getValidationRule() {
         return "PROOF FOR THIS THAT public.rootHash IS MERKLE ROOT OF " +
                 "(((private.firstName, private.lastName), (private.dateOfBirth.day, private.dateOfBirth.month)), " +

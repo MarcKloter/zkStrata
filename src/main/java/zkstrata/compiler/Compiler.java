@@ -41,9 +41,7 @@ public class Compiler {
     }
 
     private static Statement parse(Arguments args, String parentAlias, String parentSchema) {
-        ParseTreeVisitor grammarParser = new ParseTreeVisitor();
-
-        AbstractSyntaxTree ast = grammarParser.parse(
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(
                 args.getStatement().getSource(),
                 args.getStatement().getValue(),
                 parentSchema
@@ -58,16 +56,18 @@ public class Compiler {
         List<Statement> validationRules = new ArrayList<>();
 
         for (Map.Entry<String, StructuredData> subject : subjects.entrySet()) {
-            if (subject.getValue().isWitness() && subject.getValue().getSchema().getValidationRule() != null) {
-                String parentAlias = subject.getKey();
+            if (subject.getValue().isWitness() && subject.getValue().getSchema().hasValidationRule()) {
                 String source = subject.getValue().getSchema().getSource();
-                String stmt = subject.getValue().getSchema().getValidationRule();
+                String parentAlias = subject.getKey();
                 String parentSchema = subject.getValue().getSchema().getIdentifier();
 
                 LOGGER.debug("Processing validation rule of alias {} (schema: {}, source: {})",
                         parentAlias, parentSchema, source);
 
-                validationRules.add(parse(new Arguments(source, stmt, args), parentAlias, parentSchema));
+                Arguments arguments = new Arguments(args);
+                String validationRule = subject.getValue().getSchema().getValidationRule();
+                arguments.setStatement(new Arguments.Statement(source, validationRule));
+                validationRules.add(parse(arguments, parentAlias, parentSchema));
             }
         }
 
@@ -78,12 +78,11 @@ public class Compiler {
         Set<Statement> premises = new HashSet<>();
 
         for (Arguments.Statement premise : args.getPremises()) {
-            String source = premise.getSource();
-            String stmt = premise.getValue();
+            LOGGER.debug("Processing premise {}", premise.getSource());
 
-            LOGGER.debug("Processing premise {}", source);
-
-            premises.add(parse(new Arguments(source, stmt, args), null, null));
+            Arguments arguments = new Arguments(args);
+            arguments.setStatement(premise);
+            premises.add(parse(arguments, null, null));
         }
 
         return premises;

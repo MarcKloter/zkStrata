@@ -6,12 +6,22 @@ import zkstrata.domain.data.schemas.AbstractSchema;
 import zkstrata.domain.data.types.Value;
 import zkstrata.domain.data.types.custom.HexLiteral;
 import zkstrata.domain.data.types.wrapper.Null;
+import zkstrata.parser.ParseTreeVisitor;
+import zkstrata.parser.ast.AbstractSyntaxTree;
+import zkstrata.utils.StatementBuilder;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class JsonSchema extends AbstractSchema {
+    private static final String PROPERTIES = "properties";
+    private static final String TYPE = "type";
+    private static final String MAXIMUM = "maximum";
+    private static final String MINIMUM = "minimum";
+
     private String identifier;
     private JsonAccessor accessor;
 
@@ -23,17 +33,30 @@ public class JsonSchema extends AbstractSchema {
     @Override
     public Class<?> getType(Selector selector) {
         List<String> selectors = selector.getSelectors();
-        List<String> typeSelector = new ArrayList<>();
-        selectors.forEach(curr -> {
-            typeSelector.add("properties");
-            typeSelector.add(curr);
-        });
-        typeSelector.add("type");
+        String typeString = getTypeDefinition(selectors);
+
+        try {
+            Class<?> type = JSONType.valueOf(typeString.toUpperCase()).getType();
+
+            if (type == String.class && selectors.get(selectors.size() - 1).endsWith("_hex"))
+                return HexLiteral.class;
+
+            return type;
+        } catch (IllegalArgumentException e) {
+            String msg = String.format("Unknown type `%s` for property `%s` in schema %s.",
+                    typeString, selector, accessor.getSource());
+            throw new IllegalArgumentException(msg);
+        }
+    }
+
+    private String getTypeDefinition(List<String> selectors) {
+        List<String> typeSelector = constructPropertySelector(selectors);
+        typeSelector.add(TYPE);
 
         Value typeString = accessor.getValue(new Selector(typeSelector));
         if (typeString == null) {
             String msg = String.format("The provided schema %s is missing a type definition for property `%s`.",
-                    accessor.getSource(), selector);
+                    accessor.getSource(), String.join(".", selectors));
             throw new IllegalArgumentException(msg);
         }
 
@@ -44,33 +67,86 @@ public class JsonSchema extends AbstractSchema {
             throw new IllegalArgumentException(msg);
         }
 
-        try {
-            Class<?> type = JSONType.valueOf(typeString.toString().toUpperCase()).getType();
+        return typeString.toString();
+    }
 
-            if (type == String.class && selectors.get(selectors.size() - 1).endsWith("_hex"))
-                return HexLiteral.class;
-
-            return type;
-        } catch (IllegalArgumentException e) {
-            String msg = String.format("Unknown type `%s` for property `%s` in schema %s.",
-                    typeString.toString(), String.join(".", selectors), accessor.getSource());
-            throw new IllegalArgumentException(msg);
+    private List<String> constructPropertySelector(List<String> selectors) {
+        List<String> propertySelector = new ArrayList<>();
+        for (String selector : selectors) {
+            propertySelector.add(PROPERTIES);
+            propertySelector.add(selector);
         }
+        return propertySelector;
+    }
+
+    @Override
+    public boolean hasValidationRule() {
+        return accessor.getValue(new Selector("validationRule")) != null;
     }
 
     @Override
     public String getValidationRule() {
-        Value statement = accessor.getValue(new Selector(List.of("validationRule")));
+        Value validationRule = accessor.getValue(new Selector("validationRule"));
 
-        if (statement == null)
+        if (validationRule == null)
             return null;
 
-        if (statement.getType() != String.class) {
-            String msg = String.format("Invalid statement in schema %s. The statement must be a string.", accessor.getSource());
+        if (validationRule.getType() != String.class) {
+            String msg = String.format("Invalid validation rule in schema %s. The statement must be a string.", accessor.getSource());
             throw new IllegalArgumentException(msg);
         }
 
-        return statement.toString();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(accessor.getSource(), validationRule.toString(), "THIS");
+        StatementBuilder statementBuilder = new StatementBuilder(ast);
+        parseValidationKeywords(Collections.emptyList(), statementBuilder);
+
+        return statementBuilder.build();
+    }
+
+    private void parseValidationKeywords(List<String> selectors, StatementBuilder statementBuilder) {
+        List<String> propertiesSelector = constructPropertySelector(selectors);
+        propertiesSelector.add(PROPERTIES);
+
+        Set<String> properties = accessor.getKeySet(propertiesSelector);
+
+        for (String property : properties) {
+            List<String> propertySelector = new ArrayList<>(selectors);
+            propertySelector.add(property);
+            String type = getTypeDefinition(propertySelector);
+
+            propertiesSelector.add(property);
+            Set<String> validationKeywords = accessor.getKeySet(propertiesSelector);
+            String witness = String.format("private.%s", String.join(".", propertySelector));
+
+            switch (type) {
+                case "object":
+                    parseValidationKeywords(propertySelector, statementBuilder);
+                    break;
+                case "number":
+                    if (validationKeywords.contains(MAXIMUM))
+                        statementBuilder.boundsCheck(witness, null, getNumberConstraint(MAXIMUM, propertySelector));
+                    if (validationKeywords.contains(MINIMUM))
+                        statementBuilder.boundsCheck(witness, getNumberConstraint(MINIMUM, propertySelector), null);
+                    break;
+                case "string":
+                    // TODO: implement string validation keywords
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    private String getNumberConstraint(String keyword, List<String> selectors) {
+        List<String> assertionSelector = constructPropertySelector(selectors);
+        assertionSelector.add(keyword);
+        Object assertion = accessor.getObject(assertionSelector);
+
+        if (!(assertion instanceof Integer))
+            throw new IllegalArgumentException(String.format("Invalid value for validation keyword `%s` of `%s` in %s.",
+                    keyword, String.join(".", selectors), accessor.getSource()));
+
+        return String.valueOf(assertion);
     }
 
     @Override

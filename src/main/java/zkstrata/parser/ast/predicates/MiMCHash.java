@@ -2,6 +2,7 @@ package zkstrata.parser.ast.predicates;
 
 import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.types.Value;
+import zkstrata.utils.StatementBuilder;
 
 public class MiMCHash extends Predicate {
     private Value preimage;
@@ -19,5 +20,10 @@ public class MiMCHash extends Predicate {
 
     public Value getImage() {
         return image;
+    }
+
+    @Override
+    public void addTo(StatementBuilder statementBuilder) {
+        statementBuilder.mimcHash(preimage.toString(), image.toString());
     }
 }
