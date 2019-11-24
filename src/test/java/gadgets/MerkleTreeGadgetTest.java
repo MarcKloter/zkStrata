@@ -60,16 +60,20 @@ public class MerkleTreeGadgetTest {
 
     @Test
     void Root_Too_Large() {
-        assertThrows(CompileTimeException.class, () -> {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             new MerkleTreeGadget(INSTANCE_VAR_ROOT_LARGE, TREE_1);
         });
+
+        assertTrue(exception.getMessage().toLowerCase().contains("invalid root hash image"));
     }
 
     @Test
     void Root_Negative() {
-        assertThrows(CompileTimeException.class, () -> {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             new MerkleTreeGadget(INSTANCE_VAR_ROOT_NEG, TREE_1);
         });
+
+        assertTrue(exception.getMessage().toLowerCase().contains("invalid root hash image"));
     }
 
     @Test

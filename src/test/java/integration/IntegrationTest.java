@@ -18,21 +18,29 @@ public class IntegrationTest {
                     .build();
             Compiler.run(args);
         });
-
-        System.out.println(exception.getMessage());
+        assertTrue(exception.getMessage().toLowerCase().contains("is already defined"));
     }
 
     @Test
-    void Alias_Self_Should_Throw() {
+    void Alias_Private_Should_Throw() {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
-                    .withStatement("alias_self")
-                    .withInstance("pass", "passport.metadata")
+                    .withStatement("alias_private")
                     .build();
             Compiler.run(args);
         });
+        assertTrue(exception.getMessage().toLowerCase().contains("reserved keyword"));
+    }
 
-        System.out.println(exception.getMessage());
+    @Test
+    void Alias_Public_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("alias_public")
+                    .build();
+            Compiler.run(args);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("reserved keyword"));
     }
 
     @Test
@@ -55,8 +63,7 @@ public class IntegrationTest {
                     .build();
             Compiler.run(args);
         });
-
-        System.out.println(exception.getMessage());
+        assertTrue(exception.getMessage().toLowerCase().contains("missing instance data"));
     }
 
     @Test
@@ -68,8 +75,7 @@ public class IntegrationTest {
                     .build();
             Compiler.run(args);
         });
-
-        System.out.println(exception.getMessage());
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
 
     @Test
@@ -83,8 +89,7 @@ public class IntegrationTest {
                     .build();
             Compiler.run(args);
         });
-
-        System.out.println(exception.getMessage());
+        assertTrue(exception.getMessage().toLowerCase().contains("simultaneously"));
     }
 
     @Test

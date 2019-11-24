@@ -6,8 +6,7 @@ import zkstrata.compiler.Compiler;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.utils.ArgumentsBuilder;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class PremisesTest {
     @Test
@@ -39,7 +38,7 @@ public class PremisesTest {
             Compiler.run(args);
         });
 
-        System.out.println(exception.getMessage());
+        assertTrue(exception.getMessage().toLowerCase().contains("simultaneously"));
     }
 
     @Test
@@ -53,6 +52,6 @@ public class PremisesTest {
             Compiler.run(args);
         });
 
-        System.out.println(exception.getMessage());
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
 }

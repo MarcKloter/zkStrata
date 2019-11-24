@@ -66,7 +66,11 @@ public class LessThanGadgetTest {
     void Equality_Contradiction() {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
-        assertThrows(CompileTimeException.class, () -> LessThanGadget.checkContradiction(equalityGadget, lessThanGadget));
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+                LessThanGadget.checkContradiction(equalityGadget, lessThanGadget)
+        );
+
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
 
     @Test

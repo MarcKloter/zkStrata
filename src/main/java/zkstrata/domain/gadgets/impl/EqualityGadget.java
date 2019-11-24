@@ -13,6 +13,7 @@ import zkstrata.domain.gadgets.*;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.Equality;
+import zkstrata.utils.CombinatoricsUtils;
 
 import java.util.*;
 
@@ -38,7 +39,7 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
 
     @Implication(assumption = {EqualityGadget.class, EqualityGadget.class})
     public static Optional<Gadget> implyEquality(EqualityGadget eq1, EqualityGadget eq2) {
-        List<Variable> parity = getParity(eq1, eq2);
+        List<Variable> parity = CombinatoricsUtils.getParity(eq1.getLeft(), eq1.getRight(), eq2.getLeft(), eq2.getRight());
         if (new HashSet<>(parity).size() == 2)
             return Optional.of(new EqualityGadget(parity.get(0), parity.get(1)));
 
@@ -74,32 +75,6 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
         }
 
         return Set.of(eq);
-    }
-
-    /**
-     * Checks whether two equality gadgets have a common witness variable and returns the other two variables.
-     *
-     * @param eq1 {@link EqualityGadget} to check
-     * @param eq2 {@link EqualityGadget} to check
-     * @return {@link List} containing two variables if the given gadgets have a common witness variable,
-     * empty list otherwise.
-     */
-    private static List<Variable> getParity(EqualityGadget eq1, EqualityGadget eq2) {
-        if (eq1.getLeft() instanceof WitnessVariable) {
-            if (eq2.getLeft() instanceof WitnessVariable && eq1.getLeft().equals(eq2.getLeft()))
-                return List.of(eq1.getRight(), eq2.getRight());
-            if (eq2.getRight() instanceof WitnessVariable && eq1.getLeft().equals(eq2.getRight()))
-                return List.of(eq1.getRight(), eq2.getLeft());
-        }
-
-        if (eq1.getRight() instanceof WitnessVariable) {
-            if (eq2.getLeft() instanceof WitnessVariable && eq1.getRight().equals(eq2.getLeft()))
-                return List.of(eq1.getLeft(), eq2.getRight());
-            if (eq2.getRight() instanceof WitnessVariable && eq1.getRight().equals(eq2.getRight()))
-                return List.of(eq1.getLeft(), eq2.getLeft());
-        }
-
-        return Collections.emptyList();
     }
 
     /**

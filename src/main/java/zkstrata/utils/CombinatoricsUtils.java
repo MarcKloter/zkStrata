@@ -1,5 +1,7 @@
 package zkstrata.utils;
 
+import zkstrata.domain.data.types.wrapper.Variable;
+import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.Gadget;
 
 import java.util.*;
@@ -79,7 +81,7 @@ public class CombinatoricsUtils {
      * <p>
      * Taken from: https://gist.github.com/max333/3cfafa146aeee29bee2a
      *
-     * @param combinations {@link List} of {@link List} to append elements to
+     * @param combinations  {@link List} of {@link List} to append elements to
      * @param extraElements {@link List} of elements to append to each {@link List} in {@code combinations}
      * @return {@link List} of {@link List} containing the {@code combinations} with {@code extraElements} appended.
      */
@@ -90,5 +92,33 @@ public class CombinatoricsUtils {
             combinationWithExtra.add(extra);
             return combinationWithExtra;
         })).collect(Collectors.toList());
+    }
+
+    /**
+     * Checks whether two-sided gadgets have a common witness variable and returns the other two variables.
+     *
+     * @param left1 left side of first gadget
+     * @param right1 right side of first gadget
+     * @param left2 left side of second gadget
+     * @param right2 right side of second gadget
+     * @return {@link List} containing two variables if the given gadgets have a common witness variable,
+     * empty list otherwise.
+     */
+    public static List<Variable> getParity(Variable left1, Variable right1, Variable left2, Variable right2) {
+        if (left1 instanceof WitnessVariable) {
+            if (left2 instanceof WitnessVariable && left1.equals(left2))
+                return List.of(right1, right2);
+            if (right2 instanceof WitnessVariable && left1.equals(right2))
+                return List.of(right1, left2);
+        }
+
+        if (right1 instanceof WitnessVariable) {
+            if (left2 instanceof WitnessVariable && right1.equals(left2))
+                return List.of(left1, right2);
+            if (right2 instanceof WitnessVariable && right1.equals(right2))
+                return List.of(left1, left2);
+        }
+
+        return Collections.emptyList();
     }
 }

@@ -81,7 +81,7 @@ public class ASTVisitor {
 
         if (reservedAliases.contains(alias)) {
             if (parentAlias == null)
-                throw new CompileTimeException(String.format("Reserved word `%s` used as alias.", alias),
+                throw new CompileTimeException(String.format("Reserved keyword `%s` used as alias.", alias),
                         pinPosition(subject.getAlias()));
 
             alias = parentAlias;

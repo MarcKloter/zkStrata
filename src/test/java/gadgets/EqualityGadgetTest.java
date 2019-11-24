@@ -45,7 +45,10 @@ public class EqualityGadgetTest {
     @Test
     void Instance_Equals_Instance_Contradiction() {
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_41, INSTANCE_VAR_17);
-        assertThrows(CompileTimeException.class, () -> EqualityGadget.checkContradiction(equalityGadget));
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+                EqualityGadget.checkContradiction(equalityGadget)
+        );
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
 
     @Test
@@ -197,6 +200,9 @@ public class EqualityGadgetTest {
 
     @Test
     void Type_Mismatch() {
-        assertThrows(CompileTimeException.class, () -> new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_STRING));
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+                new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_STRING)
+        );
+        assertTrue(exception.getMessage().toLowerCase().contains("type mismatch"));
     }
 }

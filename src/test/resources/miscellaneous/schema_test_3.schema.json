@@ -1,0 +1,12 @@
+{
+  "title": "schema_test_3",
+  "type": "object",
+  "properties": {
+    "invalidNumberConstraint": {
+      "type": "number",
+      "maximum": "string",
+      "description": "The validation keyword maximum should fail with string values."
+    }
+  },
+  "validationRule": "PROOF FOR THIS THAT private.invalidNumberConstraint IS EQUAL TO 15"
+}

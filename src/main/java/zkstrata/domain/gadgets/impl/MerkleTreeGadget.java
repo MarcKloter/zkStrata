@@ -39,8 +39,9 @@ public class MerkleTreeGadget extends AbstractGadget<MerkleTreeGadget> {
         BigInteger image = (BigInteger) ((this.root.getValue()).getValue());
         if (image.compareTo(Constants.ED25519_MAX_VALUE) > 0
                 || image.compareTo(BigInteger.ZERO) < 0)
-            throw new CompileTimeException(String.format("Invalid root MiMC hash image. Images must be of prime order %s.",
+            throw new CompileTimeException(String.format("Invalid root hash image. Images must be of prime order %s.",
                     Constants.ED25519_PRIME_ORDER), this.root);
+
     }
 
     @Override

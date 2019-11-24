@@ -1,0 +1,1 @@
+PROOF FOR passport_ch AS private THAT private.firstName IS EQUAL TO 'John'

@@ -16,32 +16,37 @@ public class JsonSchemaTest {
 
     private JsonSchema schema1;
     private JsonSchema schema2;
+    private JsonSchema schema3;
 
     @BeforeEach
     void setup() {
         this.schema1 = new JsonSchema(DATA_PATH + "schema_test_1.schema.json", "test_schema");
         this.schema2 = new JsonSchema(DATA_PATH + "schema_test_2.schema.json", "test_schema");
+        this.schema3 = new JsonSchema(DATA_PATH + "schema_test_3.schema.json", "test_schema");
     }
 
     @Test
     void Get_Type_Undefined_Property() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             this.schema1.getType(new Selector(List.of("missing")));
         });
+        assertTrue(exception.getMessage().toLowerCase().contains("missing a type definition"));
     }
 
     @Test
     void Get_Type_Invalid_Type_Definition() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             this.schema1.getType(new Selector(List.of("invalid")));
         });
+        assertTrue(exception.getMessage().toLowerCase().contains("invalid type"));
     }
 
     @Test
     void Get_Type_Unknown_Type_Definition() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             this.schema1.getType(new Selector(List.of("unknown")));
         });
+        assertTrue(exception.getMessage().toLowerCase().contains("unknown type"));
     }
 
     @Test
@@ -61,13 +66,22 @@ public class JsonSchemaTest {
 
     @Test
     void Get_Validation_Rule_Invalid() {
-        assertThrows(IllegalArgumentException.class, () -> {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             this.schema1.getValidationRule();
         });
+        assertTrue(exception.getMessage().toLowerCase().contains("invalid validation rule"));
     }
 
     @Test
     void Missing_Validation_Rule() {
         assertNull(schema2.getValidationRule());
+    }
+
+    @Test
+    void Invalid_Number_Constraint_Value() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            this.schema3.getValidationRule();
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("invalid value for validation keyword"));
     }
 }

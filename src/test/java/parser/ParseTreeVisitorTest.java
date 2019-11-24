@@ -66,10 +66,44 @@ public class ParseTreeVisitorTest {
     }
 
     @Test
+    void Inequality_Is_Parsed_Correctly_1() {
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .inequality(IDENTIFIER_1, stringLiteral(STRING_LITERAL))
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
+        assertEquals(1, ast.getPredicates().size());
+
+        Predicate predicate = ast.getPredicates().get(0);
+        assertEquals(Inequality.class, predicate.getClass());
+
+        Inequality inequality = (Inequality) predicate;
+        assertEquals(IDENTIFIER_1, inequality.getLeft().getValue());
+        assertEquals(STRING_LITERAL, inequality.getRight().getValue());
+    }
+
+    @Test
+    void Inequality_Is_Parsed_Correctly_2() {
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .inequality(integerLiteral(INT_LITERAL_1), IDENTIFIER_1)
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
+        assertEquals(1, ast.getPredicates().size());
+
+        Predicate predicate = ast.getPredicates().get(0);
+        assertEquals(Inequality.class, predicate.getClass());
+
+        Inequality inequality = (Inequality) predicate;
+        assertEquals(INT_LITERAL_1, inequality.getLeft().getValue());
+        assertEquals(IDENTIFIER_1, inequality.getRight().getValue());
+    }
+
+    @Test
     void BoundsCheck_Is_Parsed_Correctly_1() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
-                .boundsCheck(IDENTIFIER_1, INT_LITERAL_1, INT_LITERAL_2)
+                .boundsCheck(IDENTIFIER_1, integerLiteral(INT_LITERAL_1), integerLiteral(INT_LITERAL_2))
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
@@ -87,7 +121,7 @@ public class ParseTreeVisitorTest {
     void BoundsCheck_Is_Parsed_Correctly_2() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
-                .boundsCheck(IDENTIFIER_1, INT_LITERAL_1, null)
+                .boundsCheck(IDENTIFIER_1, integerLiteral(INT_LITERAL_1), null)
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
@@ -104,7 +138,7 @@ public class ParseTreeVisitorTest {
     void BoundsCheck_Is_Parsed_Correctly_3() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
-                .boundsCheck(IDENTIFIER_1, null, INT_LITERAL_2)
+                .boundsCheck(IDENTIFIER_1, null, integerLiteral(INT_LITERAL_2))
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         assertEquals(1, ast.getPredicates().size());
@@ -262,8 +296,7 @@ public class ParseTreeVisitorTest {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             new ParseTreeVisitor().parse(SOURCE, UNEXPECTED_SYMBOL, PARENT_SCHEMA);
         });
-
-        System.out.println(exception.getMessage());
+        assertTrue(exception.getMessage().toLowerCase().contains("unexpected symbol"));
     }
 
     @Test
@@ -271,8 +304,7 @@ public class ParseTreeVisitorTest {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             new ParseTreeVisitor().parse(SOURCE, UNEXPECTED_TOKEN, PARENT_SCHEMA);
         });
-
-        System.out.println(exception.getMessage());
+        assertTrue(exception.getMessage().toLowerCase().contains("unexpected token"));
     }
 
     @Test
@@ -284,7 +316,6 @@ public class ParseTreeVisitorTest {
                     .build();
             new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         });
-
-        System.out.println(exception.getMessage());
+        assertTrue(exception.getMessage().toLowerCase().contains("unexpected input"));
     }
 }

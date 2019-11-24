@@ -59,7 +59,7 @@ public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
             BigInteger image = (BigInteger) (((HexLiteral) this.image.getValue()).getValue());
             if (image.compareTo(Constants.ED25519_MAX_VALUE) > 0
                     || image.compareTo(BigInteger.ZERO) < 0)
-                throw new CompileTimeException(String.format("Invalid MiMC hash image. Images must be of prime order %s.",
+                throw new CompileTimeException(String.format("Invalid MiMC-Hash image. Images must be of prime order %s.",
                         Constants.ED25519_PRIME_ORDER), this.image);
         }
     }

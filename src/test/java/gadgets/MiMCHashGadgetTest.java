@@ -46,16 +46,20 @@ public class MiMCHashGadgetTest {
 
     @Test
     void Image_Too_Large() {
-        assertThrows(CompileTimeException.class, () -> {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_LARGE);
         });
+
+        assertTrue(exception.getMessage().toLowerCase().contains("invalid mimc-hash image"));
     }
 
     @Test
     void Image_Negative() {
-        assertThrows(CompileTimeException.class, () -> {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_NEG);
         });
+
+        assertTrue(exception.getMessage().toLowerCase().contains("invalid mimc-hash image"));
     }
 
     @Test
@@ -83,9 +87,11 @@ public class MiMCHashGadgetTest {
     void Same_Preimage_Different_Image_Contradiction() {
         MiMCHashGadget miMCHashGadget1 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_1);
         MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_2);
-        assertThrows(CompileTimeException.class, () -> {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             MiMCHashGadget.checkContradiction(miMCHashGadget1, miMCHashGadget2);
         });
+
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
 
     @Test
