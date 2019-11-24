@@ -119,4 +119,17 @@ public class IntegrationTest {
             Compiler.run(args);
         });
     }
+
+    @Test
+    void Validation_Rules_Test_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("default")
+                    .withSchema("passport_ch", "validation_rules")
+                    .withWitness("pass", "passport")
+                    .withInstance("pass", "passport.metadata")
+                    .build();
+            Compiler.run(args);
+        });
+    }
 }
