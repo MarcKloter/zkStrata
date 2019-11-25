@@ -3,26 +3,24 @@ package zkstrata.parser;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.reflections.Reflections;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.exceptions.ParserException;
 import zkstrata.exceptions.Position;
 import zkstrata.utils.ParserUtils;
+import zkstrata.utils.ReflectionHelper;
 import zkstrata.zkStrataLexer;
 import zkstrata.parser.ast.types.Identifier;
 import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.Subject;
 import zkstrata.parser.ast.predicates.Predicate;
-import zkstrata.parser.ast.types.HexLiteral;
-import zkstrata.parser.ast.types.IntegerLiteral;
-import zkstrata.parser.ast.types.StringLiteral;
 import zkstrata.parser.ast.types.Value;
-import zkstrata.parser.predicates.PredicateParser;
-import zkstrata.parser.predicates.ParserRule;
 import zkstrata.zkStrata;
 import zkstrata.zkStrataBaseVisitor;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -34,7 +32,6 @@ import static zkstrata.parser.ast.Subject.*;
  * Then visits this parse tree to form an abstract syntax tree ({@link AbstractSyntaxTree}).
  */
 public class ParseTreeVisitor {
-
     public AbstractSyntaxTree parse(String source, String statement, String parentSchema) {
         ANTLRErrorListener errorListener = new ErrorListener();
 
@@ -176,28 +173,21 @@ public class ParseTreeVisitor {
 
     private class PredicateVisitor extends zkStrataBaseVisitor<Predicate> {
         private String[] rules;
-        private Set<Class<?>> parsers;
+        private Set<Method> parsers;
 
         PredicateVisitor(String[] rules) {
             this.rules = rules;
-
-            Reflections reflections = new Reflections("zkstrata.parser.predicates.impl");
-            this.parsers = reflections.getTypesAnnotatedWith(ParserRule.class);
+            this.parsers = ReflectionHelper.getMethodsAnnotatedWith(ParserRule.class);
         }
 
-        private PredicateParser getParser(String name) {
-            for (Class<?> parser : this.parsers) {
+        private Method getParser(String name) {
+            for (Method parser : this.parsers) {
                 ParserRule annotation = parser.getAnnotation(ParserRule.class);
-                if (annotation.name().equals(name)) {
-                    try {
-                        return (PredicateParser) parser.getConstructor().newInstance();
-                    } catch (Exception e) {
-                        throw new InternalCompilerException("Invalid implementation of parser %s.", name);
-                    }
-                }
+                if (annotation.name().equals(name))
+                    return parser;
             }
 
-            throw new InternalCompilerException("Could not find a parser implementation for rule: %s.", name);
+            throw new InternalCompilerException("No method found annotated as @ParserRule with name property `%s`.", name);
         }
 
         @Override
@@ -212,9 +202,13 @@ public class ParseTreeVisitor {
             ParserRuleContext gadget = (ParserRuleContext) child;
             String name = this.rules[gadget.getRuleIndex()];
 
-            PredicateParser parser = getParser(name);
-
-            return parser.parse(gadget);
+            Method parser = getParser(name);
+            try {
+                return (Predicate) parser.invoke(null, gadget);
+            } catch (ReflectiveOperationException e) {
+                throw new InternalCompilerException("Error during invocation of method %s in %s.",
+                        parser.getName(), parser.getDeclaringClass().getSimpleName());
+            }
         }
     }
 }

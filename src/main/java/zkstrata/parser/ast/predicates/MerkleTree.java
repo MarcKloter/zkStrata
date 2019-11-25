@@ -1,10 +1,19 @@
 package zkstrata.parser.ast.predicates;
 
+import org.antlr.v4.runtime.tree.ParseTree;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.exceptions.Position;
+import zkstrata.parser.ParseTreeVisitor;
+import zkstrata.parser.ParserRule;
 import zkstrata.parser.ast.types.Value;
 import zkstrata.utils.BinaryTree;
+import zkstrata.utils.ParserUtils;
 import zkstrata.utils.StatementBuilder;
+import zkstrata.zkStrata;
+
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class MerkleTree extends Predicate {
     private Value root;
@@ -14,6 +23,40 @@ public class MerkleTree extends Predicate {
         super(position);
         this.root = root;
         this.tree = tree;
+    }
+
+    public static BinaryTree.Node<Value> visitSubtree(zkStrata.SubtreeContext ctx) {
+        List<BinaryTree.Node<Value>> values = ctx.children.stream()
+                .map(MerkleTree::visitChild)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+
+        if (values.size() != 2)
+            throw new InternalCompilerException("Expected 2 children in subtree, found %s.", values.size());
+
+        return new BinaryTree.Node<>(values.get(0), values.get(1));
+    }
+
+    private static BinaryTree.Node<Value> visitChild(ParseTree child) {
+        if (child instanceof zkStrata.LeafContext) {
+            ParseTreeVisitor.TypeVisitor typeVisitor = new ParseTreeVisitor.TypeVisitor();
+            return new BinaryTree.Node<>(child.getChild(0).accept(typeVisitor));
+        }
+
+        if (child instanceof zkStrata.SubtreeContext)
+            return visitSubtree((zkStrata.SubtreeContext) child);
+
+        return null;
+    }
+
+    @ParserRule(name = "merkle_tree")
+    public static MerkleTree parse(zkStrata.Merkle_treeContext ctx) {
+        ParseTreeVisitor.TypeVisitor typeVisitor = new ParseTreeVisitor.TypeVisitor();
+        Value root = ctx.instance_var().accept(typeVisitor);
+
+        BinaryTree<Value> tree = new BinaryTree<>(visitSubtree(ctx.subtree()));
+
+        return new MerkleTree(root, tree, ParserUtils.getPosition(ctx.getStart()));
     }
 
     public Value getRoot() {
