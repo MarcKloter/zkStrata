@@ -56,6 +56,12 @@ public class ParseTreeVisitor {
     }
 
     public static class TypeVisitor extends zkStrataBaseVisitor<Value> {
+        private Set<Constructor> constructors;
+
+        public TypeVisitor() {
+            this.constructors = ReflectionHelper.getConstructorsAnnotatedWith(TokenType.class);
+        }
+
         @Override
         public Value visitWitness_var(zkStrata.Witness_varContext ctx) {
             if (ctx.getChildCount() != 1)
@@ -91,18 +97,25 @@ public class ParseTreeVisitor {
                 throw new InternalCompilerException("Expected 1 literal value, found %d.", ctx.getChildCount());
 
             TerminalNode node = (TerminalNode) ctx.getChild(0);
+            Constructor constructor = getConstructor(node.getSymbol().getType());
 
-            switch (node.getSymbol().getType()) {
-                case zkStrataLexer.STRING_LITERAL:
-                    return new StringLiteral(node.getText(), ParserUtils.getPosition(ctx.getStart()));
-                case zkStrataLexer.HEX_LITERAL:
-                    return new HexLiteral(node.getText(), ParserUtils.getPosition(ctx.getStart()));
-                case zkStrataLexer.INTEGER_LITERAL:
-                    return new IntegerLiteral(node.getText(), ParserUtils.getPosition(ctx.getStart()));
-                default:
-                    throw new InternalCompilerException("The literal with type index %s is defined in the grammar" +
-                            "but not implemented by the parse tree visitor.", node.getSymbol().getType());
+            try {
+                return (Value) constructor.newInstance(node.getText(), ParserUtils.getPosition(ctx.getStart()));
+            } catch (ReflectiveOperationException e) {
+                throw new InternalCompilerException("Error during invocation of constructor of %s. "
+                        + "Ensure that the constructor takes two arguments (String value, Position.Absolute position)",
+                        constructor.getDeclaringClass());
             }
+        }
+
+        private Constructor getConstructor(int tokenType) {
+            for (Constructor constructor : this.constructors) {
+                Annotation annotation = constructor.getAnnotation(TokenType.class);
+                if (annotation instanceof TokenType && ((TokenType) annotation).type() == tokenType)
+                    return constructor;
+            }
+
+            throw new InternalCompilerException("No method found annotated as @TokenType with type property `%s`.", tokenType);
         }
     }
 

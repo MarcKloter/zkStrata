@@ -7,6 +7,7 @@ import org.reflections.util.ConfigurationBuilder;
 import zkstrata.domain.gadgets.Gadget;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -48,6 +49,22 @@ public class ReflectionHelper {
         );
 
         return reflections.getMethodsAnnotatedWith(clazz);
+    }
+
+    /**
+     * Returns all constructors annotated with the given annotation.
+     *
+     * @param clazz {@link Annotation} to look for
+     * @return {@link Set} of {@link Constructor} annotated with {@code clazz}
+     */
+    public static Set<Constructor> getConstructorsAnnotatedWith(Class<? extends Annotation> clazz) {
+        Reflections reflections = new Reflections(
+                new ConfigurationBuilder()
+                        .setUrls(ClasspathHelper.forPackage("zkstrata"))
+                        .setScanners(new MethodAnnotationsScanner())
+        );
+
+        return reflections.getConstructorsAnnotatedWith(clazz);
     }
 
     /**
