@@ -1,0 +1,4 @@
+PROOF FOR
+    passport_ch AS pass
+THAT
+    pass.firstName IS MEMBER OF (pass.lastName, pass.firstName, pass.lastName)

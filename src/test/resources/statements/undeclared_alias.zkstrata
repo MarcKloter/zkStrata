@@ -1,0 +1,4 @@
+PROOF FOR
+    passport_ch AS pass
+THAT
+    id.firstName IS EQUAL TO 'John'

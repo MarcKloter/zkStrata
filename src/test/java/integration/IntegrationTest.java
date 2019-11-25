@@ -132,4 +132,53 @@ public class IntegrationTest {
             Compiler.run(args);
         });
     }
+
+    @Test
+    void Undefined_Schema_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("undefined_schema")
+                    .build();
+            Compiler.run(args);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("undefined schema"));
+    }
+
+    @Test
+    void Missing_Witness_Data_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("missing_witness_data")
+                    .withWitness("pass1", "passport")
+                    .withInstance("pass1", "passport.metadata")
+                    .withInstance("pass2", "passport.metadata")
+                    .build();
+            Compiler.run(args);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("missing witness data"));
+    }
+
+    @Test
+    void Duplicate_Set_Entries_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("duplicate_set_entries")
+                    .withInstance("pass", "passport.metadata")
+                    .build();
+            Compiler.run(args);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("duplicate element"));
+    }
+
+    @Test
+    void Undeclared_Alias_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("undeclared_alias")
+                    .withInstance("pass", "passport.metadata")
+                    .build();
+            Compiler.run(args);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("undeclared alias"));
+    }
 }

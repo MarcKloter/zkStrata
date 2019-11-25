@@ -240,7 +240,7 @@ public class ASTVisitor {
             StructuredData data = subjects.get(subject);
             return data.getVariable(new Selector(identifier.getSelectors()), pinPosition(identifier));
         } else {
-            throw new CompileTimeException(String.format("Missing declaration for subject alias `%s`.",
+            throw new CompileTimeException(String.format("Undeclared alias `%s` found.",
                     subject), pinPosition(identifier));
         }
     }
