@@ -100,7 +100,9 @@ public class ParseTreeVisitor {
             Constructor constructor = getConstructor(node.getSymbol().getType());
 
             try {
-                return (Value) constructor.newInstance(node.getText(), ParserUtils.getPosition(ctx.getStart()));
+                @SuppressWarnings("unchecked")
+                Value value = (Value) constructor.newInstance(node.getText(), ParserUtils.getPosition(ctx.getStart()));
+                return value;
             } catch (ReflectiveOperationException e) {
                 throw new InternalCompilerException("Error during invocation of constructor of %s. "
                         + "Ensure that the constructor takes two arguments (String value, Position.Absolute position)",
@@ -119,7 +121,7 @@ public class ParseTreeVisitor {
         }
     }
 
-    public class StatementVisitor extends zkStrataBaseVisitor<AbstractSyntaxTree> {
+    public static class StatementVisitor extends zkStrataBaseVisitor<AbstractSyntaxTree> {
         private String source;
         private String statement;
         private String[] rules;
@@ -151,7 +153,7 @@ public class ParseTreeVisitor {
         }
     }
 
-    private class SubjectVisitor extends zkStrataBaseVisitor<List<Subject>> {
+    private static class SubjectVisitor extends zkStrataBaseVisitor<List<Subject>> {
         private String parentSchema;
 
         SubjectVisitor(String parentSchema) {
@@ -184,7 +186,7 @@ public class ParseTreeVisitor {
         }
     }
 
-    private class PredicateVisitor extends zkStrataBaseVisitor<Predicate> {
+    private static class PredicateVisitor extends zkStrataBaseVisitor<Predicate> {
         private String[] rules;
         private Set<Method> parsers;
 
