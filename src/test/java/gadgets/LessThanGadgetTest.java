@@ -63,11 +63,27 @@ public class LessThanGadgetTest {
     }
 
     @Test
+    void Self_Contradiction() {
+        LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_1);
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+                LessThanGadget.checkSelfContradiction(lessThanGadget)
+        );
+
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
+    }
+
+    @Test
+    void Self_No_Contradiction() {
+        LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        assertDoesNotThrow(() -> LessThanGadget.checkSelfContradiction(lessThanGadget));
+    }
+
+    @Test
     void Equality_Contradiction() {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
-                LessThanGadget.checkContradiction(equalityGadget, lessThanGadget)
+                LessThanGadget.checkEqualityContradiction(equalityGadget, lessThanGadget)
         );
 
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
@@ -77,14 +93,14 @@ public class LessThanGadgetTest {
     void Equality_No_Contradiction_1() {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
-        assertDoesNotThrow(() -> LessThanGadget.checkContradiction(equalityGadget, lessThanGadget));
+        assertDoesNotThrow(() -> LessThanGadget.checkEqualityContradiction(equalityGadget, lessThanGadget));
     }
 
     @Test
     void Equality_No_Contradiction_2() {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_29, WITNESS_VAR_2);
-        assertDoesNotThrow(() -> LessThanGadget.checkContradiction(equalityGadget, lessThanGadget));
+        assertDoesNotThrow(() -> LessThanGadget.checkEqualityContradiction(equalityGadget, lessThanGadget));
     }
 
     @Test

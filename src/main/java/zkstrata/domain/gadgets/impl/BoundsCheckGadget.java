@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
+import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Null;
 import zkstrata.domain.data.types.wrapper.Variable;
@@ -24,9 +25,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static zkstrata.utils.GadgetUtils.*;
+
 @AstElement(BoundsCheck.class)
 public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
-    private static final Logger LOGGER = LogManager.getLogger(BoundsCheckGadget.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
     private static final BigInteger MIN = BigInteger.ZERO;
     private static final BigInteger MAX = Constants.UNSIGNED_64BIT_MAX;
 
@@ -62,7 +65,7 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     }
 
     @Contradiction(propositions = {BoundsCheckGadget.class, BoundsCheckGadget.class})
-    public static void checkContradiction1(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
+    public static void checkTwoBoundsChecksContradiction(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
         if (bc1.getValue().equals(bc2.getValue())) {
             if (bc1.getMinValue().compareTo(bc2.getMaxValue()) > 0)
                 throw new CompileTimeException("Contradiction.", List.of(bc1.getMin(), bc2.getMax()));
@@ -73,21 +76,23 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     }
 
     @Contradiction(propositions = {BoundsCheckGadget.class})
-    public static void checkContradiction2(BoundsCheckGadget bc) {
+    public static void checkSelfBoundsContradiction(BoundsCheckGadget bc) {
         if (bc.getMinValue().compareTo(bc.getMaxValue()) > 0)
             throw new CompileTimeException("Contradiction.", List.of(bc.getMin(), bc.getMax()));
     }
 
-    /*
-    // TODO: type checking for gadget variables is tedious
     @Contradiction(propositions = {EqualityGadget.class, BoundsCheckGadget.class})
-    public static void checkContradiction(EqualityGadget eq, BoundsCheckGadget bc) {
-        if (eq.getLeft().equals(bc.getValue()) && eq.getRightHand() instanceof InstanceVariable
-            && (eq.getRightHand().getType() == BigInteger.class &&
-                ((BigInteger) eq.getRightHand().getValue()).compareTo())
-            throw new CompileTimeException("Contradiction.", Set.of(eq.getLeft(), eq.getRightHand()));
+    public static void checkEqualityBoundsContradiction(EqualityGadget eq, BoundsCheckGadget bc) {
+        Optional<Variable> equal = EqualityGadget.getEqual(eq, bc.getValue());
+
+        if (equal.isPresent() && isInstanceVariable(equal.get()) && isBigInteger(equal.get())) {
+            BigInteger value = (BigInteger) ((Literal) equal.get().getValue()).getValue();
+            if (value.compareTo(bc.getMinValue()) < 0)
+                throw new CompileTimeException("Contradiction.", List.of(eq.getRight(), bc.getMin()));
+            if (value.compareTo(bc.getMaxValue()) > 0)
+                throw new CompileTimeException("Contradiction.", List.of(eq.getRight(), bc.getMax()));
+        }
     }
-    */
 
     @Substitution(target = {BoundsCheckGadget.class, BoundsCheckGadget.class})
     public static Set<Gadget> replaceEquality2(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
@@ -123,8 +128,6 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     public BigInteger getMaxValue() {
         return (BigInteger) max.getValue().getValue();
     }
-
-    // TODO: optimizer: check min == 1 --> replace by equals 0
 
     @Override
     public boolean isEqualTo(BoundsCheckGadget other) {

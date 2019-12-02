@@ -4,7 +4,6 @@ import zkstrata.analysis.Contradiction;
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.custom.HexLiteral;
-import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
@@ -17,6 +16,8 @@ import zkstrata.utils.Constants;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+
+import static zkstrata.utils.GadgetUtils.isInstanceVariable;
 
 @AstElement(MiMCHash.class)
 public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
@@ -47,15 +48,14 @@ public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
     @Contradiction(propositions = {MiMCHashGadget.class, MiMCHashGadget.class})
     public static void checkContradiction(MiMCHashGadget hg1, MiMCHashGadget hg2) {
         if (hg1.getPreimage().equals(hg2.getPreimage())
-                && hg1.getImage() instanceof InstanceVariable
-                && hg2.getImage() instanceof InstanceVariable
+                && isInstanceVariable(hg1.getImage()) && isInstanceVariable(hg2.getImage())
                 && !hg1.getImage().equals(hg2.getImage()))
             throw new CompileTimeException("Contradiction.", List.of(hg1.getImage(), hg2.getImage()));
     }
 
     @Override
     public void performChecks() {
-        if (this.image instanceof InstanceVariable) {
+        if (isInstanceVariable(this.image)) {
             BigInteger image = (BigInteger) (((HexLiteral) this.image.getValue()).getValue());
             if (image.compareTo(Constants.ED25519_MAX_VALUE) > 0
                     || image.compareTo(BigInteger.ZERO) < 0)

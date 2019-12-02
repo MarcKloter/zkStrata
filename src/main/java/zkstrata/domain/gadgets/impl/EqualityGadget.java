@@ -6,7 +6,6 @@ import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.data.types.Any;
-import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.*;
@@ -16,6 +15,8 @@ import zkstrata.parser.ast.predicates.Equality;
 import zkstrata.utils.CombinatoricsUtils;
 
 import java.util.*;
+
+import static zkstrata.utils.GadgetUtils.*;
 
 @AstElement(Equality.class)
 public class EqualityGadget extends AbstractGadget<EqualityGadget> {
@@ -48,15 +49,14 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
 
     @Contradiction(propositions = {EqualityGadget.class})
     public static void checkContradiction(EqualityGadget eq) {
-        if (eq.getLeft() instanceof InstanceVariable && eq.getRight() instanceof InstanceVariable
+        if (isInstanceVariable(eq.getLeft()) && isInstanceVariable(eq.getRight())
                 && !eq.getLeft().equals(eq.getRight()))
             throw new CompileTimeException("Contradiction.", List.of(eq.getLeft(), eq.getRight()));
     }
 
     @Substitution(target = {EqualityGadget.class})
     public static Set<Gadget> removeWitnessEqualsSelf(EqualityGadget eq) {
-        if (eq.getLeft() instanceof WitnessVariable && eq.getRight() instanceof WitnessVariable
-                && eq.getLeft().equals(eq.getRight())) {
+        if (isWitnessVariable(eq.getLeft()) && isWitnessVariable(eq.getRight()) && eq.getLeft().equals(eq.getRight())) {
             // TODO: maybe add statements information
             LOGGER.info("Removed equality predicate of single witness variable.");
             return Collections.emptySet();
@@ -67,7 +67,7 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
 
     @Substitution(target = {EqualityGadget.class})
     public static Set<Gadget> removeInstanceEqualsInstance(EqualityGadget eq) {
-        if (eq.getLeft() instanceof InstanceVariable && eq.getRight() instanceof InstanceVariable
+        if (isInstanceVariable(eq.getLeft()) && isInstanceVariable(eq.getRight())
                 && eq.getLeft().getValue().equals(eq.getRight().getValue())) {
             // TODO: maybe add statements information
             LOGGER.info("Removed equality predicate of two instance variables.");
@@ -86,10 +86,10 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
      * @return {@link Optional} containing a {@link Variable} the given {@link WitnessVariable} is equal to
      */
     public static Optional<Variable> getEqual(EqualityGadget eq, WitnessVariable var) {
-        if (eq.getLeft() instanceof WitnessVariable && eq.getLeft().equals(var))
+        if (isWitnessVariable(eq.getLeft()) && eq.getLeft().equals(var))
             return Optional.of(eq.getRight());
 
-        if (eq.getRight() instanceof WitnessVariable && eq.getRight().equals(var))
+        if (isWitnessVariable(eq.getRight()) && eq.getRight().equals(var))
             return Optional.of(eq.getLeft());
 
         return Optional.empty();

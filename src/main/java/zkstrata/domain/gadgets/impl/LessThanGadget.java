@@ -19,6 +19,8 @@ import zkstrata.parser.ast.predicates.LessThan;
 import java.math.BigInteger;
 import java.util.*;
 
+import static zkstrata.utils.GadgetUtils.*;
+
 @AstElement(LessThan.class)
 public class LessThanGadget extends AbstractGadget<LessThanGadget> {
     private static final Logger LOGGER = LogManager.getRootLogger();
@@ -39,8 +41,14 @@ public class LessThanGadget extends AbstractGadget<LessThanGadget> {
         this.performChecks();
     }
 
+    @Contradiction(propositions = {LessThanGadget.class})
+    public static void checkSelfContradiction(LessThanGadget lt) {
+        if (lt.getLeft().equals(lt.getRight()))
+            throw new CompileTimeException("Contradiction.", List.of(lt.getLeft(), lt.getRight()));
+    }
+
     @Contradiction(propositions = {EqualityGadget.class, LessThanGadget.class})
-    public static void checkContradiction(EqualityGadget eq, LessThanGadget lt) {
+    public static void checkEqualityContradiction(EqualityGadget eq, LessThanGadget lt) {
         if (eq.getLeft().equals(lt.getLeft()) && eq.getRight().equals(lt.getRight())
                 || eq.getRight().equals(lt.getRight()) && eq.getRight().equals(lt.getLeft()))
             throw new CompileTimeException("Contradiction.",
@@ -57,7 +65,7 @@ public class LessThanGadget extends AbstractGadget<LessThanGadget> {
                 .orElse(EqualityGadget.getEqual(eq2, lt.getRight())
                         .orElse(null));
 
-        if (left instanceof InstanceVariable && right instanceof InstanceVariable) {
+        if (isInstanceVariable(left) && isBigInteger(left) && isInstanceVariable(right) && isBigInteger(right)) {
             BigInteger leftValue = (BigInteger) ((InstanceVariable) left).getValue().getValue();
             BigInteger rightValue = (BigInteger) ((InstanceVariable) right).getValue().getValue();
 
@@ -85,11 +93,11 @@ public class LessThanGadget extends AbstractGadget<LessThanGadget> {
     @Implication(assumption = {LessThanGadget.class, EqualityGadget.class})
     public static Optional<Gadget> implyEquality(LessThanGadget lt, EqualityGadget eq) {
         Optional<Variable> left = EqualityGadget.getEqual(eq, lt.getLeft());
-        if (left.isPresent() && left.get() instanceof WitnessVariable && !left.get().equals(lt.getRight()))
+        if (left.isPresent() && isWitnessVariable(left.get()) && !left.get().equals(lt.getRight()))
             return Optional.of(new LessThanGadget((WitnessVariable) left.get(), lt.getRight()));
 
         Optional<Variable> right = EqualityGadget.getEqual(eq, lt.getRight());
-        if (right.isPresent() && right.get() instanceof WitnessVariable && !lt.getLeft().equals(right.get()))
+        if (right.isPresent() && isWitnessVariable(right.get()) && !lt.getLeft().equals(right.get()))
             return Optional.of(new LessThanGadget(lt.getLeft(), (WitnessVariable) right.get()));
 
         return Optional.empty();

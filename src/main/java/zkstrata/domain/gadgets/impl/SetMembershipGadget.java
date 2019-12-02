@@ -16,6 +16,8 @@ import zkstrata.parser.ast.predicates.SetMembership;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static zkstrata.utils.GadgetUtils.isWitnessVariable;
+
 @AstElement(SetMembership.class)
 public class SetMembershipGadget extends AbstractGadget<SetMembershipGadget> {
     private static final Logger LOGGER = LogManager.getRootLogger();
@@ -50,7 +52,7 @@ public class SetMembershipGadget extends AbstractGadget<SetMembershipGadget> {
 
     @Substitution(target = {SetMembershipGadget.class}, context = {EqualityGadget.class})
     public static Set<Gadget> removeEqualityContained(SetMembershipGadget sm, EqualityGadget eq) {
-        if (sm.getMember() instanceof WitnessVariable) {
+        if (isWitnessVariable(sm.getMember())) {
             Optional<Variable> equal = EqualityGadget.getEqual(eq, (WitnessVariable) sm.getMember());
             if (equal.isPresent() && sm.getSet().contains(equal.get())) {
                 // TODO: maybe add statements information

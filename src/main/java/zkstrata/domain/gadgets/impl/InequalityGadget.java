@@ -5,7 +5,6 @@ import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.data.types.Any;
-import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.gadgets.AbstractGadget;
 import zkstrata.domain.gadgets.AstElement;
@@ -16,6 +15,8 @@ import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.Inequality;
 
 import java.util.*;
+
+import static zkstrata.utils.GadgetUtils.*;
 
 @AstElement(Inequality.class)
 public class InequalityGadget extends AbstractGadget<InequalityGadget> {
@@ -39,8 +40,7 @@ public class InequalityGadget extends AbstractGadget<InequalityGadget> {
 
     @Contradiction(propositions = {InequalityGadget.class})
     public static void checkSelfContradiction(InequalityGadget iq) {
-        if (iq.getLeft() instanceof InstanceVariable && iq.getRight() instanceof InstanceVariable
-                && iq.getLeft().equals(iq.getRight()))
+        if (isInstanceVariable(iq.getLeft()) && isInstanceVariable(iq.getRight()) && iq.getLeft().equals(iq.getRight()))
             throw new CompileTimeException("Contradiction.", List.of(iq.getLeft(), iq.getRight()));
     }
 
@@ -54,7 +54,7 @@ public class InequalityGadget extends AbstractGadget<InequalityGadget> {
 
     @Substitution(target = {InequalityGadget.class})
     public static Set<Gadget> removeInstanceUnequalsInstance(InequalityGadget iq) {
-        if (iq.getLeft() instanceof InstanceVariable && iq.getRight() instanceof InstanceVariable
+        if (isInstanceVariable(iq.getLeft()) && isInstanceVariable(iq.getRight())
                 && !iq.getLeft().getValue().equals(iq.getRight().getValue())) {
             // TODO: maybe add statements information
             LOGGER.info("Removed inequality predicate of two instance variables.");

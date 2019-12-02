@@ -110,7 +110,7 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_41, INSTANCE_VAR_29);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
-            BoundsCheckGadget.checkContradiction2(boundsCheckGadget);
+            BoundsCheckGadget.checkSelfBoundsContradiction(boundsCheckGadget);
         });
 
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
@@ -121,7 +121,7 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
 
         assertDoesNotThrow(() -> {
-            BoundsCheckGadget.checkContradiction2(boundsCheckGadget);
+            BoundsCheckGadget.checkSelfBoundsContradiction(boundsCheckGadget);
         });
     }
 
@@ -131,7 +131,7 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_29);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
-            BoundsCheckGadget.checkContradiction1(boundsCheckGadget1, boundsCheckGadget2);
+            BoundsCheckGadget.checkTwoBoundsChecksContradiction(boundsCheckGadget1, boundsCheckGadget2);
         });
 
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
@@ -143,7 +143,7 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_41, INSTANCE_VAR_53);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
-            BoundsCheckGadget.checkContradiction1(boundsCheckGadget1, boundsCheckGadget2);
+            BoundsCheckGadget.checkTwoBoundsChecksContradiction(boundsCheckGadget1, boundsCheckGadget2);
         });
 
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
@@ -155,8 +155,52 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_53);
 
         assertDoesNotThrow(() -> {
-            BoundsCheckGadget.checkContradiction1(boundsCheckGadget1, boundsCheckGadget2);
-            BoundsCheckGadget.checkContradiction1(boundsCheckGadget2, boundsCheckGadget1);
+            BoundsCheckGadget.checkTwoBoundsChecksContradiction(boundsCheckGadget1, boundsCheckGadget2);
+            BoundsCheckGadget.checkTwoBoundsChecksContradiction(boundsCheckGadget2, boundsCheckGadget1);
+        });
+    }
+
+    @Test
+    void Equality_Bounds_Contradiction_1() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_41, INSTANCE_VAR_53);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            BoundsCheckGadget.checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget);
+        });
+
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
+    }
+
+    @Test
+    void Equality_Bounds_Contradiction_2() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_53);
+
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            BoundsCheckGadget.checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget);
+        });
+
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
+    }
+
+    @Test
+    void Two_Gadget_No_Contradiction_1() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+
+        assertDoesNotThrow(() -> {
+            BoundsCheckGadget.checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget);
+        });
+    }
+
+    @Test
+    void Two_Gadget_No_Contradiction_2() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_41);
+
+        assertDoesNotThrow(() -> {
+            BoundsCheckGadget.checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget);
         });
     }
 
