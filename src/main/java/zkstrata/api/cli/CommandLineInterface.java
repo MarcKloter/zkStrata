@@ -1,4 +1,4 @@
-package zkstrata.compiler.cli;
+package zkstrata.api.cli;
 
 import org.apache.commons.cli.*;
 import org.apache.commons.io.FilenameUtils;

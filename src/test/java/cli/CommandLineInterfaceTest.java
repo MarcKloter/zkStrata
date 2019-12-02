@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import zkstrata.compiler.Arguments;
-import zkstrata.compiler.cli.CommandLineInterface;
+import zkstrata.api.cli.CommandLineInterface;
 import zkstrata.domain.data.accessors.JsonAccessor;
 import zkstrata.domain.data.schemas.dynamic.JsonSchema;
 

@@ -1,8 +1,10 @@
-package zkstrata.compiler;
+package zkstrata.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import zkstrata.compiler.cli.CommandLineInterface;
+import zkstrata.api.cli.CommandLineInterface;
+import zkstrata.compiler.Arguments;
+import zkstrata.compiler.Compiler;
 
 public class Starter {
     private static final Logger LOGGER = LogManager.getLogger(Starter.class);
