@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SemanticAnalyzer {
-    private static final Logger LOGGER = LogManager.getLogger(SemanticAnalyzer.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     private final Set<Method> implicationRules;
     private final Set<Method> contradictionRules;

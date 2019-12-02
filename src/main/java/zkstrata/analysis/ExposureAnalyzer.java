@@ -23,7 +23,7 @@ import java.util.Map;
  * will throw an exception.
  */
 public class ExposureAnalyzer {
-    private static final Logger LOGGER = LogManager.getLogger(ExposureAnalyzer.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     private ExposureAnalyzer() {
         throw new IllegalStateException("Utility class");

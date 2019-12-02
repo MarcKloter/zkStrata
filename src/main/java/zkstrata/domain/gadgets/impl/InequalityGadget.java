@@ -19,7 +19,7 @@ import java.util.*;
 
 @AstElement(Inequality.class)
 public class InequalityGadget extends AbstractGadget<InequalityGadget> {
-    private static final Logger LOGGER = LogManager.getLogger(InequalityGadget.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     @Type({Any.class})
     private Variable left;

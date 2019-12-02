@@ -13,7 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Optimizer {
-    private static final Logger LOGGER = LogManager.getLogger(Optimizer.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     public static List<Gadget> run(Statement statement) {
         LOGGER.debug("Starting optimization on {} gadgets", statement.getGadgets().size());

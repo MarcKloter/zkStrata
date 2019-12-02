@@ -21,7 +21,7 @@ import java.util.*;
 
 @AstElement(LessThan.class)
 public class LessThanGadget extends AbstractGadget<LessThanGadget> {
-    private static final Logger LOGGER = LogManager.getLogger(LessThanGadget.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     @Type({BigInteger.class})
     private WitnessVariable left;

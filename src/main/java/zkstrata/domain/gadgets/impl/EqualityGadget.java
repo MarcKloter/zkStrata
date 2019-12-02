@@ -19,7 +19,7 @@ import java.util.*;
 
 @AstElement(Equality.class)
 public class EqualityGadget extends AbstractGadget<EqualityGadget> {
-    private static final Logger LOGGER = LogManager.getLogger(EqualityGadget.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     @Type({Any.class})
     private Variable left;

@@ -7,7 +7,7 @@ import zkstrata.compiler.Arguments;
 import zkstrata.compiler.Compiler;
 
 public class Starter {
-    private static final Logger LOGGER = LogManager.getLogger(Starter.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     public static void main(String[] args) {
         CommandLineInterface cli = new CommandLineInterface();

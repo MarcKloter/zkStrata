@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class CodeGenerator {
-    private static final Logger LOGGER = LogManager.getLogger(CodeGenerator.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
     private static final String GADGETS_FILE_EXT = ".gadgets";
     private static final String INSTANCE_FILE_EXT = ".inst";
     private static final String WITNESS_FILE_EXT = ".wtns";

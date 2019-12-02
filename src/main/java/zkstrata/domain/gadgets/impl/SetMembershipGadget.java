@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 
 @AstElement(SetMembership.class)
 public class SetMembershipGadget extends AbstractGadget<SetMembershipGadget> {
-    private static final Logger LOGGER = LogManager.getLogger(SetMembershipGadget.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     @Type({Any.class})
     private Variable member;

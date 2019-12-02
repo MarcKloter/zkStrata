@@ -8,7 +8,7 @@ import java.lang.reflect.Method;
 import java.math.BigInteger;
 
 public class HexEncoder {
-    private static final Logger LOGGER = LogManager.getLogger(HexEncoder.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     private HexEncoder() {
         throw new IllegalStateException("Utility class");

@@ -36,8 +36,6 @@ public class CommandLineInterface {
      */
     public Arguments parse(String[] args) {
         try {
-            checkFlags(args);
-
             return parseArguments(args);
         } catch (ParseException e) {
             printHelp();
@@ -49,9 +47,7 @@ public class CommandLineInterface {
     private Arguments parseArguments(String[] args) throws ParseException {
         CommandLineParser parser = new DefaultParser();
         CommandLine cmd = parser.parse(options, args);
-
-        if (cmd.hasOption("verbose"))
-            setVerbose();
+        checkFlags(cmd);
 
         String file = getStatementFile(cmd);
         String name = getStatementName(file);
@@ -68,18 +64,17 @@ public class CommandLineInterface {
     /**
      * Checks whether special option flags were used.
      *
-     * @param args Arguments passed to the CLI
-     * @throws ParseException if the given arguments could not be processed
+     * @param cmd {@link CommandLine} object that represents a list of arguments
      */
-    private void checkFlags(String[] args) throws ParseException {
-        CommandLineParser parser = new DefaultParser();
-        CommandLine cmd = parser.parse(new OptionBuilder().withFlags().build(), args, true);
-
+    private void checkFlags(CommandLine cmd) {
         if (cmd.hasOption("help"))
             printHelp();
 
         if (cmd.hasOption("version"))
             printVersion();
+
+        if (cmd.hasOption("verbose"))
+            setVerbose();
     }
 
     /**

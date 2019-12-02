@@ -14,7 +14,7 @@ import zkstrata.parser.ast.AbstractSyntaxTree;
 import java.util.*;
 
 public class Compiler {
-    private static final Logger LOGGER = LogManager.getLogger(Compiler.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
 
     private Compiler() {
         throw new IllegalStateException("Utility class");

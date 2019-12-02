@@ -32,7 +32,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 
 public class ASTVisitor {
-    private static final Logger LOGGER = LogManager.getLogger(ASTVisitor.class);
+    private static final Logger LOGGER = LogManager.getRootLogger();
     private static final List<String> reservedAliases = List.of("private", "public");
 
     private final String parentAlias;
