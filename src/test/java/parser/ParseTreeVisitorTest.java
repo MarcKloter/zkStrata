@@ -9,6 +9,8 @@ import zkstrata.exceptions.CompileTimeException;
 import zkstrata.parser.ParseTreeVisitor;
 import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.Clause;
+import zkstrata.parser.ast.connectives.And;
+import zkstrata.parser.ast.connectives.Or;
 import zkstrata.parser.ast.predicates.*;
 import zkstrata.parser.ast.types.Value;
 import zkstrata.utils.BinaryTree;
@@ -304,5 +306,60 @@ public class ParseTreeVisitorTest {
             new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         });
         assertTrue(exception.getMessage().toLowerCase().contains("unexpected input"));
+    }
+
+    @Test
+    void Or_Conjunction_Is_Parsed_Correctly_1() {
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .equality(integerLiteral(INT_LITERAL_1), IDENTIFIER_1)
+                .conjunction(StatementBuilder.or()
+                        .inequality(integerLiteral(INT_LITERAL_1), IDENTIFIER_2)
+                        .mimcHash(IDENTIFIER_1, HEX_LITERAL)
+                        .build())
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
+
+        Clause predicateClause = ast.getClause();
+        assertEquals(And.class, predicateClause.getClass());
+
+        And and = (And) predicateClause;
+        assertEquals(Equality.class, and.getLeft().getClass());
+        assertEquals(Or.class, and.getRight().getClass());
+
+        Or or = (Or) and.getRight();
+        assertEquals(Inequality.class, or.getLeft().getClass());
+        assertEquals(MiMCHash.class, or.getRight().getClass());
+    }
+
+    @Test
+    void Or_Conjunction_Is_Parsed_Correctly_2() {
+        String statement = new StatementBuilder()
+                .subject(SCHEMA, ALIAS, true)
+                .conjunction(StatementBuilder.or()
+                        .equality(integerLiteral(INT_LITERAL_1), IDENTIFIER_1)
+                        .conjunction(StatementBuilder.and()
+                                .mimcHash(IDENTIFIER_1, HEX_LITERAL)
+                                .lessThan(IDENTIFIER_1, IDENTIFIER_2)
+                                .build())
+                        .inequality(integerLiteral(INT_LITERAL_1), IDENTIFIER_2)
+                        .build())
+                .build();
+        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
+
+        Clause predicateClause = ast.getClause();
+        assertEquals(Or.class, predicateClause.getClass());
+
+        Or or1 = (Or) predicateClause;
+        assertEquals(Or.class, or1.getLeft().getClass());
+        assertEquals(Inequality.class, or1.getRight().getClass());
+
+        Or or2 = (Or) or1.getLeft();
+        assertEquals(Equality.class, or2.getLeft().getClass());
+        assertEquals(And.class, or2.getRight().getClass());
+
+        And and = (And) or2.getRight();
+        assertEquals(MiMCHash.class, and.getLeft().getClass());
+        assertEquals(LessThan.class, and.getRight().getClass());
     }
 }

@@ -26,10 +26,9 @@ public class Or extends Connective {
 
     @Override
     public void addTo(StatementBuilder statementBuilder) {
-        StatementBuilder localBuilder = new StatementBuilder();
-        left.addTo(localBuilder);
-        right.addTo(localBuilder);
-        String predicate = localBuilder.buildPredicates(StatementBuilder.Conjunction.OR);
-        statementBuilder.predicate(String.format("(%s)", predicate));
+        StatementBuilder orBuilder = StatementBuilder.or();
+        left.addTo(orBuilder);
+        right.addTo(orBuilder);
+        statementBuilder.conjunction(orBuilder.build());
     }
 }

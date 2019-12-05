@@ -19,6 +19,9 @@ public class StatementBuilder {
     private List<String> subjects = new ArrayList<>();
     private List<String> predicates = new ArrayList<>();
 
+    private boolean fullBuildMode = true;
+    private Conjunction conjunction = Conjunction.AND;
+
     public StatementBuilder() {
 
     }
@@ -30,12 +33,25 @@ public class StatementBuilder {
         ast.getClause().addTo(this);
     }
 
+    private StatementBuilder(boolean fullBuildMode, Conjunction conjunction) {
+        this.fullBuildMode = fullBuildMode;
+        this.conjunction = conjunction;
+    }
+
     public static String stringLiteral(String string) {
         return String.format("'%s'", string);
     }
 
     public static String integerLiteral(BigInteger integer) {
         return String.format("%d", integer);
+    }
+
+    public static StatementBuilder or() {
+        return new StatementBuilder(false, Conjunction.OR);
+    }
+
+    public static StatementBuilder and() {
+        return new StatementBuilder(false, Conjunction.AND);
     }
 
     public StatementBuilder subject(String schema, String alias, boolean isWitness) {
@@ -54,7 +70,7 @@ public class StatementBuilder {
         return this;
     }
 
-    public StatementBuilder predicate(String predicate) {
+    public StatementBuilder conjunction(String predicate) {
         predicates.add(predicate);
 
         return this;
@@ -128,11 +144,18 @@ public class StatementBuilder {
         return this;
     }
 
-    public String buildPredicates(Conjunction conjunction) {
-        return String.join(conjunction.getEncoding(), predicates);
+    public String build() {
+        if (fullBuildMode)
+            return buildStatement();
+        else
+            return buildPredicates(conjunction);
     }
 
-    public String build() {
+    private String buildPredicates(Conjunction conjunction) {
+        return String.format("(%s)", String.join(conjunction.getEncoding(), predicates));
+    }
+
+    private String buildStatement() {
         TextStringBuilder builder = new TextStringBuilder();
         builder.append(PREFIX);
         builder.append(String.join(Conjunction.AND.getEncoding(), subjects));
