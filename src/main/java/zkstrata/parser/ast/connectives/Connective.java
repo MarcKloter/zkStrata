@@ -5,11 +5,20 @@ import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.Clause;
 
 public abstract class Connective extends AbstractTraceable implements Clause {
-    public Connective(Position position) {
+    private Clause left;
+    private Clause right;
+
+    public Connective(Clause left, Clause right, Position position) {
         super(position);
+        this.left = left;
+        this.right = right;
     }
 
-    public abstract Clause getLeft();
+    public Clause getLeft() {
+        return left;
+    }
 
-    public abstract Clause getRight();
+    public Clause getRight() {
+        return right;
+    }
 }
