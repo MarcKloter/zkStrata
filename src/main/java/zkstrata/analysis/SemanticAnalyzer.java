@@ -67,9 +67,9 @@ public class SemanticAnalyzer {
         for (Method contradictionRule : contradictionRules) {
             Class<? extends Gadget>[] context = contradictionRule.getAnnotation(Contradiction.class).propositions();
 
-            List<List<Gadget>> contextCombinations = CombinatoricsUtils.getCombinations(
+            Set<List<Gadget>> contextCombinations = CombinatoricsUtils.getCombinations(
                     List.of(context),
-                    inferences.stream().map(Inference::getConclusion).collect(Collectors.toList())
+                    inferences.stream().map(Inference::getConclusion).collect(Collectors.toSet())
             );
 
             for (List<Gadget> contextCombination : contextCombinations) {
@@ -188,7 +188,7 @@ public class SemanticAnalyzer {
                 int index = context.indexOf(type);
                 context.remove(index);
 
-                List<List<Gadget>> contextCombinations = CombinatoricsUtils.getCombinations(context, assumptionMapping.keySet());
+                Set<List<Gadget>> contextCombinations = CombinatoricsUtils.getCombinations(context, assumptionMapping.keySet());
                 for (List<Gadget> contextCombination : contextCombinations) {
                     contextCombination.add(index, assumption.getConclusion());
                     invokeImplication(implicationRule, contextCombination.toArray())
