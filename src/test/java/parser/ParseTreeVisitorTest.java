@@ -281,34 +281,6 @@ public class ParseTreeVisitorTest {
     }
 
     @Test
-    void Unexpected_Symbol_Should_Throw() {
-        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
-            new ParseTreeVisitor().parse(SOURCE, UNEXPECTED_SYMBOL, PARENT_SCHEMA);
-        });
-        assertTrue(exception.getMessage().toLowerCase().contains("unexpected symbol"));
-    }
-
-    @Test
-    void Unexpected_Token_Should_Throw() {
-        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
-            new ParseTreeVisitor().parse(SOURCE, UNEXPECTED_TOKEN, PARENT_SCHEMA);
-        });
-        assertTrue(exception.getMessage().toLowerCase().contains("unexpected token"));
-    }
-
-    @Test
-    void Unexpected_Input_Should_Throw() {
-        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
-            String statement = new StatementBuilder()
-                    .subject(SCHEMA, ALIAS, true)
-                    .mimcHash(MISSING_TOKEN, HEX_LITERAL)
-                    .build();
-            new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
-        });
-        assertTrue(exception.getMessage().toLowerCase().contains("unexpected input"));
-    }
-
-    @Test
     void Or_Conjunction_Is_Parsed_Correctly_1() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
@@ -361,5 +333,33 @@ public class ParseTreeVisitorTest {
         And and = (And) or2.getRight();
         assertEquals(MiMCHash.class, and.getLeft().getClass());
         assertEquals(LessThan.class, and.getRight().getClass());
+    }
+
+    @Test
+    void Unexpected_Symbol_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            new ParseTreeVisitor().parse(SOURCE, UNEXPECTED_SYMBOL, PARENT_SCHEMA);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("unexpected symbol"));
+    }
+
+    @Test
+    void Unexpected_Token_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            new ParseTreeVisitor().parse(SOURCE, UNEXPECTED_TOKEN, PARENT_SCHEMA);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("unexpected token"));
+    }
+
+    @Test
+    void Unexpected_Input_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            String statement = new StatementBuilder()
+                    .subject(SCHEMA, ALIAS, true)
+                    .mimcHash(MISSING_TOKEN, HEX_LITERAL)
+                    .build();
+            new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("unexpected input"));
     }
 }
