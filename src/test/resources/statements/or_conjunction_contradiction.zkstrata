@@ -1,0 +1,22 @@
+PROOF FOR
+    passport_ch AS pass
+THAT
+    pass.firstName IS EQUAL TO 'John'
+AND
+    (
+        pass.lastName IS EQUAL TO 'Doe'
+    OR
+        pass.dateOfBirth.day IS EQUAL TO 12
+    AND
+        (
+            pass.dateOfBirth.month IS GREATER THAN pass.expiresOn.month
+        OR
+            pass.firstName IS PREIMAGE OF 0x01bd94c871b2d21926cf4f1c9e2fcbca8ece3353a0aac7cea8d507a9ad30afe2
+        OR
+            pass.firstName IS EQUAL TO 'Jane'
+        )
+    )
+OR
+    pass.dateOfBirth.month IS EQUAL TO 6
+OR
+    pass.dateOfBirth.year IS EQUAL TO 1980
