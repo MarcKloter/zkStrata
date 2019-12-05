@@ -181,4 +181,28 @@ public class IntegrationTest {
         });
         assertTrue(exception.getMessage().toLowerCase().contains("undeclared alias"));
     }
+
+    @Test
+    void Missing_Entry_Should_Throw() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("default")
+                    .withWitness("pass", "passport_missing_entry")
+                    .build();
+            Compiler.run(args);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("missing entry"));
+    }
+
+    @Test
+    void Witness_Type_Mismatch_Should_Throw() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("default")
+                    .withWitness("pass", "passport_invalid_entry")
+                    .build();
+            Compiler.run(args);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("type mismatch"));
+    }
 }
