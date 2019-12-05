@@ -1,12 +1,12 @@
 package zkstrata.domain.gadgets;
 
-import zkstrata.codegen.TargetFormat;
+import zkstrata.domain.Constituent;
 import zkstrata.domain.data.types.wrapper.Variable;
 
 import java.util.List;
 import java.util.Map;
 
-public interface Gadget<T extends Gadget> {
+public interface Gadget<T extends Gadget> extends Constituent {
     /**
      * Initializes fields of this gadget annotated with {@link Type} according to the given source.
      *
@@ -20,11 +20,6 @@ public interface Gadget<T extends Gadget> {
      * Indicates whether this gadget instance is equal to the provided one.
      */
     boolean isEqualTo(T other);
-
-    /**
-     * Transforms this gadget into the target format.
-     */
-    TargetFormat toTargetFormat();
 
     /**
      * Hook method that will be called after @Type annotated fields were wired.

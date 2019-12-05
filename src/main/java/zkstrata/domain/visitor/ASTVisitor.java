@@ -4,11 +4,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zkstrata.compiler.Arguments;
+import zkstrata.domain.Constituent;
 import zkstrata.domain.Statement;
+import zkstrata.domain.conjunctions.Conjunction;
 import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.accessors.SchemaAccessor;
 import zkstrata.domain.data.accessors.ValueAccessor;
 import zkstrata.exceptions.*;
+import zkstrata.parser.ast.Clause;
+import zkstrata.parser.ast.connectives.Connective;
+import zkstrata.parser.ast.predicates.Predicate;
 import zkstrata.parser.ast.types.*;
 import zkstrata.utils.BinaryTree;
 import zkstrata.utils.ReflectionHelper;
@@ -19,12 +24,10 @@ import zkstrata.domain.data.schemas.wrapper.StructuredData;
 import zkstrata.domain.data.schemas.wrapper.Witness;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
-import zkstrata.domain.gadgets.AstElement;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.data.schemas.Schema;
 import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.Subject;
-import zkstrata.parser.ast.predicates.Predicate;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -65,15 +68,14 @@ public class ASTVisitor {
             this.subjects.put(alias, visitSubject(subject));
         }
 
-        List<Gadget> gadgets = new ArrayList<>();
-        for (Predicate predicate : ast.getPredicates())
-            gadgets.add(visitPredicate(predicate));
+        Constituent predicate = visitClause(ast.getClause());
 
         this.checkUnusedSubjects();
 
-        LOGGER.debug("Finishing visit of AST for {}: Found {} gadgets over {} subjects",
-                ast.getSource(), gadgets.size(), subjects.getUsedMap().size());
-        return new Statement(subjects.getUsedMap(), gadgets);
+        // TODO
+        /*LOGGER.debug("Finishing visit of AST for {}: Found {} gadgets over {} subjects",
+                ast.getSource(), gadgets.size(), subjects.getUsedMap().size());*/
+        return new Statement(subjects.getUsedMap(), predicate);
     }
 
     private StructuredData visitSubject(Subject subject) {
@@ -105,7 +107,60 @@ public class ASTVisitor {
             return new Instance(alias, schema, instanceData.get(alias));
     }
 
-    private Gadget visitPredicate(Predicate predicate) {
+    private Constituent visitClause(Clause clause) {
+        if (clause instanceof Connective)
+            return visitConnective((Connective) clause);
+
+        if (clause instanceof Predicate)
+            return visitPredicate((Predicate) clause);
+
+        throw new InternalCompilerException("Missing visitor for clause of type %s.", clause.getClass());
+    }
+
+    private Constituent visitConnective(Connective connective) {
+        List<Constituent> parts = new ArrayList<>();
+
+        Class<? extends Conjunction> conjunctionType = getConjunctionType(connective);
+
+        Constituent left = visitClause(connective.getLeft());
+        if (conjunctionType.equals(left.getClass()))
+            parts.addAll(((Conjunction) left).getParts());
+        else
+            parts.add(left);
+
+        Constituent right = visitClause(connective.getRight());
+        if (conjunctionType.equals(right.getClass()))
+            parts.addAll(((Conjunction) right).getParts());
+        else
+            parts.add(right);
+
+        try {
+            return conjunctionType.getConstructor(List.class).newInstance(parts);
+        } catch (NoSuchMethodException e) {
+            throw new InternalCompilerException("Conjunction %s is missing a parameterized with List.class.", conjunctionType);
+        } catch (ReflectiveOperationException e) {
+            throw new InternalCompilerException("Invalid implementation of conjunction %s.", conjunctionType);
+        }
+    }
+
+    private Class<? extends Conjunction> getConjunctionType(Connective connective) {
+        Set<Class<? extends Conjunction>> conjunctions = ReflectionHelper.getAllConjunctions();
+
+        for (Class<? extends Conjunction> conjunction : conjunctions) {
+            AstElement from = conjunction.getAnnotation(AstElement.class);
+
+            if (from == null)
+                throw new InternalCompilerException("Missing @AstElement annotation in %s.", conjunction);
+
+            if (from.value() == connective.getClass()) {
+                return conjunction;
+            }
+        }
+
+        throw new InternalCompilerException("Missing conjunction implementation for connective: %s", connective.getClass());
+    }
+
+    private Constituent visitPredicate(Predicate predicate) {
         Set<Class<? extends Gadget>> gadgets = ReflectionHelper.getAllGadgets();
 
         for (Class<? extends Gadget> gadget : gadgets) {

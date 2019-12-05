@@ -43,13 +43,15 @@ public class JsonAccessor implements ValueAccessor {
     public Object getObject(List<String> selectors) {
         Object object = this.jsonObject;
         for (String key : selectors) {
-            if (object instanceof JSONObject)
-                if (((JSONObject) object).has(key))
+            if (object instanceof JSONObject) {
+                if (((JSONObject) object).has(key)) {
                     object = ((JSONObject) object).get(key);
-                else
+                } else {
                     return null;
-            else
+                }
+            } else {
                 return null;
+            }
         }
         return object;
     }

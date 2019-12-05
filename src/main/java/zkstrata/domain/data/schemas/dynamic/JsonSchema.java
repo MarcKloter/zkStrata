@@ -163,14 +163,14 @@ public class JsonSchema extends AbstractSchema {
      * Primitive types in JSON as of RFC 8259
      */
     private enum JSONType {
-        STRING("string", String.class),
-        NUMBER("number", BigInteger.class),
-        BOOLEAN("boolean", Boolean.class),
-        NULL("null", Null.class);
+        STRING(String.class),
+        NUMBER(BigInteger.class),
+        BOOLEAN(Boolean.class),
+        NULL(Null.class);
 
         private Class<?> type;
 
-        JSONType(String name, Class<?> type) {
+        JSONType(Class<?> type) {
             this.type = type;
         }
 

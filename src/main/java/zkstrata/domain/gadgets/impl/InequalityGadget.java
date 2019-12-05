@@ -7,7 +7,7 @@ import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.gadgets.AbstractGadget;
-import zkstrata.domain.gadgets.AstElement;
+import zkstrata.domain.visitor.AstElement;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
@@ -77,12 +77,12 @@ public class InequalityGadget extends AbstractGadget<InequalityGadget> {
     }
 
     @Override
-    public TargetFormat toTargetFormat() {
+    public List<TargetFormat> toTargetFormat() {
         Map<String, Variable> args = Map.ofEntries(
                 Map.entry("left", left),
                 Map.entry("right", right)
         );
-        return new TargetFormat("UNEQUAL %(left) %(right)", args);
+        return List.of(new TargetFormat("UNEQUAL %(left) %(right)", args));
     }
 
     public Variable getLeft() {

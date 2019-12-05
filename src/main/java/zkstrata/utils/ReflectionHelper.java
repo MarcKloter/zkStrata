@@ -5,6 +5,7 @@ import org.reflections.scanners.MethodAnnotationsScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import zkstrata.domain.gadgets.Gadget;
+import zkstrata.domain.conjunctions.Conjunction;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -32,6 +33,21 @@ public class ReflectionHelper {
         return gadgets
                 .stream()
                 .filter(gadget -> !Modifier.isAbstract(gadget.getModifiers()))
+                .collect(Collectors.toSet());
+    }
+    /**
+     * Returns all non-abstract classes implementing the {@link Conjunction} interface.
+     *
+     * @return {@link Set} of classes implementing {@link Conjunction}
+     */
+    public static Set<Class<? extends Conjunction>> getAllConjunctions() {
+        Reflections reflections = new Reflections("zkstrata.domain.conjunctions");
+
+        Set<Class<? extends Conjunction>> conjunctions = reflections.getSubTypesOf(Conjunction.class);
+
+        return conjunctions
+                .stream()
+                .filter(conjunction -> !Modifier.isAbstract(conjunction.getModifiers()))
                 .collect(Collectors.toSet());
     }
 

@@ -15,6 +15,7 @@ K_LESS                : L E S S ;
 K_MEMBER              : M E M B E R ;
 K_MERKLE              : M E R K L E ;
 K_OF                  : O F ;
+K_OR                  : O R ;
 K_PREIMAGE            : P R E I M A G E ;
 K_PROOF               : P R O O F ;
 K_ROOT                : R O O T ;

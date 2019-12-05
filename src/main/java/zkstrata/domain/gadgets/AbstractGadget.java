@@ -155,4 +155,9 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
     public int hashCode() {
         return getVariables().stream().mapToInt(Variable::hashCode).sum();
     }
+
+    @Override
+    public List<List<Gadget>> getEvaluationPaths() {
+        return Arrays.asList(Arrays.asList(this));
+    }
 }

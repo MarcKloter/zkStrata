@@ -10,27 +10,30 @@ import BoundsCheck,
        Comparison,
        SetMembership;
 
-statement           : K_PROOF K_FOR subjects K_THAT predicates EOF ;
-predicates          : predicate_clause (joint predicate_clause)* (joint)? ;
-subjects            : subject (joint subject)* (joint)? ;
-subject             : K_INSTANCE? schema_name K_AS alias
-                    | (K_WITNESS? | K_INSTANCE) alias K_COMPLIANT K_TO schema_name
+statement           : K_PROOF K_FOR subjects K_THAT predicate EOF ;
+predicate           : clause (SCOL)? ;
+subjects            : subject ((K_AND | SCOL) subject)* (SCOL)? ;
+subject             : K_INSTANCE? schema K_AS alias
+                    | (K_WITNESS? | K_INSTANCE) alias K_COMPLIANT K_TO schema
                     | K_THIS ;
 
-witness_var         : referenced_value ;
-instance_var        : (referenced_value | literal_value) ;
+witness_var         : reference # WitnessVariable;
+instance_var        : (reference | literal) # InstanceVariable;
 
-referenced_value    : alias (DOT property)+ ;
+reference           : alias (DOT property)+ ;
 
-literal_value       : STRING_LITERAL
+literal             : STRING_LITERAL
                     | INTEGER_LITERAL
                     | HEX_LITERAL ;
 
 alias               : IDENTIFIER ;
-schema_name         : IDENTIFIER ;
+schema              : IDENTIFIER ;
 property            : IDENTIFIER ;
 
-joint               : (K_AND | SCOL) ;
+clause              : LPAREN clause RPAREN          # ParenClause
+                    | clause (K_AND | SCOL) clause  # AndClause
+                    | clause K_OR clause            # OrClause
+                    | predicate_clause              # AtomClause ;
 
 /**
  * Predicate Clauses

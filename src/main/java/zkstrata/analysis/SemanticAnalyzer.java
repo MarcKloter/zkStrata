@@ -2,6 +2,7 @@ package zkstrata.analysis;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import zkstrata.domain.Constituent;
 import zkstrata.domain.Statement;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.Gadget;
@@ -30,28 +31,38 @@ public class SemanticAnalyzer {
         this.contradictionRules = ReflectionHelper.getMethodsAnnotatedWith(Contradiction.class);
     }
 
-    // TODO: Herleitungs-History wäre interessant (Implication Object) --> vor allem in Fehlermeldung
-
     public void process(Statement statement) {
-        List<Gadget> gadgets = new ArrayList<>(statement.getGadgets());
-        statement.getPremises().forEach(premise -> gadgets.addAll(premise.getGadgets()));
+        LOGGER.debug("Starting semantic analysis");
 
-        LOGGER.debug("Starting semantic analysis on {} gadgets", gadgets.size());
+        // combine the given statement with all provided premises
+        Constituent rootConstituent = statement.getRootConstituent();
+        for (Statement premise : statement.getPremises()) {
+            rootConstituent = rootConstituent.combine(premise.getRootConstituent());
+        }
 
-        this.inferences = new HashSet<>();
-        this.inferenceMapping = new HashMap<>();
+        List<List<Gadget>> evaluationPaths = rootConstituent.getEvaluationPaths();
 
-        // find inferences by executing methods annotated with @Implication
-        findImplications(gadgets);
+        LOGGER.debug("Found {} logically distinct paths to evaluate the given statement", evaluationPaths.size());
 
-        // check for semantic errors by executing methods annotated with @Contradiction
-        checkContradictions();
+        for (List<Gadget> evaluationPath : evaluationPaths) {
+            this.inferences = new HashSet<>();
+            this.inferenceMapping = new HashMap<>();
 
-        statement.setInferences(inferences);
+            // find inferences by executing methods annotated with @Implication
+            findImplications(evaluationPath);
 
-        LOGGER.debug("Finishing analysis: Found a total of {} inferences", inferences.size());
+            LOGGER.debug("Found {} inferences for this evaluation path", inferences.size());
+
+            // check for semantic errors by executing methods annotated with @Contradiction
+            checkContradictions();
+        }
+
+        LOGGER.debug("Finishing semantic analysis");
     }
 
+    /**
+     * Executes all methods annotated as {@link Contradiction} on gadget combinations formed from {@link SemanticAnalyzer#inferences}.
+     */
     private void checkContradictions() {
         for (Method contradictionRule : contradictionRules) {
             Class<? extends Gadget>[] context = contradictionRule.getAnnotation(Contradiction.class).propositions();
@@ -80,11 +91,21 @@ public class SemanticAnalyzer {
         }
     }
 
+    /**
+     * Executes all methods annotated as {@link Implication} on the gadgets in the given list {@code gadgets} and all
+     * inferences that can be drawn from it, until there is no new realization.
+     * <p>
+     * To reduce the implication rules that will be run, the {@link SemanticAnalyzer#inferenceMapping}, a mapping of
+     * witness variables to the inferences they occur in, is used. This way only inferences containing common witnesses
+     * (thus, related inferences) are being used to run implication rules.
+     * <p>
+     * Any gadget that can be inferred will be stored in {@link SemanticAnalyzer#inferences} and the mapping
+     * {@link SemanticAnalyzer#inferenceMapping} which maps {@link WitnessVariable} to all gadgets in which they occur.
+     *
+     * @param gadgets list of gadgets to search inferences for
+     */
     private void findImplications(List<Gadget> gadgets) {
-        // represent gadgets assembled from statements as inferences of themselves
-        Map<WitnessVariable, Set<Inference>> newInferences = processInferences(gadgets.stream()
-                .map(g -> new Inference(Set.of(g), g, Collections.emptySet()))
-                .collect(Collectors.toSet()));
+        Map<WitnessVariable, Set<Inference>> newInferences = drawSelfInferences(gadgets);
 
         while (!newInferences.isEmpty()) {
             Set<Inference> round = new HashSet<>();
@@ -97,6 +118,26 @@ public class SemanticAnalyzer {
         }
     }
 
+    /**
+     * Transforms the given list of {@link Gadget} into a list of {@link Inference}, where each inference is drawn from
+     * the gadget itself.
+     *
+     * @param gadgets list of gadgets
+     * @return list of inferences drawn from the gadgets with no additional assumption
+     */
+    private Map<WitnessVariable, Set<Inference>> drawSelfInferences(List<Gadget> gadgets) {
+        return processInferences(gadgets.stream()
+                .map(g -> new Inference(Set.of(g), g, Collections.emptySet()))
+                .collect(Collectors.toSet()));
+    }
+
+    /**
+     * Transforms the given {@link Set} of {@link Inference} into a mapping of {@link WitnessVariable} to all
+     * {@link Inference} in which they occur.
+     *
+     * @param inferences set of inferences
+     * @return mapping of witness variables to the inferences they are part of
+     */
     private Map<WitnessVariable, Set<Inference>> processInferences(Set<Inference> inferences) {
         this.inferences.addAll(inferences);
 
@@ -111,16 +152,33 @@ public class SemanticAnalyzer {
         return delta;
     }
 
+    /**
+     * Filters the given set of {@link Inference} for such that have been implied before using less or the same assumptions.
+     * <p>
+     * This method is used to prevent recursive implications by staying with the most basic inference (least assumptions).
+     *
+     * @param inferences set of inferences to simplify
+     * @return the given set of inferences without elements that have been implied before
+     */
     private Set<Inference> simplify(Set<Inference> inferences) {
         return inferences.stream()
-                .filter(inference -> Stream.concat(inferences.stream().filter(i -> !inference.equals(i)), this.inferences.stream())
-                        .noneMatch(inference::canBeImpliedFrom))
+                .filter(curr -> Stream.concat(inferences.stream().filter(i -> !curr.equals(i)), this.inferences.stream())
+                        .noneMatch(curr::canBeImpliedFrom))
                 .collect(Collectors.toSet());
     }
 
+    /**
+     * Invokes all methods annotated as {@link Implication} for the given {@code assumption} using the given set of
+     * {@link Inference} of related inferences as basic assumptions.
+     *
+     * @param assumption  {@link Inference} to include into implication rule invocations
+     * @param assumptions set of {@link Inference} to complete implication rule invocations with
+     * @return set of newly drawn {@link Inference}
+     */
     private Set<Inference> runImplicationRules(Inference assumption, Set<Inference> assumptions) {
         Map<Gadget, List<Inference>> assumptionMapping = new HashMap<>();
         assumptions.forEach(inference -> assumptionMapping.computeIfAbsent(inference.getConclusion(), s -> new ArrayList<>()).add(inference));
+
         Class<? extends Gadget> type = assumption.getConclusion().getClass();
 
         Set<Inference> newInferences = new HashSet<>();
@@ -148,6 +206,13 @@ public class SemanticAnalyzer {
         return newInferences;
     }
 
+    /**
+     * Invokes the given {@link Method} using the provided {@code args}.
+     *
+     * @param implication {@link Method} to invoke
+     * @param args        arguments to pass to the method
+     * @return {@link Optional} {@link Gadget} returned by the invoked method
+     */
     private Optional<Gadget> invokeImplication(Method implication, Object[] args) {
         if (!ReflectionHelper.checkReturnType(implication, Optional.class, Gadget.class))
             throw new InternalCompilerException("Invalid implementation of @Implication annotated method %s in %s. "

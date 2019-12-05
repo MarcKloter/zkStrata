@@ -1,20 +1,18 @@
 package zkstrata.parser.ast;
 
-import zkstrata.parser.ast.predicates.Predicate;
-
 import java.util.List;
 
 public class AbstractSyntaxTree {
     private String source;
     private String statement;
     private List<Subject> subjects;
-    private List<Predicate> predicates;
+    private Clause clause;
 
-    public AbstractSyntaxTree(String source, String statement, List<Subject> subjects, List<Predicate> predicates) {
+    public AbstractSyntaxTree(String source, String statement, List<Subject> subjects, Clause clause) {
         this.source = source;
         this.statement = statement;
         this.subjects = subjects;
-        this.predicates = predicates;
+        this.clause = clause;
     }
 
     public String getSource() {
@@ -29,7 +27,7 @@ public class AbstractSyntaxTree {
         return subjects;
     }
 
-    public List<Predicate> getPredicates() {
-        return predicates;
+    public Clause getClause() {
+        return clause;
     }
 }

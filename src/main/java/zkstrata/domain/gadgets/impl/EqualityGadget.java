@@ -9,6 +9,7 @@ import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.*;
+import zkstrata.domain.visitor.AstElement;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.Equality;
@@ -108,12 +109,12 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
     }
 
     @Override
-    public TargetFormat toTargetFormat() {
+    public List<TargetFormat> toTargetFormat() {
         Map<String, Variable> args = Map.ofEntries(
                 Map.entry("left", left),
                 Map.entry("right", right)
         );
-        return new TargetFormat("EQUALS %(left) %(right)", args);
+        return List.of(new TargetFormat("EQUALS %(left) %(right)", args));
     }
 
     public Variable getLeft() {

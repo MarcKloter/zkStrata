@@ -1,12 +1,12 @@
-package zkstrata.domain.gadgets;
+package zkstrata.domain.visitor;
 
-import zkstrata.parser.ast.predicates.Predicate;
+import zkstrata.parser.ast.Clause;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface AstElement {
-    Class<? extends Predicate> value();
+    Class<? extends Clause> value();
 }
 

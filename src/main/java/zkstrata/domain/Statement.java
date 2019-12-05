@@ -1,10 +1,8 @@
 package zkstrata.domain;
 
-import zkstrata.analysis.Inference;
+import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
-import zkstrata.domain.gadgets.Gadget;
 
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -13,25 +11,20 @@ import java.util.Set;
  */
 public class Statement {
     private Map<String, StructuredData> subjects;
-    private List<Gadget> gadgets;
+    private Constituent rootConstituent;
     private Set<Statement> premises;
-    private Set<Inference> inferences;
 
-    public Statement(Map<String, StructuredData> subjects, List<Gadget> gadgets) {
+    public Statement(Map<String, StructuredData> subjects, Constituent rootConstituent) {
         this.subjects = subjects;
-        this.gadgets = gadgets;
+        this.rootConstituent = rootConstituent;
     }
 
     public Map<String, StructuredData> getSubjects() {
         return subjects;
     }
 
-    public List<Gadget> getGadgets() {
-        return gadgets;
-    }
-
-    public Set<Inference> getInferences() {
-        return inferences;
+    public Constituent getRootConstituent() {
+        return rootConstituent;
     }
 
     public Set<Statement> getPremises() {
@@ -42,11 +35,12 @@ public class Statement {
         this.premises = premises;
     }
 
-    public void setInferences(Set<Inference> inferences) {
-        this.inferences = inferences;
-    }
-
-    public void addGadgets(List<Gadget> gadgets) {
-        this.gadgets.addAll(gadgets);
+    /**
+     * Adds the given constituent to the {@code rootConstituent} of this grammar using an {@link AndConjunction}.
+     *
+     * @param constituent {@link Constituent} to add
+     */
+    public void addConstituent(Constituent constituent) {
+        this.rootConstituent = this.rootConstituent.combine(constituent);
     }
 }

@@ -7,7 +7,8 @@ import zkstrata.domain.data.types.custom.HexLiteral;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
-import zkstrata.domain.gadgets.AstElement;
+import zkstrata.domain.gadgets.Gadget;
+import zkstrata.domain.visitor.AstElement;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.parser.ast.predicates.MiMCHash;
@@ -70,12 +71,12 @@ public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
     }
 
     @Override
-    public TargetFormat toTargetFormat() {
+    public List<TargetFormat> toTargetFormat() {
         Map<String, Variable> args = Map.ofEntries(
                 Map.entry("preimage", preimage),
                 Map.entry("image", image)
         );
-        return new TargetFormat("HASH %(image) %(preimage)", args);
+        return List.of(new TargetFormat("HASH %(image) %(preimage)", args));
     }
 
     public WitnessVariable getPreimage() {

@@ -7,7 +7,7 @@ import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
-import zkstrata.domain.gadgets.AstElement;
+import zkstrata.domain.visitor.AstElement;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.optimizer.Substitution;
@@ -70,7 +70,7 @@ public class SetMembershipGadget extends AbstractGadget<SetMembershipGadget> {
     }
 
     @Override
-    public TargetFormat toTargetFormat() {
+    public List<TargetFormat> toTargetFormat() {
         Map<String, Variable> args = new HashMap<>();
         args.put("member", member);
 
@@ -80,7 +80,7 @@ public class SetMembershipGadget extends AbstractGadget<SetMembershipGadget> {
             return String.format("%%(%s)", key);
         }).collect(Collectors.joining(" "));
 
-        return new TargetFormat(String.format("SET_MEMBER %%(member) %s", setString), args);
+        return List.of(new TargetFormat(String.format("SET_MEMBER %%(member) %s", setString), args));
     }
 
     public Variable getMember() {

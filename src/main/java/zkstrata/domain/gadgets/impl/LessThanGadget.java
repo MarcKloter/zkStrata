@@ -9,7 +9,7 @@ import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
-import zkstrata.domain.gadgets.AstElement;
+import zkstrata.domain.visitor.AstElement;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
@@ -120,12 +120,12 @@ public class LessThanGadget extends AbstractGadget<LessThanGadget> {
     }
 
     @Override
-    public TargetFormat toTargetFormat() {
+    public List<TargetFormat> toTargetFormat() {
         Map<String, Variable> args = Map.ofEntries(
                 Map.entry("left", left),
                 Map.entry("right", right)
         );
-        return new TargetFormat("LESS_THAN %(left) %(right)", args);
+        return List.of(new TargetFormat("LESS_THAN %(left) %(right)", args));
     }
 
     public WitnessVariable getLeft() {

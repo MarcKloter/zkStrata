@@ -3,7 +3,6 @@ package zkstrata.utils;
 import org.apache.commons.text.TextStringBuilder;
 import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.Subject;
-import zkstrata.parser.ast.predicates.Predicate;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.Set;
 public class StatementBuilder {
     private static final String PREFIX = "PROOF FOR ";
     private static final String INFIX = " THAT ";
-    private static final String AND = " AND ";
     private static final String WITNESS = "";
     private static final String INSTANCE = "INSTANCE ";
     private static final String THIS = "THIS";
@@ -29,8 +27,7 @@ public class StatementBuilder {
         for (Subject subject : ast.getSubjects())
             subject(subject);
 
-        for (Predicate predicate : ast.getPredicates())
-            predicate.addTo(this);
+        ast.getClause().addTo(this);
     }
 
     public static String stringLiteral(String string) {
@@ -53,6 +50,12 @@ public class StatementBuilder {
                 subjects.add(THIS);
         } else
             subject(subject.getSchema().getName(), subject.getAlias().getName(), subject.isWitness());
+
+        return this;
+    }
+
+    public StatementBuilder predicate(String predicate) {
+        predicates.add(predicate);
 
         return this;
     }
@@ -125,12 +128,31 @@ public class StatementBuilder {
         return this;
     }
 
+    public String buildPredicates(Conjunction conjunction) {
+        return String.join(conjunction.getEncoding(), predicates);
+    }
+
     public String build() {
         TextStringBuilder builder = new TextStringBuilder();
         builder.append(PREFIX);
-        builder.append(String.join(AND, subjects));
+        builder.append(String.join(Conjunction.AND.getEncoding(), subjects));
         builder.append(INFIX);
-        builder.append(String.join(AND, predicates));
+        builder.append(buildPredicates(Conjunction.AND));
         return builder.build();
+    }
+
+    public enum Conjunction {
+        AND(" AND "),
+        OR(" OR ");
+
+        private String encoding;
+
+        Conjunction(String encoding) {
+            this.encoding = encoding;
+        }
+
+        public String getEncoding() {
+            return encoding;
+        }
     }
 }

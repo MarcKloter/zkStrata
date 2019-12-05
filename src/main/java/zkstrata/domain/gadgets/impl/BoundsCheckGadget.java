@@ -11,7 +11,7 @@ import zkstrata.domain.data.types.wrapper.Null;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
-import zkstrata.domain.gadgets.AstElement;
+import zkstrata.domain.visitor.AstElement;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
@@ -144,13 +144,13 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     }
 
     @Override
-    public TargetFormat toTargetFormat() {
+    public List<TargetFormat> toTargetFormat() {
         Map<String, Variable> args = Map.ofEntries(
                 Map.entry("value", value),
                 Map.entry("min", min),
                 Map.entry("max", max)
         );
-        return new TargetFormat("BOUND %(value) %(min) %(max)", args);
+        return List.of(new TargetFormat("BOUND %(value) %(min) %(max)", args));
     }
 
     public WitnessVariable getValue() {

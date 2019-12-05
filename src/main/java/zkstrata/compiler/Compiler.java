@@ -23,7 +23,7 @@ public class Compiler {
     public static void run(Arguments args) {
         Statement statement = parse(args, null, null);
 
-        parseValidationRules(statement.getSubjects(), args).forEach(stmt -> statement.addGadgets(stmt.getGadgets()));
+        parseValidationRules(statement.getSubjects(), args).forEach(stmt -> statement.addConstituent(stmt.getRootConstituent()));
 
         statement.setPremises(parsePremises(args));
 
@@ -37,7 +37,7 @@ public class Compiler {
 
 
 
-        new CodeGenerator(args.getName()).run(statement.getGadgets(), args.hasWitnessData());
+        new CodeGenerator(args.getName()).run(statement.getRootConstituent(), args.hasWitnessData());
     }
 
     private static Statement parse(Arguments args, String parentAlias, String parentSchema) {

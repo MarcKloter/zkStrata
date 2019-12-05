@@ -7,6 +7,9 @@ import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.exceptions.ParserException;
 import zkstrata.exceptions.Position;
+import zkstrata.parser.ast.Clause;
+import zkstrata.parser.ast.connectives.And;
+import zkstrata.parser.ast.connectives.Or;
 import zkstrata.utils.ParserUtils;
 import zkstrata.utils.ReflectionHelper;
 import zkstrata.zkStrataLexer;
@@ -55,6 +58,113 @@ public class ParseTreeVisitor {
         return visitor.visit(tree);
     }
 
+
+    public static class StatementVisitor extends zkStrataBaseVisitor<AbstractSyntaxTree> {
+        private String source;
+        private String statement;
+        private String[] rules;
+        private String parentSchema;
+
+        StatementVisitor(String source, String statement, String[] rules, String parentSchema) {
+            this.source = source;
+            this.statement = statement;
+            this.rules = rules;
+            this.parentSchema = parentSchema;
+        }
+
+        @Override
+        public AbstractSyntaxTree visitStatement(zkStrata.StatementContext ctx) {
+            SubjectVisitor subjectVisitor = new SubjectVisitor(parentSchema);
+            List<Subject> subjects = ctx.subjects().subject()
+                    .stream()
+                    .map(subject -> subject.accept(subjectVisitor))
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+
+            ClauseVisitor clauseVisitor = new ClauseVisitor(this.rules);
+            Clause predicate = ctx.predicate().clause().accept(clauseVisitor);
+
+            return new AbstractSyntaxTree(source, statement, subjects, predicate);
+        }
+    }
+
+    private static class ClauseVisitor extends zkStrataBaseVisitor<Clause> {
+        private String[] parserRules;
+
+        ClauseVisitor(String[] parserRules) {
+            this.parserRules = parserRules;
+        }
+
+        @Override
+        public Clause visitParenClause(zkStrata.ParenClauseContext ctx) {
+            ClauseVisitor clauseVisitor = new ClauseVisitor(parserRules);
+            return ctx.clause().accept(clauseVisitor);
+        }
+
+        @Override
+        public Clause visitAndClause(zkStrata.AndClauseContext ctx) {
+            ClauseVisitor clauseVisitor = new ClauseVisitor(parserRules);
+            Clause left = ctx.clause(0).accept(clauseVisitor);
+            Clause right = ctx.clause(1).accept(clauseVisitor);
+            return new And(left, right, ParserUtils.getPosition(ctx.K_AND().getSymbol()));
+        }
+
+        @Override
+        public Clause visitOrClause(zkStrata.OrClauseContext ctx) {
+            ClauseVisitor clauseVisitor = new ClauseVisitor(parserRules);
+            Clause left = ctx.clause(0).accept(clauseVisitor);
+            Clause right = ctx.clause(1).accept(clauseVisitor);
+            return new Or(left, right, ParserUtils.getPosition(ctx.K_OR().getSymbol()));
+        }
+
+        @Override
+        public Clause visitAtomClause(zkStrata.AtomClauseContext ctx) {
+            PredicateVisitor predicateVisitor = new PredicateVisitor(this.parserRules);
+            return ctx.predicate_clause().accept(predicateVisitor);
+        }
+    }
+
+    private static class PredicateVisitor extends zkStrataBaseVisitor<Predicate> {
+        private String[] parserRules;
+        private Set<Method> parseMethods;
+
+        PredicateVisitor(String[] parserRules) {
+            this.parserRules = parserRules;
+            this.parseMethods = ReflectionHelper.getMethodsAnnotatedWith(ParserRule.class);
+        }
+
+        private Method getParser(String name) {
+            for (Method parser : this.parseMethods) {
+                ParserRule annotation = parser.getAnnotation(ParserRule.class);
+                if (annotation.name().equals(name))
+                    return parser;
+            }
+
+            throw new InternalCompilerException("No method found annotated as @ParserRule with name property `%s`.", name);
+        }
+
+        @Override
+        public Predicate visitPredicate_clause(zkStrata.Predicate_clauseContext ctx) {
+            if (ctx.getChildCount() != 1)
+                throw new InternalCompilerException("Expected 1 predicate in clause, found %d.", ctx.getChildCount());
+
+            ParseTree child = ctx.getChild(0);
+            if (!(child instanceof ParserRuleContext))
+                throw new InternalCompilerException("Expected predicate to be a parser rule, found %s.", child.getClass());
+
+            ParserRuleContext gadget = (ParserRuleContext) child;
+            String name = this.parserRules[gadget.getRuleIndex()];
+
+            Method parser = getParser(name);
+            try {
+                return (Predicate) parser.invoke(null, gadget);
+            } catch (ReflectiveOperationException e) {
+                throw new InternalCompilerException("Error during invocation of method %s in %s.",
+                        parser.getName(), parser.getDeclaringClass().getSimpleName());
+            }
+        }
+    }
+
     public static class TypeVisitor extends zkStrataBaseVisitor<Value> {
         private Set<Constructor> constructors;
 
@@ -63,7 +173,7 @@ public class ParseTreeVisitor {
         }
 
         @Override
-        public Value visitWitness_var(zkStrata.Witness_varContext ctx) {
+        public Value visitWitnessVariable(zkStrata.WitnessVariableContext ctx) {
             if (ctx.getChildCount() != 1)
                 throw new InternalCompilerException("Expected a single witness variable, found %d.", ctx.getChildCount());
 
@@ -71,7 +181,7 @@ public class ParseTreeVisitor {
         }
 
         @Override
-        public Value visitInstance_var(zkStrata.Instance_varContext ctx) {
+        public Value visitInstanceVariable(zkStrata.InstanceVariableContext ctx) {
             if (ctx.getChildCount() != 1)
                 throw new InternalCompilerException("Expected a single instance variable, found %d.", ctx.getChildCount());
 
@@ -79,7 +189,7 @@ public class ParseTreeVisitor {
         }
 
         @Override
-        public Value visitReferenced_value(zkStrata.Referenced_valueContext ctx) {
+        public Value visitReference(zkStrata.ReferenceContext ctx) {
             if (ctx.getChildCount() == 0)
                 throw new InternalCompilerException("Expected a reference, found nothing.");
 
@@ -92,7 +202,7 @@ public class ParseTreeVisitor {
         }
 
         @Override
-        public Value visitLiteral_value(zkStrata.Literal_valueContext ctx) {
+        public Value visitLiteral(zkStrata.LiteralContext ctx) {
             if (ctx.getChildCount() != 1)
                 throw new InternalCompilerException("Expected 1 literal value, found %d.", ctx.getChildCount());
 
@@ -121,38 +231,6 @@ public class ParseTreeVisitor {
         }
     }
 
-    public static class StatementVisitor extends zkStrataBaseVisitor<AbstractSyntaxTree> {
-        private String source;
-        private String statement;
-        private String[] rules;
-        private String parentSchema;
-
-        StatementVisitor(String source, String statement, String[] rules, String parentSchema) {
-            this.source = source;
-            this.statement = statement;
-            this.rules = rules;
-            this.parentSchema = parentSchema;
-        }
-
-        @Override
-        public AbstractSyntaxTree visitStatement(zkStrata.StatementContext ctx) {
-            SubjectVisitor subjectVisitor = new SubjectVisitor(parentSchema);
-            List<Subject> subjects = ctx.subjects().subject()
-                    .stream()
-                    .map(subject -> subject.accept(subjectVisitor))
-                    .flatMap(List::stream)
-                    .collect(Collectors.toList());
-
-            PredicateVisitor predicateVisitor = new PredicateVisitor(this.rules);
-            List<Predicate> predicates = ctx.predicates().predicate_clause()
-                    .stream()
-                    .map(predicate -> predicate.accept(predicateVisitor))
-                    .collect(Collectors.toList());
-
-            return new AbstractSyntaxTree(source, statement, subjects, predicates);
-        }
-    }
-
     private static class SubjectVisitor extends zkStrataBaseVisitor<List<Subject>> {
         private String parentSchema;
 
@@ -167,7 +245,7 @@ public class ParseTreeVisitor {
 
             // check whether the instance keyword is present
             boolean isWitness = ctx.K_INSTANCE() == null;
-            Schema schema = new Schema(ctx.schema_name().getText(), ParserUtils.getPosition(ctx.schema_name().getStart()));
+            Schema schema = new Schema(ctx.schema().getText(), ParserUtils.getPosition(ctx.schema().getStart()));
             Alias alias = new Alias(ctx.alias().getText(), ParserUtils.getPosition(ctx.alias().getStart()));
 
             return List.of(new Subject(schema, alias, isWitness));
@@ -183,47 +261,6 @@ public class ParseTreeVisitor {
             Subject instance = new Subject(schema, publicAlias, false);
 
             return List.of(witness, instance);
-        }
-    }
-
-    private static class PredicateVisitor extends zkStrataBaseVisitor<Predicate> {
-        private String[] rules;
-        private Set<Method> parsers;
-
-        PredicateVisitor(String[] rules) {
-            this.rules = rules;
-            this.parsers = ReflectionHelper.getMethodsAnnotatedWith(ParserRule.class);
-        }
-
-        private Method getParser(String name) {
-            for (Method parser : this.parsers) {
-                ParserRule annotation = parser.getAnnotation(ParserRule.class);
-                if (annotation.name().equals(name))
-                    return parser;
-            }
-
-            throw new InternalCompilerException("No method found annotated as @ParserRule with name property `%s`.", name);
-        }
-
-        @Override
-        public Predicate visitPredicate_clause(zkStrata.Predicate_clauseContext ctx) {
-            if (ctx.getChildCount() != 1)
-                throw new InternalCompilerException("Expected 1 predicate in clause, found %d.", ctx.getChildCount());
-
-            ParseTree child = ctx.getChild(0);
-            if (!(child instanceof ParserRuleContext))
-                throw new InternalCompilerException("Expected predicate to be a parser rule, found %s.", child.getClass());
-
-            ParserRuleContext gadget = (ParserRuleContext) child;
-            String name = this.rules[gadget.getRuleIndex()];
-
-            Method parser = getParser(name);
-            try {
-                return (Predicate) parser.invoke(null, gadget);
-            } catch (ReflectiveOperationException e) {
-                throw new InternalCompilerException("Error during invocation of method %s in %s.",
-                        parser.getName(), parser.getDeclaringClass().getSimpleName());
-            }
         }
     }
 }
