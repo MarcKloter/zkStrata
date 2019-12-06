@@ -63,8 +63,10 @@ public class BinaryTree<T> {
         }
 
         public int countLeaves() {
-            return isLeaf() ? 1 : ((getLeft() != null) ? getLeft().countLeaves() : 0)
-                    + ((getRight() != null) ? getRight().countLeaves() : 0);
+            if (isLeaf())
+                return 1;
+
+            return (getLeft() != null ? getLeft().countLeaves() : 0) + (getRight() != null ? getRight().countLeaves() : 0);
         }
 
         @Override
