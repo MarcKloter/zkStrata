@@ -44,14 +44,14 @@ public class SemanticAnalyzer {
 
         LOGGER.debug("Found {} logically distinct paths to evaluate the given statement", evaluationPaths.size());
 
-        for (List<Gadget> evaluationPath : evaluationPaths) {
+        for (int i = 0; i < evaluationPaths.size(); i++) {
             this.inferences = new HashSet<>();
             this.inferenceMapping = new HashMap<>();
 
             // find inferences by executing methods annotated with @Implication
-            findImplications(evaluationPath);
+            findImplications(evaluationPaths.get(i));
 
-            LOGGER.debug("Found {} inferences for this evaluation path", inferences.size());
+            LOGGER.debug("Drew {} inferences for evaluation path {}", inferences.size(), i);
 
             // check for semantic errors by executing methods annotated with @Contradiction
             checkContradictions();
