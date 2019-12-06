@@ -35,8 +35,14 @@ public class Compiler {
 
 
 
-        LOGGER.debug("Compiled the given statement into the following structure:{}{}",
-                System.lineSeparator(), statement.getClaim().toDebugString());
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("Statement claim structure before optimization:{}{}",
+                    System.lineSeparator(), statement.getClaim().toDebugString());
+
+
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("Compiled the claim of the given statement into the following structure:{}{}",
+                    System.lineSeparator(), statement.getClaim().toDebugString());
 
         new CodeGenerator(args.getName()).run(statement.getClaim(), args.hasWitnessData());
     }
@@ -48,8 +54,9 @@ public class Compiler {
                 parentSchema
         );
 
-        LOGGER.debug("Parsed the statement `{}` into the following AST:{}{}",
-                args.getStatement().getSource(), System.lineSeparator(), ast.getRoot().toDebugString());
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("Parsed the statement `{}` into the following AST:{}{}",
+                    args.getStatement().getSource(), System.lineSeparator(), ast.getRoot().toDebugString());
 
         return new ASTVisitor(args, parentAlias).visit(ast);
     }
