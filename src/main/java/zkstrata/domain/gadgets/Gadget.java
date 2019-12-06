@@ -14,6 +14,11 @@ public interface Gadget<T extends Gadget> extends Proposition {
      */
     void initFrom(Map<String, Object> source);
 
+    /**
+     * Returns all values of fields annotated as {@link Type}
+     *
+     * @return list of {@link Variable} used by this gadget
+     */
     List<Variable> getVariables();
 
     /**
@@ -25,6 +30,4 @@ public interface Gadget<T extends Gadget> extends Proposition {
      * Hook method that will be called after @Type annotated fields were wired.
      */
     void performChecks();
-
-    String toDebugString();
 }

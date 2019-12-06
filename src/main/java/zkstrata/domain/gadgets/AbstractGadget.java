@@ -138,16 +138,6 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
     }
 
     @Override
-    public String toDebugString() {
-        TextStringBuilder builder = new TextStringBuilder();
-        builder.appendln("%s@%s", getClass().getSimpleName(), Integer.toHexString(hashCode()));
-        getVariables().forEach(var ->
-                builder.appendln("    %s@%s: %s", var.getClass().getSimpleName(), Integer.toHexString(var.hashCode()), var.toString())
-        );
-        return builder.build();
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj == null)
             return false;
