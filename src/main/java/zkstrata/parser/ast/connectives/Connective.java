@@ -21,4 +21,9 @@ public abstract class Connective extends AbstractTraceable implements Node {
     public Node getRight() {
         return right;
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName().toUpperCase();
+    }
 }

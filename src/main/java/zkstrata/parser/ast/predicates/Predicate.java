@@ -8,4 +8,9 @@ public abstract class Predicate extends AbstractTraceable implements Node {
     public Predicate(Position position) {
         super(position);
     }
+
+    @Override
+    public String toString() {
+        return getClass().getSimpleName();
+    }
 }

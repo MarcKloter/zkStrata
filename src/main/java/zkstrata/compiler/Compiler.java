@@ -48,9 +48,10 @@ public class Compiler {
                 parentSchema
         );
 
-        ASTVisitor astVisitor = new ASTVisitor(args, parentAlias);
+        LOGGER.debug("Parsed the statement `{}` into the following AST:{}{}",
+                args.getStatement().getSource(), System.lineSeparator(), ast.getRoot().toDebugString());
 
-        return astVisitor.visit(ast);
+        return new ASTVisitor(args, parentAlias).visit(ast);
     }
 
     private static List<Statement> parseValidationRules(Map<String, StructuredData> subjects, Arguments args) {

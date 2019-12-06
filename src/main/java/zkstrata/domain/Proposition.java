@@ -68,24 +68,22 @@ public interface Proposition {
     /**
      * Appends the string format of this object as tree branch/leaf to the given string builder.
      * <p>
-     * Based on: https://stackoverflow.com/questions/4965335/how-to-print-binary-tree-diagram/8948691#8948691
+     * Based on: https://stackoverflow.com/a/8948691/4382892
      *
      * @param builder        {@link TextStringBuilder} to append to
      * @param prefix         string to prefix to the string representation of this
      * @param childrenPrefix prefix to apply to children of this (used to indent multiple levels)
      */
     private void append(TextStringBuilder builder, String prefix, String childrenPrefix) {
-        builder.append(prefix);
-        builder.append(this.toString());
+        builder.append(prefix).append(this.toString());
 
         if (this instanceof Conjunction) {
             for (Iterator<Proposition> it = ((Conjunction) this).getParts().iterator(); it.hasNext(); ) {
                 Proposition next = it.next();
-                builder.appendNewLine();
                 if (it.hasNext()) {
-                    next.append(builder, childrenPrefix + "├── ", childrenPrefix + "│   ");
+                    next.append(builder.appendNewLine(), childrenPrefix + "├── ", childrenPrefix + "│   ");
                 } else {
-                    next.append(builder, childrenPrefix + "└── ", childrenPrefix + "    ");
+                    next.append(builder.appendNewLine(), childrenPrefix + "└── ", childrenPrefix + "    ");
                 }
             }
         }
