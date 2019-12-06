@@ -46,6 +46,11 @@ public class MerkleTreeGadget extends AbstractGadget<MerkleTreeGadget> {
     }
 
     @Override
+    public int getCostEstimate() {
+        return Constants.MIMC_HASH_COST_ESTIMATE * (2 * tree.getRoot().countLeaves() - 1);
+    }
+
+    @Override
     public boolean isEqualTo(MerkleTreeGadget other) {
         return root.equals(other.root) && tree.equals(other.tree);
     }

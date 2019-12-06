@@ -14,6 +14,7 @@ import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.Equality;
 import zkstrata.utils.CombinatoricsUtils;
+import zkstrata.utils.Constants;
 
 import java.util.*;
 
@@ -100,6 +101,11 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
     public void performChecks() {
         if (left.getType() != right.getType())
             throw new CompileTimeException("Type mismatch.", List.of(this.left, this.right));
+    }
+
+    @Override
+    public int getCostEstimate() {
+        return Constants.EQUALITY_COST_ESTIMATE;
     }
 
     @Override

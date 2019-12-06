@@ -12,6 +12,7 @@ import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.SetMembership;
+import zkstrata.utils.Constants;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,6 +68,11 @@ public class SetMembershipGadget extends AbstractGadget<SetMembershipGadget> {
     @Override
     public boolean isEqualTo(SetMembershipGadget other) {
         return member.equals(other.member) && set.equals(other.set);
+    }
+
+    @Override
+    public int getCostEstimate() {
+        return Constants.MIMC_HASH_COST_ESTIMATE * set.size() + 5 * set.size() + 2;
     }
 
     @Override

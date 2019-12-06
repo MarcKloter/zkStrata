@@ -62,6 +62,11 @@ public class BinaryTree<T> {
             return this.left == null && this.right == null;
         }
 
+        public int countLeaves() {
+            return isLeaf() ? 1 : ((getLeft() != null) ? getLeft().countLeaves() : 0)
+                    + ((getRight() != null) ? getRight().countLeaves() : 0);
+        }
+
         @Override
         public boolean equals(Object obj) {
             if (obj == null)

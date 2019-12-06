@@ -13,6 +13,7 @@ import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.Inequality;
+import zkstrata.utils.Constants;
 
 import java.util.*;
 
@@ -68,6 +69,11 @@ public class InequalityGadget extends AbstractGadget<InequalityGadget> {
     public void performChecks() {
         if (left.getType() != right.getType())
             throw new CompileTimeException("Type mismatch.", List.of(this.left, this.right));
+    }
+
+    @Override
+    public int getCostEstimate() {
+        return Constants.INEQUALITY_COST_ESTIMATE;
     }
 
     @Override

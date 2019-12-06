@@ -66,6 +66,11 @@ public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
     }
 
     @Override
+    public int getCostEstimate() {
+        return Constants.MIMC_HASH_COST_ESTIMATE;
+    }
+
+    @Override
     public boolean isEqualTo(MiMCHashGadget other) {
         return preimage.equals(other.preimage) && image.equals(other.image);
     }

@@ -144,6 +144,11 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     }
 
     @Override
+    public int getCostEstimate() {
+        return Constants.BOUNDS_CHECK_COST_ESTIMATE;
+    }
+
+    @Override
     public List<TargetFormat> toTargetFormat() {
         Map<String, Variable> args = Map.ofEntries(
                 Map.entry("value", value),

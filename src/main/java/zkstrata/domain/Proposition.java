@@ -57,6 +57,11 @@ public interface Proposition {
     List<List<Gadget>> getEvaluationPaths();
 
     /**
+     * Returns an upper bound for the cost (number of constraints) to prove/verify this proposition.
+     */
+    int getCostEstimate();
+
+    /**
      * Returns the string representation of this proposition as tree structure of conjunctions and gadgets.
      */
     default String toDebugString() {

@@ -66,4 +66,16 @@ public class BinaryTreeTest {
         BinaryTree<String> treeB = new BinaryTree<>(new Node<>(LEAF_1, new Node<>(LEAF_3, LEAF_2)));
         assertEquals(treeA.hashCode(), treeB.hashCode());
     }
+
+    @Test
+    void Count_Leaves_1() {
+        BinaryTree<String> tree = new BinaryTree<>(new Node<>(new Node<>(LEAF_1, LEAF_4), new Node<>(LEAF_3, LEAF_2)));
+        assertEquals(4, tree.getRoot().countLeaves());
+    }
+
+    @Test
+    void Count_Leaves_2() {
+        BinaryTree<String> tree = new BinaryTree<>(new Node<>(LEAF_1, null));
+        assertEquals(1, tree.getRoot().countLeaves());
+    }
 }

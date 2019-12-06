@@ -15,6 +15,7 @@ import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.LessThan;
+import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -117,6 +118,11 @@ public class LessThanGadget extends AbstractGadget<LessThanGadget> {
     @Override
     public boolean isEqualTo(LessThanGadget other) {
         return left.equals(other.left) && right.equals(other.right);
+    }
+
+    @Override
+    public int getCostEstimate() {
+        return Constants.LESS_THAN_COST_ESTIMATE;
     }
 
     @Override

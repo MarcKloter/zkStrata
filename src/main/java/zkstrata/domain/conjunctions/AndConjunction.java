@@ -17,6 +17,11 @@ public class AndConjunction extends AbstractConjunction {
         super(parts);
     }
 
+    @Override
+    public int getCostEstimate() {
+        return getParts().stream().mapToInt(Proposition::getCostEstimate).sum();
+    }
+
     /**
      * Returns the cartesian product of the logical evaluation paths of its parts.
      * <p>

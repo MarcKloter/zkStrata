@@ -18,6 +18,11 @@ public class OrConjunction extends AbstractConjunction {
         super(parts);
     }
 
+    @Override
+    public int getCostEstimate() {
+        return getParts().stream().mapToInt(Proposition::getCostEstimate).reduce(1, (a, b) -> a * b);
+    }
+
     /**
      * Returns the flattened combination of the logical evaluation paths of its parts.
      * <p>
