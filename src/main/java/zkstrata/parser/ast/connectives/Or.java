@@ -1,11 +1,11 @@
 package zkstrata.parser.ast.connectives;
 
 import zkstrata.exceptions.Position;
-import zkstrata.parser.ast.Clause;
+import zkstrata.parser.ast.Node;
 import zkstrata.utils.StatementBuilder;
 
 public class Or extends Connective {
-    public Or(Clause left, Clause right, Position position) {
+    public Or(Node left, Node right, Position position) {
         super(left, right, position);
     }
 

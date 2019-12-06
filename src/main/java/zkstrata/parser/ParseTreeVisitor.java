@@ -7,7 +7,7 @@ import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.exceptions.ParserException;
 import zkstrata.exceptions.Position;
-import zkstrata.parser.ast.Clause;
+import zkstrata.parser.ast.Node;
 import zkstrata.parser.ast.connectives.And;
 import zkstrata.parser.ast.connectives.Or;
 import zkstrata.utils.ParserUtils;
@@ -82,13 +82,13 @@ public class ParseTreeVisitor {
                     .collect(Collectors.toList());
 
             ClauseVisitor clauseVisitor = new ClauseVisitor(this.rules);
-            Clause predicate = ctx.predicate().clause().accept(clauseVisitor);
+            Node predicate = ctx.predicate().clause().accept(clauseVisitor);
 
             return new AbstractSyntaxTree(source, statement, subjects, predicate);
         }
     }
 
-    private static class ClauseVisitor extends zkStrataBaseVisitor<Clause> {
+    private static class ClauseVisitor extends zkStrataBaseVisitor<Node> {
         private String[] parserRules;
 
         ClauseVisitor(String[] parserRules) {
@@ -96,29 +96,29 @@ public class ParseTreeVisitor {
         }
 
         @Override
-        public Clause visitParenClause(zkStrata.ParenClauseContext ctx) {
+        public Node visitParenClause(zkStrata.ParenClauseContext ctx) {
             ClauseVisitor clauseVisitor = new ClauseVisitor(parserRules);
             return ctx.clause().accept(clauseVisitor);
         }
 
         @Override
-        public Clause visitAndClause(zkStrata.AndClauseContext ctx) {
+        public Node visitAndClause(zkStrata.AndClauseContext ctx) {
             ClauseVisitor clauseVisitor = new ClauseVisitor(parserRules);
-            Clause left = ctx.clause(0).accept(clauseVisitor);
-            Clause right = ctx.clause(1).accept(clauseVisitor);
+            Node left = ctx.clause(0).accept(clauseVisitor);
+            Node right = ctx.clause(1).accept(clauseVisitor);
             return new And(left, right, ParserUtils.getPosition(ctx.K_AND().getSymbol()));
         }
 
         @Override
-        public Clause visitOrClause(zkStrata.OrClauseContext ctx) {
+        public Node visitOrClause(zkStrata.OrClauseContext ctx) {
             ClauseVisitor clauseVisitor = new ClauseVisitor(parserRules);
-            Clause left = ctx.clause(0).accept(clauseVisitor);
-            Clause right = ctx.clause(1).accept(clauseVisitor);
+            Node left = ctx.clause(0).accept(clauseVisitor);
+            Node right = ctx.clause(1).accept(clauseVisitor);
             return new Or(left, right, ParserUtils.getPosition(ctx.K_OR().getSymbol()));
         }
 
         @Override
-        public Clause visitAtomClause(zkStrata.AtomClauseContext ctx) {
+        public Node visitAtomClause(zkStrata.AtomClauseContext ctx) {
             PredicateVisitor predicateVisitor = new PredicateVisitor(this.parserRules);
             return ctx.predicate_clause().accept(predicateVisitor);
         }

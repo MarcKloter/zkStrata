@@ -2,23 +2,23 @@ package zkstrata.parser.ast.connectives;
 
 import zkstrata.exceptions.AbstractTraceable;
 import zkstrata.exceptions.Position;
-import zkstrata.parser.ast.Clause;
+import zkstrata.parser.ast.Node;
 
-public abstract class Connective extends AbstractTraceable implements Clause {
-    private Clause left;
-    private Clause right;
+public abstract class Connective extends AbstractTraceable implements Node {
+    private Node left;
+    private Node right;
 
-    public Connective(Clause left, Clause right, Position position) {
+    public Connective(Node left, Node right, Position position) {
         super(position);
         this.left = left;
         this.right = right;
     }
 
-    public Clause getLeft() {
+    public Node getLeft() {
         return left;
     }
 
-    public Clause getRight() {
+    public Node getRight() {
         return right;
     }
 }

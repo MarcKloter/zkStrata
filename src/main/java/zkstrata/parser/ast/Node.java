@@ -2,6 +2,6 @@ package zkstrata.parser.ast;
 
 import zkstrata.utils.StatementBuilder;
 
-public interface Clause {
+public interface Node {
     void addTo(StatementBuilder statementBuilder);
 }

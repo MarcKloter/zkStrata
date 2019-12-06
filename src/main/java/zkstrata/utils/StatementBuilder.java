@@ -30,7 +30,7 @@ public class StatementBuilder {
         for (Subject subject : ast.getSubjects())
             subject(subject);
 
-        ast.getClause().addTo(this);
+        ast.getRoot().addTo(this);
     }
 
     private StatementBuilder(boolean fullBuildMode, Conjunction conjunction) {

@@ -4,14 +4,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zkstrata.compiler.Arguments;
-import zkstrata.domain.Constituent;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
 import zkstrata.domain.conjunctions.Conjunction;
 import zkstrata.domain.data.Selector;
 import zkstrata.domain.data.accessors.SchemaAccessor;
 import zkstrata.domain.data.accessors.ValueAccessor;
 import zkstrata.exceptions.*;
-import zkstrata.parser.ast.Clause;
+import zkstrata.parser.ast.Node;
 import zkstrata.parser.ast.connectives.Connective;
 import zkstrata.parser.ast.predicates.Predicate;
 import zkstrata.parser.ast.types.*;
@@ -68,7 +68,7 @@ public class ASTVisitor {
             this.subjects.put(alias, visitSubject(subject));
         }
 
-        Constituent predicate = visitClause(ast.getClause());
+        Proposition predicate = visitNode(ast.getRoot());
 
         this.checkUnusedSubjects();
 
@@ -107,28 +107,28 @@ public class ASTVisitor {
             return new Instance(alias, schema, instanceData.get(alias));
     }
 
-    private Constituent visitClause(Clause clause) {
-        if (clause instanceof Connective)
-            return visitConnective((Connective) clause);
+    private Proposition visitNode(Node node) {
+        if (node instanceof Connective)
+            return visitConnective((Connective) node);
 
-        if (clause instanceof Predicate)
-            return visitPredicate((Predicate) clause);
+        if (node instanceof Predicate)
+            return visitPredicate((Predicate) node);
 
-        throw new InternalCompilerException("Missing visitor for clause of type %s.", clause.getClass());
+        throw new InternalCompilerException("Missing visitor for AST node of type %s.", node.getClass());
     }
 
-    private Constituent visitConnective(Connective connective) {
-        List<Constituent> parts = new ArrayList<>();
+    private Proposition visitConnective(Connective connective) {
+        List<Proposition> parts = new ArrayList<>();
 
         Class<? extends Conjunction> conjunctionType = getConjunctionType(connective);
 
-        Constituent left = visitClause(connective.getLeft());
+        Proposition left = visitNode(connective.getLeft());
         if (conjunctionType.equals(left.getClass()))
             parts.addAll(((Conjunction) left).getParts());
         else
             parts.add(left);
 
-        Constituent right = visitClause(connective.getRight());
+        Proposition right = visitNode(connective.getRight());
         if (conjunctionType.equals(right.getClass()))
             parts.addAll(((Conjunction) right).getParts());
         else
@@ -160,7 +160,7 @@ public class ASTVisitor {
         throw new InternalCompilerException("Missing conjunction implementation for connective: %s", connective.getClass());
     }
 
-    private Constituent visitPredicate(Predicate predicate) {
+    private Proposition visitPredicate(Predicate predicate) {
         Set<Class<? extends Gadget>> gadgets = ReflectionHelper.getAllGadgets();
 
         for (Class<? extends Gadget> gadget : gadgets) {

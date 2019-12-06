@@ -11,20 +11,20 @@ import java.util.Set;
  */
 public class Statement {
     private Map<String, StructuredData> subjects;
-    private Constituent rootConstituent;
+    private Proposition claim;
     private Set<Statement> premises;
 
-    public Statement(Map<String, StructuredData> subjects, Constituent rootConstituent) {
+    public Statement(Map<String, StructuredData> subjects, Proposition claim) {
         this.subjects = subjects;
-        this.rootConstituent = rootConstituent;
+        this.claim = claim;
     }
 
     public Map<String, StructuredData> getSubjects() {
         return subjects;
     }
 
-    public Constituent getRootConstituent() {
-        return rootConstituent;
+    public Proposition getClaim() {
+        return claim;
     }
 
     public Set<Statement> getPremises() {
@@ -36,11 +36,11 @@ public class Statement {
     }
 
     /**
-     * Adds the given constituent to the {@code rootConstituent} of this grammar using an {@link AndConjunction}.
+     * Adds the given proposition to the {@code claim} of this statement using an {@link AndConjunction}.
      *
-     * @param constituent {@link Constituent} to add
+     * @param proposition {@link Proposition} to add
      */
-    public void addConstituent(Constituent constituent) {
-        this.rootConstituent = this.rootConstituent.combine(constituent);
+    public void addConstituent(Proposition proposition) {
+        this.claim = this.claim.combine(proposition);
     }
 }

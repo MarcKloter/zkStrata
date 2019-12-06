@@ -2,7 +2,7 @@ package zkstrata.analysis;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import zkstrata.domain.Constituent;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.Gadget;
@@ -35,9 +35,9 @@ public class SemanticAnalyzer {
         LOGGER.debug("Starting semantic analysis");
 
         // combine the given statement with all provided premises
-        Constituent rootConstituent = statement.getRootConstituent();
+        Proposition rootConstituent = statement.getClaim();
         for (Statement premise : statement.getPremises()) {
-            rootConstituent = rootConstituent.combine(premise.getRootConstituent());
+            rootConstituent = rootConstituent.combine(premise.getClaim());
         }
 
         List<List<Gadget>> evaluationPaths = rootConstituent.getEvaluationPaths();

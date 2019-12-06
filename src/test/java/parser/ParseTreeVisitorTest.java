@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.parser.ParseTreeVisitor;
 import zkstrata.parser.ast.AbstractSyntaxTree;
-import zkstrata.parser.ast.Clause;
+import zkstrata.parser.ast.Node;
 import zkstrata.parser.ast.connectives.And;
 import zkstrata.parser.ast.connectives.Or;
 import zkstrata.parser.ast.predicates.*;
@@ -42,10 +42,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(Equality.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(Equality.class, rootNode.getClass());
 
-        Equality equality = (Equality) predicateClause;
+        Equality equality = (Equality) rootNode;
         assertEquals(IDENTIFIER_1, equality.getLeft().getValue());
         assertEquals(STRING_LITERAL, equality.getRight().getValue());
     }
@@ -58,10 +58,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(Equality.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(Equality.class, rootNode.getClass());
 
-        Equality equality = (Equality) predicateClause;
+        Equality equality = (Equality) rootNode;
         assertEquals(INT_LITERAL_1, equality.getLeft().getValue());
         assertEquals(IDENTIFIER_1, equality.getRight().getValue());
     }
@@ -74,10 +74,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(Inequality.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(Inequality.class, rootNode.getClass());
 
-        Inequality inequality = (Inequality) predicateClause;
+        Inequality inequality = (Inequality) rootNode;
         assertEquals(IDENTIFIER_1, inequality.getLeft().getValue());
         assertEquals(STRING_LITERAL, inequality.getRight().getValue());
     }
@@ -90,10 +90,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(Inequality.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(Inequality.class, rootNode.getClass());
 
-        Inequality inequality = (Inequality) predicateClause;
+        Inequality inequality = (Inequality) rootNode;
         assertEquals(INT_LITERAL_1, inequality.getLeft().getValue());
         assertEquals(IDENTIFIER_1, inequality.getRight().getValue());
     }
@@ -106,10 +106,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(BoundsCheck.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(BoundsCheck.class, rootNode.getClass());
 
-        BoundsCheck boundsCheck = (BoundsCheck) predicateClause;
+        BoundsCheck boundsCheck = (BoundsCheck) rootNode;
         assertEquals(IDENTIFIER_1, boundsCheck.getValue().getValue());
         assertEquals(INT_LITERAL_1, boundsCheck.getMin().getValue());
         assertEquals(INT_LITERAL_2, boundsCheck.getMax().getValue());
@@ -123,10 +123,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(BoundsCheck.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(BoundsCheck.class, rootNode.getClass());
 
-        BoundsCheck boundsCheck = (BoundsCheck) predicateClause;
+        BoundsCheck boundsCheck = (BoundsCheck) rootNode;
         assertEquals(IDENTIFIER_1, boundsCheck.getValue().getValue());
         assertEquals(INT_LITERAL_1, boundsCheck.getMin().getValue());
     }
@@ -139,10 +139,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(BoundsCheck.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(BoundsCheck.class, rootNode.getClass());
 
-        BoundsCheck boundsCheck = (BoundsCheck) predicateClause;
+        BoundsCheck boundsCheck = (BoundsCheck) rootNode;
         assertEquals(IDENTIFIER_1, boundsCheck.getValue().getValue());
         assertEquals(INT_LITERAL_2, boundsCheck.getMax().getValue());
     }
@@ -155,10 +155,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(MiMCHash.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(MiMCHash.class, rootNode.getClass());
 
-        MiMCHash mimcHash = (MiMCHash) predicateClause;
+        MiMCHash mimcHash = (MiMCHash) rootNode;
         assertEquals(IDENTIFIER_1, mimcHash.getPreimage().getValue());
         assertEquals(HEX_LITERAL, mimcHash.getImage().getValue());
     }
@@ -175,10 +175,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(MerkleTree.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(MerkleTree.class, rootNode.getClass());
 
-        MerkleTree merkleTree = (MerkleTree) predicateClause;
+        MerkleTree merkleTree = (MerkleTree) rootNode;
         assertEquals(HEX_LITERAL, merkleTree.getRoot().getValue());
         assertEquals(STRING_LITERAL, merkleTree.getTree().getRoot().getLeft().getLeft().getValue().getValue());
         assertEquals(IDENTIFIER_1, merkleTree.getTree().getRoot().getLeft().getRight().getValue().getValue());
@@ -198,10 +198,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(MerkleTree.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(MerkleTree.class, rootNode.getClass());
 
-        MerkleTree merkleTree = (MerkleTree) predicateClause;
+        MerkleTree merkleTree = (MerkleTree) rootNode;
         assertEquals(HEX_LITERAL, merkleTree.getRoot().getValue());
         assertEquals(STRING_LITERAL, merkleTree.getTree().getRoot().getLeft().getLeft().getValue().getValue());
         assertEquals(IDENTIFIER_1, merkleTree.getTree().getRoot().getLeft().getRight().getValue().getValue());
@@ -220,10 +220,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(MerkleTree.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(MerkleTree.class, rootNode.getClass());
 
-        MerkleTree merkleTree = (MerkleTree) predicateClause;
+        MerkleTree merkleTree = (MerkleTree) rootNode;
         assertEquals(HEX_LITERAL, merkleTree.getRoot().getValue());
         assertEquals(IDENTIFIER_1, merkleTree.getTree().getRoot().getLeft().getValue().getValue());
         assertEquals(HEX_LITERAL, merkleTree.getTree().getRoot().getRight().getLeft().getValue().getValue());
@@ -238,10 +238,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(LessThan.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(LessThan.class, rootNode.getClass());
 
-        LessThan lessThan = (LessThan) predicateClause;
+        LessThan lessThan = (LessThan) rootNode;
         assertEquals(IDENTIFIER_1, lessThan.getLeft().getValue());
         assertEquals(IDENTIFIER_2, lessThan.getRight().getValue());
     }
@@ -254,10 +254,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(LessThan.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(LessThan.class, rootNode.getClass());
 
-        LessThan lessThan = (LessThan) predicateClause;
+        LessThan lessThan = (LessThan) rootNode;
         assertEquals(IDENTIFIER_1, lessThan.getRight().getValue());
         assertEquals(IDENTIFIER_2, lessThan.getLeft().getValue());
     }
@@ -270,10 +270,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(SetMembership.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(SetMembership.class, rootNode.getClass());
 
-        SetMembership setMembership = (SetMembership) predicateClause;
+        SetMembership setMembership = (SetMembership) rootNode;
         assertEquals(IDENTIFIER_1, setMembership.getMember().getValue());
         Set<Object> set = Set.of(INT_LITERAL_1, HEX_LITERAL, IDENTIFIER_1);
         for (Value value : setMembership.getSet())
@@ -292,10 +292,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(And.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(And.class, rootNode.getClass());
 
-        And and = (And) predicateClause;
+        And and = (And) rootNode;
         assertEquals(Equality.class, and.getLeft().getClass());
         assertEquals(Or.class, and.getRight().getClass());
 
@@ -319,10 +319,10 @@ public class ParseTreeVisitorTest {
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
 
-        Clause predicateClause = ast.getClause();
-        assertEquals(Or.class, predicateClause.getClass());
+        Node rootNode = ast.getRoot();
+        assertEquals(Or.class, rootNode.getClass());
 
-        Or or1 = (Or) predicateClause;
+        Or or1 = (Or) rootNode;
         assertEquals(Or.class, or1.getLeft().getClass());
         assertEquals(Inequality.class, or1.getRight().getClass());
 

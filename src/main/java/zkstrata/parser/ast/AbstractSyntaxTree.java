@@ -6,13 +6,13 @@ public class AbstractSyntaxTree {
     private String source;
     private String statement;
     private List<Subject> subjects;
-    private Clause clause;
+    private Node root;
 
-    public AbstractSyntaxTree(String source, String statement, List<Subject> subjects, Clause clause) {
+    public AbstractSyntaxTree(String source, String statement, List<Subject> subjects, Node root) {
         this.source = source;
         this.statement = statement;
         this.subjects = subjects;
-        this.clause = clause;
+        this.root = root;
     }
 
     public String getSource() {
@@ -27,7 +27,7 @@ public class AbstractSyntaxTree {
         return subjects;
     }
 
-    public Clause getClause() {
-        return clause;
+    public Node getRoot() {
+        return root;
     }
 }
