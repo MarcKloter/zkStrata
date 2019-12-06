@@ -23,10 +23,9 @@ public class Compiler {
     public static void run(Arguments args) {
         Statement statement = parse(args, null, null);
 
-        parseValidationRules(statement.getSubjects(), args).forEach(stmt -> statement.addConstituent(stmt.getRootConstituent()));
+        parseValidationRules(statement.getSubjects(), args).forEach(stmt -> statement.addConstituent(stmt.getClaim()));
 
         statement.setPremises(parsePremises(args));
-
 
 
         if (args.hasWitnessData())
@@ -36,8 +35,10 @@ public class Compiler {
 
 
 
+        LOGGER.debug("Compiled the given statement into the following structure:{}{}",
+                System.lineSeparator(), statement.getClaim().toDebugString());
 
-        new CodeGenerator(args.getName()).run(statement.getRootConstituent(), args.hasWitnessData());
+        new CodeGenerator(args.getName()).run(statement.getClaim(), args.hasWitnessData());
     }
 
     private static Statement parse(Arguments args, String parentAlias, String parentSchema) {

@@ -37,6 +37,12 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
         this.performChecks();
     }
 
+    /**
+     * Checks whether the given {@link Field} accepts the provided object as value.
+     *
+     * @param field {@link Field} to check
+     * @param value {@link Object} to type check against
+     */
     private void checkType(Field field, Object value) {
         if (value instanceof Variable)
             checkTypeAnnotation(field, (Variable) value);
@@ -45,6 +51,13 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
                     field.getName(), field.getDeclaringClass().getSimpleName());
     }
 
+    /**
+     * Checks whether the given {@link Field}, which must be annotated as {@link Type}, accepts the type of the provided
+     * {@link Variable}.
+     *
+     * @param field    {@link Field} to check the annotation for
+     * @param variable {@link Variable} to type check against
+     */
     private void checkTypeAnnotation(Field field, Variable variable) {
         Type annotation = field.getAnnotation(Type.class);
 
@@ -121,10 +134,7 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
 
     @Override
     public String toString() {
-        TextStringBuilder builder = new TextStringBuilder();
-        builder.append("%s@%s", getClass().getSimpleName(), Integer.toHexString(hashCode()));
-        getVariables().forEach(var -> builder.append(" <%s>", var.toString()));
-        return builder.build();
+        return getClass().getSimpleName();
     }
 
     @Override
