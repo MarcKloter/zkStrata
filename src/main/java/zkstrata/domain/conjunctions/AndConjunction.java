@@ -1,7 +1,7 @@
 package zkstrata.domain.conjunctions;
 
 import zkstrata.codegen.TargetFormat;
-import zkstrata.domain.Constituent;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.visitor.AstElement;
 import zkstrata.parser.ast.connectives.And;
@@ -12,16 +12,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AstElement(And.class)
-public class AndConjunction implements Conjunction {
-    private List<Constituent> parts;
-
-    public AndConjunction(List<Constituent> parts) {
-        this.parts = parts;
-    }
-
-    @Override
-    public List<Constituent> getParts() {
-        return parts;
+public class AndConjunction extends AbstractConjunction {
+    public AndConjunction(List<Proposition> parts) {
+        super(parts);
     }
 
     /**
@@ -38,13 +31,13 @@ public class AndConjunction implements Conjunction {
      * This statement can be proven by showing that at least one of the following gadget-combinations evaluates to true:
      * [[A, C, E], [A, C, F], [A, C, G], [B, C, E], [B, C, F], [B, C, G]]
      * <p>
-     * Which is the cartesian product of the evaluation paths returned by the parts ({@link Constituent#getEvaluationPaths()}).
+     * Which is the cartesian product of the evaluation paths returned by the parts ({@link Proposition#getEvaluationPaths()}).
      */
     @Override
     public List<List<Gadget>> getEvaluationPaths() {
         return CombinatoricsUtils.computeCartesianProduct(
-                parts.stream()
-                        .map(Constituent::getEvaluationPaths)
+                getParts().stream()
+                        .map(Proposition::getEvaluationPaths)
                         .collect(Collectors.toList())
         ).stream()
                 .map(evaluationPath -> evaluationPath.stream()
@@ -55,6 +48,9 @@ public class AndConjunction implements Conjunction {
 
     @Override
     public List<TargetFormat> toTargetFormat() {
-        return parts.stream().map(Constituent::toTargetFormat).flatMap(Collection::stream).collect(Collectors.toList());
+        return getParts().stream()
+                .map(Proposition::toTargetFormat)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 }

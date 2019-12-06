@@ -1,7 +1,7 @@
 package zkstrata.domain.conjunctions;
 
 import zkstrata.codegen.TargetFormat;
-import zkstrata.domain.Constituent;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.visitor.AstElement;
 import zkstrata.parser.ast.connectives.Or;
@@ -13,16 +13,9 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @AstElement(Or.class)
-public class OrConjunction implements Conjunction {
-    private List<Constituent> parts;
-
-    public OrConjunction(List<Constituent> parts) {
-        this.parts = parts;
-    }
-
-    @Override
-    public List<Constituent> getParts() {
-        return parts;
+public class OrConjunction extends AbstractConjunction {
+    public OrConjunction(List<Proposition> parts) {
+        super(parts);
     }
 
     /**
@@ -39,12 +32,12 @@ public class OrConjunction implements Conjunction {
      * This statement can be proven by showing that at least one of the following gadget-combinations evaluates to true:
      * [[A], [B], [C], [D, E]]
      * <p>
-     * Which is the flattened combination of the evaluation paths returned by the parts ({@link Constituent#getEvaluationPaths()}).
+     * Which is the flattened combination of the evaluation paths returned by the parts ({@link Proposition#getEvaluationPaths()}).
      */
     @Override
     public List<List<Gadget>> getEvaluationPaths() {
-        return parts.stream()
-                .map(Constituent::getEvaluationPaths)
+        return getParts().stream()
+                .map(Proposition::getEvaluationPaths)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
@@ -54,9 +47,9 @@ public class OrConjunction implements Conjunction {
         List<TargetFormat> result = new ArrayList<>();
         result.add(new TargetFormat("OR", Collections.emptyMap()));
         result.add(new TargetFormat("[", Collections.emptyMap()));
-        parts.forEach(constituent -> {
+        getParts().forEach(proposition -> {
             result.add(new TargetFormat("{", Collections.emptyMap()));
-            result.addAll(constituent.toTargetFormat());
+            result.addAll(proposition.toTargetFormat());
             result.add(new TargetFormat("}", Collections.emptyMap()));
         });
         result.add(new TargetFormat("]", Collections.emptyMap()));
