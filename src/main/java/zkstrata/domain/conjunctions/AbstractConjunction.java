@@ -1,5 +1,6 @@
 package zkstrata.domain.conjunctions;
 
+import com.google.common.base.Objects;
 import zkstrata.domain.Proposition;
 
 import java.util.List;
@@ -26,9 +27,14 @@ public abstract class AbstractConjunction implements Conjunction {
         if (obj == null)
             return false;
 
-        if (obj.getClass().isAssignableFrom(Conjunction.class))
+        if (getClass() != obj.getClass())
             return false;
 
         return getParts().equals(((Conjunction) obj).getParts());
+    }
+
+    @Override
+    public int hashCode() {
+        return parts.hashCode();
     }
 }
