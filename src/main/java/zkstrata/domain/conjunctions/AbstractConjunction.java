@@ -20,4 +20,15 @@ public abstract class AbstractConjunction implements Conjunction {
     public String toString() {
         return getClass().getSimpleName().replace("Conjunction", "").toUpperCase();
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+
+        if (obj.getClass().isAssignableFrom(Conjunction.class))
+            return false;
+
+        return getParts().equals(((Conjunction) obj).getParts());
+    }
 }
