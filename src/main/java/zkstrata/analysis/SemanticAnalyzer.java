@@ -18,6 +18,10 @@ import java.util.stream.Collectors;
 public class SemanticAnalyzer {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
+    private SemanticAnalyzer() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Combines the given claim and premises to draw all inferences that can be made from the provided information.
      * Based on this, check for any contradiction between any inference and throw a {@link CompileTimeException} in case
