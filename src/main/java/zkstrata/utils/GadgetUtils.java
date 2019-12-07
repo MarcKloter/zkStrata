@@ -7,6 +7,10 @@ import zkstrata.domain.data.types.wrapper.Variable;
 import java.math.BigInteger;
 
 public class GadgetUtils {
+    private GadgetUtils() {
+        throw new IllegalStateException("Utility class");
+    }
+
     public static boolean isInstanceVariable(Variable variable) {
         return variable instanceof InstanceVariable;
     }
