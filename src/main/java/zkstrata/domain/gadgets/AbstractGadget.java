@@ -1,7 +1,6 @@
 package zkstrata.domain.gadgets;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.TextStringBuilder;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Null;
 import zkstrata.domain.data.types.wrapper.Variable;
