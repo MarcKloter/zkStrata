@@ -47,7 +47,9 @@ public class Reference implements Value {
             return false;
 
         Reference ref = (Reference) obj;
-        return type.equals(ref.getType()) && subject.equals(ref.getSubject()) && selector.equals(ref.getSelector());
+        return getType().equals(ref.getType())
+                && getSubject().equals(ref.getSubject())
+                && getSelector().equals(ref.getSelector());
     }
 
     @Override

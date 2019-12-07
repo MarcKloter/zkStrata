@@ -30,7 +30,7 @@ public class Selector {
         if (getClass() != obj.getClass())
             return false;
 
-        return selectors.equals(((Selector) obj).getSelectors());
+        return getSelectors().equals(((Selector) obj).getSelectors());
     }
 
     @Override

@@ -62,12 +62,12 @@ public class Inference {
         if (getClass() != obj.getClass())
             return false;
 
-        if (conclusion == null || assumptions == null)
+        if (getConclusion() == null || getAssumptions() == null)
             return false;
 
         Inference other = (Inference) obj;
 
-        return conclusion.equals(other.getConclusion()) && assumptions.equals(other.getAssumptions());
+        return getConclusion().equals(other.getConclusion()) && getAssumptions().equals(other.getAssumptions());
     }
 
     @Override

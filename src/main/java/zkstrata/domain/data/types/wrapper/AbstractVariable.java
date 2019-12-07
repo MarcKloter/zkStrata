@@ -53,6 +53,6 @@ public abstract class AbstractVariable extends AbstractTraceable implements Vari
         if (getClass() != obj.getClass())
             return false;
 
-        return value.equals(((Variable) obj).getValue());
+        return getValue().equals(((Variable) obj).getValue());
     }
 }
