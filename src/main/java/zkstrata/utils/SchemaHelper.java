@@ -11,6 +11,13 @@ public class SchemaHelper {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Resolves the given {@code name} to a {@link zkstrata.domain.data.schemas.Schema} object by creating a new
+     * instance of the class annotated as {@link Schema} with name property equal to the given {@code name}.
+     *
+     * @param name name of the {@link Schema} to instantiate
+     * @return instance of the class annotated as {@link Schema} with name property equal to {@code name}
+     */
     public static zkstrata.domain.data.schemas.Schema resolve(String name) {
         Reflections reflections = new Reflections("zkstrata.domain.data.schemas.predefined");
         Set<Class<?>> schemas = reflections.getTypesAnnotatedWith(Schema.class);
@@ -19,8 +26,8 @@ public class SchemaHelper {
             Schema annotation = schema.getAnnotation(Schema.class);
             if (annotation.name().equals(name)) {
                 if (!zkstrata.domain.data.schemas.Schema.class.isAssignableFrom(schema)) {
-                    // TODO: add test for this case
-                    String msg = String.format("The predefined schema %s does not implement %s.", name, zkstrata.domain.data.schemas.Schema.class);
+                    String msg = String.format("The predefined schema %s does not implement %s.",
+                            name, zkstrata.domain.data.schemas.Schema.class);
                     throw new InternalCompilerException(msg);
                 }
 
