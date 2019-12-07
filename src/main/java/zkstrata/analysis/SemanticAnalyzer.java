@@ -35,12 +35,12 @@ public class SemanticAnalyzer {
         LOGGER.debug("Starting semantic analysis");
 
         // combine the given statement with all provided premises
-        Proposition rootConstituent = statement.getClaim();
+        Proposition claim = statement.getClaim();
         for (Statement premise : statement.getPremises()) {
-            rootConstituent = rootConstituent.combine(premise.getClaim());
+            claim = claim.combine(premise.getClaim());
         }
 
-        List<List<Gadget>> evaluationPaths = rootConstituent.getEvaluationPaths();
+        List<List<Gadget>> evaluationPaths = claim.getEvaluationPaths();
 
         LOGGER.debug("Found {} logically distinct paths to evaluate the given statement", evaluationPaths.size());
 

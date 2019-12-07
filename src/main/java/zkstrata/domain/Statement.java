@@ -40,7 +40,7 @@ public class Statement {
      *
      * @param proposition {@link Proposition} to add
      */
-    public void addConstituent(Proposition proposition) {
+    public void addProposition(Proposition proposition) {
         this.claim = this.claim.combine(proposition);
     }
 }
