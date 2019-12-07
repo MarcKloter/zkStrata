@@ -112,7 +112,10 @@ public class SemanticAnalyzer {
 
             for (Map.Entry<WitnessVariable, Set<Inference>> newInference : newInferences.entrySet())
                 for (Inference assumption : newInference.getValue())
-                    round.addAll(runImplicationRules(assumption, inferenceMapping.getOrDefault(newInference.getKey(), Collections.emptySet())));
+                    round.addAll(runImplicationRules(
+                            assumption,
+                            inferenceMapping.getOrDefault(newInference.getKey(), Collections.emptySet())
+                    ));
 
             newInferences = processInferences(simplify(round));
         }
