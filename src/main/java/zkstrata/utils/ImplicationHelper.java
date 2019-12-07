@@ -12,6 +12,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ImplicationHelper {
+    private ImplicationHelper() {
+        throw new IllegalStateException("Utility class");
+    }
+
     /**
      * Executes all methods annotated as {@link Implication} on the {@link Gadget} objects in the given list
      * {@code gadgets} and all inferences that can be drawn from it, until there is no new realization.
