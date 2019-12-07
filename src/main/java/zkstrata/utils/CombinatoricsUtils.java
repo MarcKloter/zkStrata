@@ -117,4 +117,29 @@ public class CombinatoricsUtils {
 
         return Collections.emptyList();
     }
+
+    /**
+     * Returns all elements that occur in each of the provided list of lists (intersection of all lists).
+     *
+     * @param listOfLists {@link List} of {@link List} to intersect
+     * @return intersection of elements occurring in each of the lists within the provided list
+     */
+    public static <T> Set<T> computeIntersection(List<List<T>> listOfLists) {
+        if(listOfLists.isEmpty())
+            return Collections.emptySet();
+
+        Set<T> commonElements = new HashSet<>(listOfLists.get(0));
+
+        for (int i = 1; i < listOfLists.size(); i++) {
+            List<T> list = listOfLists.get(i);
+            Set<T> common = new HashSet<>();
+            for (T element : list) {
+                if (commonElements.contains(element))
+                    common.add(element);
+            }
+            commonElements = common;
+        }
+
+        return commonElements;
+    }
 }

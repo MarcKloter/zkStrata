@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.ExposureAnalyzer;
 import zkstrata.analysis.SemanticAnalyzer;
 import zkstrata.codegen.CodeGenerator;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
 import zkstrata.domain.visitor.ASTVisitor;
@@ -23,16 +24,12 @@ public class Compiler {
     public static void run(Arguments args) {
         Statement statement = parse(args, null, null);
 
-        parseValidationRules(statement.getSubjects(), args).forEach(stmt -> statement.addConstituent(stmt.getClaim()));
+        parseValidationRules(statement.getSubjects(), args).forEach(stmt -> statement.addProposition(stmt.getClaim()));
 
         statement.setPremises(parsePremises(args));
 
-
         if (args.hasWitnessData())
             ExposureAnalyzer.process(statement, args);
-
-        new SemanticAnalyzer().process(statement);
-
 
 
         if (LOGGER.isDebugEnabled())
