@@ -12,6 +12,15 @@ import java.util.stream.Collectors;
 
 public interface Proposition {
     /**
+     * Returns an empty {@link AndConjunction} which can be used as neutral element (no effect on a statement).
+     *
+     * @return empty proposition
+     */
+    static Proposition emptyProposition() {
+        return new AndConjunction(Collections.emptyList());
+    }
+
+    /**
      * Combines the given {@link Proposition} with this using an {@link AndConjunction}.
      *
      * @param proposition {@link Proposition} to combine with
