@@ -1,6 +1,5 @@
 package zkstrata.domain.conjunctions;
 
-import com.google.common.base.Objects;
 import zkstrata.domain.Proposition;
 
 import java.util.List;
