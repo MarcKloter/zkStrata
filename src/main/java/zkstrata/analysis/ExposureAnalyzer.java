@@ -40,8 +40,8 @@ public class ExposureAnalyzer {
 
         Map<String, VariableExposure> checkList = new HashMap<>();
 
-        List<Gadget> gadgets = statement.getClaim().listAllGadgets();
-        statement.getPremises().forEach(premise -> gadgets.addAll(premise.getClaim().listAllGadgets()));
+        List<Gadget> gadgets = statement.getClaim().combine(statement.getPremises()).listAllGadgets();
+
         for (Gadget gadget : gadgets) {
             for (Object variable : gadget.getVariables()) {
                 if (variable instanceof Variable)

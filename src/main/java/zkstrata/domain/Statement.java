@@ -4,7 +4,6 @@ import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
 
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Compiler internal representation of a zkStrata statement.
@@ -12,7 +11,7 @@ import java.util.Set;
 public class Statement {
     private Map<String, StructuredData> subjects;
     private Proposition claim;
-    private Set<Statement> premises;
+    private Proposition premises;
 
     public Statement(Map<String, StructuredData> subjects, Proposition claim) {
         this.subjects = subjects;
@@ -27,11 +26,11 @@ public class Statement {
         return claim;
     }
 
-    public Set<Statement> getPremises() {
+    public Proposition getPremises() {
         return premises;
     }
 
-    public void setPremises(Set<Statement> premises) {
+    public void setPremises(Proposition premises) {
         this.premises = premises;
     }
 

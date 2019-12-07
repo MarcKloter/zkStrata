@@ -9,6 +9,7 @@ import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
 import zkstrata.domain.visitor.ASTVisitor;
+import zkstrata.optimizer.Optimizer;
 import zkstrata.parser.ParseTreeVisitor;
 import zkstrata.parser.ast.AbstractSyntaxTree;
 
@@ -31,17 +32,19 @@ public class Compiler {
         if (args.hasWitnessData())
             ExposureAnalyzer.process(statement, args);
 
+        SemanticAnalyzer.process(statement.getClaim(), statement.getPremises());
 
         if (LOGGER.isDebugEnabled())
             LOGGER.debug("Statement claim structure before optimization:{}{}",
                     System.lineSeparator(), statement.getClaim().toDebugString());
 
+        Proposition claim = Optimizer.process(statement.getClaim(), statement.getPremises());
 
         if (LOGGER.isDebugEnabled())
             LOGGER.debug("Compiled the claim of the given statement into the following structure:{}{}",
-                    System.lineSeparator(), statement.getClaim().toDebugString());
+                    System.lineSeparator(), claim.toDebugString());
 
-        new CodeGenerator(args.getName()).run(statement.getClaim(), args.hasWitnessData());
+        new CodeGenerator(args.getName()).run(claim, args.hasWitnessData());
     }
 
     private static Statement parse(Arguments args, String parentAlias, String parentSchema) {
@@ -80,15 +83,15 @@ public class Compiler {
         return validationRules;
     }
 
-    private static Set<Statement> parsePremises(Arguments args) {
-        Set<Statement> premises = new HashSet<>();
+    private static Proposition parsePremises(Arguments args) {
+        Proposition premises = Proposition.emptyProposition();
 
         for (Arguments.Statement premise : args.getPremises()) {
             LOGGER.debug("Processing premise {}", premise.getSource());
 
             Arguments arguments = new Arguments(args);
             arguments.setStatement(premise);
-            premises.add(parse(arguments, null, null));
+            premises = premises.combine(parse(arguments, null, null).getClaim());
         }
 
         return premises;
