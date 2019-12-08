@@ -21,7 +21,7 @@ import java.util.*;
 import static zkstrata.utils.GadgetUtils.*;
 
 @AstElement(Equality.class)
-public class EqualityGadget extends AbstractGadget<EqualityGadget> {
+public class EqualityGadget extends AbstractGadget {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
     @Type({Any.class})

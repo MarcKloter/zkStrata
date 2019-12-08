@@ -172,8 +172,7 @@ public class ASTVisitor {
             if (from.value() == predicate.getClass()) {
                 Map<String, Object> sourceValues = getSourceValues(predicate);
                 try {
-                    @SuppressWarnings("unchecked")
-                    Gadget<? extends Gadget> instance = gadget.getConstructor().newInstance();
+                    Gadget instance = gadget.getConstructor().newInstance();
                     instance.initFrom(sourceValues);
                     return instance;
                 } catch (NoSuchMethodException e) {

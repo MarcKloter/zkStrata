@@ -20,15 +20,12 @@ import zkstrata.parser.ast.predicates.BoundsCheck;
 import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 import static zkstrata.utils.GadgetUtils.*;
 
 @AstElement(BoundsCheck.class)
-public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
+public class BoundsCheckGadget extends AbstractGadget {
     private static final Logger LOGGER = LogManager.getRootLogger();
     private static final BigInteger MIN = BigInteger.ZERO;
     private static final BigInteger MAX = Constants.UNSIGNED_64BIT_MAX;

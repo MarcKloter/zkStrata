@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import static zkstrata.utils.GadgetUtils.isWitnessVariable;
 
 @AstElement(SetMembership.class)
-public class SetMembershipGadget extends AbstractGadget<SetMembershipGadget> {
+public class SetMembershipGadget extends AbstractGadget {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
     @Type({Any.class})

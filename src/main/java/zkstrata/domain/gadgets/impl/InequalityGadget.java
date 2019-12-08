@@ -20,7 +20,7 @@ import java.util.*;
 import static zkstrata.utils.GadgetUtils.*;
 
 @AstElement(Inequality.class)
-public class InequalityGadget extends AbstractGadget<InequalityGadget> {
+public class InequalityGadget extends AbstractGadget {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
     @Type({Any.class})

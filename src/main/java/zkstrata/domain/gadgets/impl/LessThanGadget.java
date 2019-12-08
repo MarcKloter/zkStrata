@@ -23,7 +23,7 @@ import java.util.*;
 import static zkstrata.utils.GadgetUtils.*;
 
 @AstElement(LessThan.class)
-public class LessThanGadget extends AbstractGadget<LessThanGadget> {
+public class LessThanGadget extends AbstractGadget {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
     @Type({BigInteger.class})

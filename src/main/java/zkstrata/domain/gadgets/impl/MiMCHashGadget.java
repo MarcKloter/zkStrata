@@ -17,11 +17,12 @@ import zkstrata.utils.Constants;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static zkstrata.utils.GadgetUtils.isInstanceVariable;
 
 @AstElement(MiMCHash.class)
-public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
+public class MiMCHashGadget extends AbstractGadget {
     @Type({Any.class})
     private WitnessVariable preimage;
 

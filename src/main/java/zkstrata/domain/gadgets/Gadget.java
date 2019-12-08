@@ -6,7 +6,7 @@ import zkstrata.domain.data.types.wrapper.Variable;
 import java.util.List;
 import java.util.Map;
 
-public interface Gadget<T extends Gadget> extends Proposition {
+public interface Gadget extends Proposition {
     /**
      * Initializes fields of this gadget annotated with {@link Type} according to the given source.
      *

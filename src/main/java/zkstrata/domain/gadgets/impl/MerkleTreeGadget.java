@@ -16,9 +16,10 @@ import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @AstElement(MerkleTree.class)
-public class MerkleTreeGadget extends AbstractGadget<MerkleTreeGadget> {
+public class MerkleTreeGadget extends AbstractGadget {
     @Type({HexLiteral.class})
     private InstanceVariable root;
 

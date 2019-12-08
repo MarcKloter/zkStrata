@@ -14,7 +14,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget<T> {
+public abstract class AbstractGadget implements Gadget {
     @Override
     public void initFrom(Map<String, Object> sourceFields) {
         for (Map.Entry<String, Object> source : sourceFields.entrySet()) {
