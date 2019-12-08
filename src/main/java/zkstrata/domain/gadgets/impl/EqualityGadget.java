@@ -109,9 +109,21 @@ public class EqualityGadget extends AbstractGadget<EqualityGadget> {
     }
 
     @Override
-    public boolean isEqualTo(EqualityGadget other) {
-        return (left.equals(other.left) && right.equals(other.right)) ||
-                (right.equals(other.left)) && left.equals(other.right);
+    public boolean equals(Object object) {
+        if (object == null)
+            return false;
+
+        if (getClass() != object.getClass())
+            return false;
+
+        EqualityGadget other = (EqualityGadget) object;
+        return (getLeft().equals(other.getLeft()) && getRight().equals(other.getRight())) ||
+                (getRight().equals(other.getLeft())) && getLeft().equals(other.getRight());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLeft(), getRight());
     }
 
     @Override

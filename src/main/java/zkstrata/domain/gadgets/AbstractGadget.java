@@ -127,8 +127,8 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
     }
 
     @Substitution(target = {AbstractGadget.class}, context = {AbstractGadget.class})
-    public Optional<Set<Gadget>> removeDuplicate(T other) {
-        return isEqualTo(other) ? Optional.empty() : Optional.of(Set.of(this));
+    public Optional<Set<Gadget>> removeDuplicate(Gadget other) {
+        return equals(other) ? Optional.empty() : Optional.of(Set.of(this));
     }
 
     @Override
@@ -137,23 +137,10 @@ public abstract class AbstractGadget<T extends AbstractGadget> implements Gadget
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-
-        if (getClass() != obj.getClass())
-            return false;
-
-        @SuppressWarnings("unchecked")
-        boolean result = isEqualTo((T) obj);
-
-        return result;
-    }
+    public abstract boolean equals(Object obj);
 
     @Override
-    public int hashCode() {
-        return getVariables().stream().mapToInt(Variable::hashCode).sum();
-    }
+    public abstract int hashCode();
 
     @Override
     public List<List<Gadget>> getEvaluationPaths() {

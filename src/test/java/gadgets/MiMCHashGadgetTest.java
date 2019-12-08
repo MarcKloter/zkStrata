@@ -46,18 +46,18 @@ public class MiMCHashGadgetTest {
 
     @Test
     void Image_Too_Large() {
-        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
-            new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_LARGE);
-        });
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+            new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_LARGE)
+        );
 
         assertTrue(exception.getMessage().toLowerCase().contains("invalid mimc-hash image"));
     }
 
     @Test
     void Image_Negative() {
-        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
-            new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_NEG);
-        });
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+            new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_NEG)
+        );
 
         assertTrue(exception.getMessage().toLowerCase().contains("invalid mimc-hash image"));
     }
@@ -66,30 +66,30 @@ public class MiMCHashGadgetTest {
     void Is_Equal_To() {
         MiMCHashGadget miMCHashGadget1 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_1);
         MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_1);
-        assertTrue(miMCHashGadget1.isEqualTo(miMCHashGadget2));
+        assertEquals(miMCHashGadget1, miMCHashGadget2);
     }
 
     @Test
     void Is_Not_Equal_To_1() {
         MiMCHashGadget miMCHashGadget1 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_1);
         MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_2, INSTANCE_VAR_1);
-        assertFalse(miMCHashGadget1.isEqualTo(miMCHashGadget2));
+        assertNotEquals(miMCHashGadget1, miMCHashGadget2);
     }
 
     @Test
     void Is_Not_Equal_To_2() {
         MiMCHashGadget miMCHashGadget1 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_2);
         MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_1);
-        assertFalse(miMCHashGadget1.isEqualTo(miMCHashGadget2));
+        assertNotEquals(miMCHashGadget1, miMCHashGadget2);
     }
 
     @Test
     void Same_Preimage_Different_Image_Contradiction() {
         MiMCHashGadget miMCHashGadget1 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_1);
         MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_2);
-        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
-            MiMCHashGadget.checkContradiction(miMCHashGadget1, miMCHashGadget2);
-        });
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+            MiMCHashGadget.checkContradiction(miMCHashGadget1, miMCHashGadget2)
+        );
 
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
@@ -107,9 +107,9 @@ public class MiMCHashGadgetTest {
     @Test
     void Equal_No_Contradiction() {
         MiMCHashGadget miMCHashGadget = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_1);
-        assertDoesNotThrow(() -> {
-            MiMCHashGadget.checkContradiction(miMCHashGadget, miMCHashGadget);
-        });
+        assertDoesNotThrow(() ->
+            MiMCHashGadget.checkContradiction(miMCHashGadget, miMCHashGadget)
+        );
     }
 
     @Test

@@ -112,21 +112,21 @@ public class InequalityGadgetTest {
     void Is_Equal_To_1() {
         InequalityGadget inequalityGadget1 = new InequalityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         InequalityGadget inequalityGadget2 = new InequalityGadget(WITNESS_VAR_2, WITNESS_VAR_1);
-        assertTrue(inequalityGadget1.isEqualTo(inequalityGadget2));
+        assertEquals(inequalityGadget1, inequalityGadget2);
     }
 
     @Test
     void Is_Equal_To_2() {
         InequalityGadget inequalityGadget1 = new InequalityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         InequalityGadget inequalityGadget2 = new InequalityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
-        assertTrue(inequalityGadget1.isEqualTo(inequalityGadget2));
+        assertEquals(inequalityGadget1, inequalityGadget2);
     }
 
     @Test
     void Is_Not_Equal_To() {
         InequalityGadget inequalityGadget1 = new InequalityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         InequalityGadget inequalityGadget2 = new InequalityGadget(WITNESS_VAR_2, WITNESS_VAR_2);
-        assertFalse(inequalityGadget1.isEqualTo(inequalityGadget2));
+        assertNotEquals(inequalityGadget1, inequalityGadget2);
     }
 
     @Test

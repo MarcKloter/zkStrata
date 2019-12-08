@@ -52,28 +52,28 @@ public class SetMembershipGadgetTest {
     void Is_Equal_To_1() {
         SetMembershipGadget setMembershipGadget1 = new SetMembershipGadget(WITNESS_VAR_1, SET_1A);
         SetMembershipGadget setMembershipGadget2 = new SetMembershipGadget(WITNESS_VAR_1, SET_1A);
-        assertTrue(setMembershipGadget1.isEqualTo(setMembershipGadget2));
+        assertEquals(setMembershipGadget1, setMembershipGadget2);
     }
 
     @Test
     void Is_Equal_To_2() {
         SetMembershipGadget setMembershipGadget1 = new SetMembershipGadget(WITNESS_VAR_1, SET_1A);
         SetMembershipGadget setMembershipGadget2 = new SetMembershipGadget(WITNESS_VAR_1, SET_1B);
-        assertTrue(setMembershipGadget1.isEqualTo(setMembershipGadget2));
+        assertEquals(setMembershipGadget1, setMembershipGadget2);
     }
 
     @Test
     void Is_Not_Equal_To_1() {
         SetMembershipGadget setMembershipGadget1 = new SetMembershipGadget(INSTANCE_VAR_17, SET_2);
         SetMembershipGadget setMembershipGadget2 = new SetMembershipGadget(WITNESS_VAR_1, SET_2);
-        assertFalse(setMembershipGadget1.isEqualTo(setMembershipGadget2));
+        assertNotEquals(setMembershipGadget1, setMembershipGadget2);
     }
 
     @Test
     void Is_Not_Equal_To_2() {
         SetMembershipGadget setMembershipGadget1 = new SetMembershipGadget(INSTANCE_VAR_17, SET_2);
         SetMembershipGadget setMembershipGadget2 = new SetMembershipGadget(INSTANCE_VAR_17, SET_3);
-        assertFalse(setMembershipGadget1.isEqualTo(setMembershipGadget2));
+        assertNotEquals(setMembershipGadget1, setMembershipGadget2);
     }
 
     @Test

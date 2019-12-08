@@ -60,18 +60,18 @@ public class MerkleTreeGadgetTest {
 
     @Test
     void Root_Too_Large() {
-        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
-            new MerkleTreeGadget(INSTANCE_VAR_ROOT_LARGE, TREE_1);
-        });
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+            new MerkleTreeGadget(INSTANCE_VAR_ROOT_LARGE, TREE_1)
+        );
 
         assertTrue(exception.getMessage().toLowerCase().contains("invalid root hash image"));
     }
 
     @Test
     void Root_Negative() {
-        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
-            new MerkleTreeGadget(INSTANCE_VAR_ROOT_NEG, TREE_1);
-        });
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+            new MerkleTreeGadget(INSTANCE_VAR_ROOT_NEG, TREE_1)
+        );
 
         assertTrue(exception.getMessage().toLowerCase().contains("invalid root hash image"));
     }
@@ -80,20 +80,20 @@ public class MerkleTreeGadgetTest {
     void Is_Equal_To() {
         MerkleTreeGadget merkleTreeGadget1 = new MerkleTreeGadget(INSTANCE_VAR_ROOT_1, TREE_1);
         MerkleTreeGadget merkleTreeGadget2 = new MerkleTreeGadget(INSTANCE_VAR_ROOT_1, TREE_1);
-        assertTrue(merkleTreeGadget1.isEqualTo(merkleTreeGadget2));
+        assertEquals(merkleTreeGadget1, merkleTreeGadget2);
     }
 
     @Test
     void Is_Not_Equal_To_1() {
         MerkleTreeGadget merkleTreeGadget1 = new MerkleTreeGadget(INSTANCE_VAR_ROOT_1, TREE_1);
         MerkleTreeGadget merkleTreeGadget2 = new MerkleTreeGadget(INSTANCE_VAR_ROOT_2, TREE_1);
-        assertFalse(merkleTreeGadget1.isEqualTo(merkleTreeGadget2));
+        assertNotEquals(merkleTreeGadget1, merkleTreeGadget2);
     }
 
     @Test
     void Is_Not_Equal_To_2() {
         MerkleTreeGadget merkleTreeGadget1 = new MerkleTreeGadget(INSTANCE_VAR_ROOT_2, TREE_1);
         MerkleTreeGadget merkleTreeGadget2 = new MerkleTreeGadget(INSTANCE_VAR_ROOT_2, TREE_2);
-        assertFalse(merkleTreeGadget1.isEqualTo(merkleTreeGadget2));
+        assertNotEquals(merkleTreeGadget1, merkleTreeGadget2);
     }
 }

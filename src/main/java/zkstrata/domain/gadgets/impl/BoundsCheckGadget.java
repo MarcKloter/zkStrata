@@ -130,8 +130,20 @@ public class BoundsCheckGadget extends AbstractGadget<BoundsCheckGadget> {
     }
 
     @Override
-    public boolean isEqualTo(BoundsCheckGadget other) {
-        return value.equals(other.value) && min.equals(other.min) && max.equals(other.max);
+    public boolean equals(Object object) {
+        if (object == null)
+            return false;
+
+        if (getClass() != object.getClass())
+            return false;
+
+        BoundsCheckGadget other = (BoundsCheckGadget) object;
+        return getValue().equals(other.getValue()) && getMin().equals(other.getMin()) && getMax().equals(other.getMax());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getValue(), getMin(), getMax());
     }
 
     @Override

@@ -52,14 +52,14 @@ public class LessThanGadgetTest {
     void Is_Equal_To() {
         LessThanGadget lessThanGadget1 = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         LessThanGadget lessThanGadget2 = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
-        assertTrue(lessThanGadget1.isEqualTo(lessThanGadget2));
+        assertEquals(lessThanGadget1, lessThanGadget2);
     }
 
     @Test
     void Is_Not_Equal_To() {
         LessThanGadget lessThanGadget1 = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         LessThanGadget lessThanGadget2 = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_3);
-        assertFalse(lessThanGadget1.isEqualTo(lessThanGadget2));
+        assertNotEquals(lessThanGadget1, lessThanGadget2);
     }
 
     @Test
@@ -128,7 +128,7 @@ public class LessThanGadgetTest {
         Optional<Gadget> result = LessThanGadget.implyTransitivity(lessThanGadget1, lessThanGadget2);
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof LessThanGadget);
-        assertTrue(implication.isEqualTo((LessThanGadget) result.get()));
+        assertEquals(implication, result.get());
     }
 
     @Test
@@ -140,7 +140,7 @@ public class LessThanGadgetTest {
         Optional<Gadget> result = LessThanGadget.implyTransitivity(lessThanGadget1, lessThanGadget2);
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof LessThanGadget);
-        assertTrue(implication.isEqualTo((LessThanGadget) result.get()));
+        assertEquals(implication, result.get());
     }
 
     @Test
@@ -161,7 +161,7 @@ public class LessThanGadgetTest {
         Optional<Gadget> result = LessThanGadget.implyEquality(lessThanGadget, equalityGadget);
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof LessThanGadget);
-        assertTrue(implication.isEqualTo((LessThanGadget) result.get()));
+        assertEquals(implication, result.get());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class LessThanGadgetTest {
         Optional<Gadget> result = LessThanGadget.implyEquality(lessThanGadget, equalityGadget);
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof LessThanGadget);
-        assertTrue(implication.isEqualTo((LessThanGadget) result.get()));
+        assertEquals(implication, result.get());
     }
 
     @Test
@@ -194,7 +194,7 @@ public class LessThanGadgetTest {
         Optional<Gadget> result = LessThanGadget.implyBounds(lessThanGadget, boundsCheckGadget);
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof BoundsCheckGadget);
-        assertTrue(implication.isEqualTo((BoundsCheckGadget) result.get()));
+        assertEquals(implication, result.get());
     }
 
     @Test
@@ -206,7 +206,7 @@ public class LessThanGadgetTest {
         Optional<Gadget> result = LessThanGadget.implyBounds(lessThanGadget, boundsCheckGadget);
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof BoundsCheckGadget);
-        assertTrue(implication.isEqualTo((BoundsCheckGadget) result.get()));
+        assertEquals(implication, result.get());
     }
 
     @Test

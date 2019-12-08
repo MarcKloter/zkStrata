@@ -71,8 +71,20 @@ public class MiMCHashGadget extends AbstractGadget<MiMCHashGadget> {
     }
 
     @Override
-    public boolean isEqualTo(MiMCHashGadget other) {
-        return preimage.equals(other.preimage) && image.equals(other.image);
+    public boolean equals(Object object) {
+        if (object == null)
+            return false;
+
+        if (getClass() != object.getClass())
+            return false;
+
+        MiMCHashGadget other = (MiMCHashGadget) object;
+        return getPreimage().equals(other.getPreimage()) && getImage().equals(other.getImage());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getImage(), getPreimage());
     }
 
     @Override

@@ -116,8 +116,20 @@ public class LessThanGadget extends AbstractGadget<LessThanGadget> {
     }
 
     @Override
-    public boolean isEqualTo(LessThanGadget other) {
-        return left.equals(other.left) && right.equals(other.right);
+    public boolean equals(Object object) {
+        if (object == null)
+            return false;
+
+        if (getClass() != object.getClass())
+            return false;
+
+        LessThanGadget other = (LessThanGadget) object;
+        return getLeft().equals(other.getLeft()) && getRight().equals(other.getRight());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getLeft(), getRight());
     }
 
     @Override

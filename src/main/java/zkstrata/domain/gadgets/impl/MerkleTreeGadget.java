@@ -51,8 +51,20 @@ public class MerkleTreeGadget extends AbstractGadget<MerkleTreeGadget> {
     }
 
     @Override
-    public boolean isEqualTo(MerkleTreeGadget other) {
-        return root.equals(other.root) && tree.equals(other.tree);
+    public boolean equals(Object object) {
+        if (object == null)
+            return false;
+
+        if (getClass() != object.getClass())
+            return false;
+
+        MerkleTreeGadget other = (MerkleTreeGadget) object;
+        return getRoot().equals(other.getRoot()) && getTree().equals(other.getTree());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getRoot(), getTree());
     }
 
     @Override

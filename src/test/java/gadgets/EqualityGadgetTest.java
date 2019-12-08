@@ -122,21 +122,21 @@ public class EqualityGadgetTest {
     void Is_Equal_To_1() {
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, WITNESS_VAR_1);
-        assertTrue(equalityGadget1.isEqualTo(equalityGadget2));
+        assertEquals(equalityGadget1, equalityGadget2);
     }
 
     @Test
     void Is_Equal_To_2() {
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
-        assertTrue(equalityGadget1.isEqualTo(equalityGadget2));
+        assertEquals(equalityGadget1, equalityGadget2);
     }
 
     @Test
     void Is_Not_Equal_To() {
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, WITNESS_VAR_2);
-        assertFalse(equalityGadget1.isEqualTo(equalityGadget2));
+        assertNotEquals(equalityGadget1, equalityGadget2);
     }
 
     @Test
@@ -148,7 +148,7 @@ public class EqualityGadgetTest {
         Optional<Gadget> result = EqualityGadget.implyEquality(equalityGadget1, equalityGadget2);
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof EqualityGadget);
-        assertTrue(implication.isEqualTo((EqualityGadget) result.get()));
+        assertEquals(implication, result.get());
     }
 
     @Test
@@ -160,7 +160,7 @@ public class EqualityGadgetTest {
         Optional<Gadget> result = EqualityGadget.implyEquality(equalityGadget1, equalityGadget2);
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof EqualityGadget);
-        assertTrue(implication.isEqualTo((EqualityGadget) result.get()));
+        assertEquals(implication, result.get());
     }
 
     @Test
@@ -172,7 +172,7 @@ public class EqualityGadgetTest {
         Optional<Gadget> result = EqualityGadget.implyEquality(equalityGadget1, equalityGadget2);
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof EqualityGadget);
-        assertTrue(implication.isEqualTo((EqualityGadget) result.get()));
+        assertEquals(implication, result.get());
     }
 
     @Test
@@ -184,7 +184,7 @@ public class EqualityGadgetTest {
         Optional<Gadget> result = EqualityGadget.implyEquality(equalityGadget1, equalityGadget2);
         assertTrue(result.isPresent());
         assertTrue(result.get() instanceof EqualityGadget);
-        assertTrue(implication.isEqualTo((EqualityGadget) result.get()));
+        assertEquals(implication, result.get());
     }
 
     @Test

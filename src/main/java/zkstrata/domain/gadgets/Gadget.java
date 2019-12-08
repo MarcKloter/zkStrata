@@ -22,11 +22,6 @@ public interface Gadget<T extends Gadget> extends Proposition {
     List<Variable> getVariables();
 
     /**
-     * Indicates whether this gadget instance is equal to the provided one.
-     */
-    boolean isEqualTo(T other);
-
-    /**
      * Hook method that will be called after @Type annotated fields were wired.
      */
     void performChecks();

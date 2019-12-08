@@ -66,8 +66,20 @@ public class SetMembershipGadget extends AbstractGadget<SetMembershipGadget> {
     }
 
     @Override
-    public boolean isEqualTo(SetMembershipGadget other) {
-        return member.equals(other.member) && set.equals(other.set);
+    public boolean equals(Object object) {
+        if (object == null)
+            return false;
+
+        if (getClass() != object.getClass())
+            return false;
+
+        SetMembershipGadget other = (SetMembershipGadget) object;
+        return getMember().equals(other.getMember()) && getSet().equals(other.getSet());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getMember(), getSet());
     }
 
     @Override
