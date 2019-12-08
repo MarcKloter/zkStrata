@@ -2,6 +2,7 @@ package zkstrata.utils;
 
 import zkstrata.analysis.Implication;
 import zkstrata.analysis.Inference;
+import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.exceptions.InternalCompilerException;
@@ -76,7 +77,7 @@ public class ImplicationHelper {
     private static Map<WitnessVariable, Set<Inference>> createWitnessToInferenceMap(Set<Inference> inferences) {
         Map<WitnessVariable, Set<Inference>> inferenceMapping = new HashMap<>();
         for (Inference inference : inferences)
-            for (Object var : inference.getConclusion().getVariables())
+            for (Variable var : inference.getConclusion().getVariables())
                 if (var instanceof WitnessVariable)
                     inferenceMapping.computeIfAbsent((WitnessVariable) var, s -> new HashSet<>()).add(inference);
 
