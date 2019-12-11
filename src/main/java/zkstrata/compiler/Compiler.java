@@ -84,7 +84,7 @@ public class Compiler {
     }
 
     private static Proposition parsePremises(Arguments args) {
-        Proposition premises = Proposition.emptyProposition();
+        Proposition premises = Proposition.trueProposition();
 
         for (Arguments.Statement premise : args.getPremises()) {
             LOGGER.debug("Processing premise {}", premise.getSource());

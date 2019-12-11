@@ -6,18 +6,19 @@ import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.conjunctions.Conjunction;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.exceptions.InternalCompilerException;
+import zkstrata.optimizer.TrueProposition;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 public interface Proposition {
     /**
-     * Returns an empty {@link AndConjunction} which can be used as neutral element (no effect on a statement).
+     * Returns a {@link TrueProposition}, which can be used as a neutral element (no effect on a statement).
      *
-     * @return empty proposition
+     * @return true proposition
      */
-    static Proposition emptyProposition() {
-        return new AndConjunction(Collections.emptyList());
+    static Proposition trueProposition() {
+        return new TrueProposition();
     }
 
     /**
