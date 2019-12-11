@@ -13,43 +13,101 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ImplicationHelper {
+    private static final Set<Method> IMPLICATION_RULES = ReflectionHelper.getMethodsAnnotatedWith(Implication.class);
+
     private ImplicationHelper() {
         throw new IllegalStateException("Utility class");
     }
 
     /**
+     * Executes all methods annotated as {@link Implication} on the given list of {@link Gadget} objects {@code gadgets}
+     * and the inferences that can be drawn from it, until there is no new implication to be drawn.
+     *
+     * @param targets list of {@link Gadget} objects to draw inferences for
+     * @return set of {@link Inference} returned by the executed implication rules
+     */
+    public static Set<Inference> drawInferences(List<Gadget> targets) {
+        Set<Inference> inferences = drawSelfInferences(targets);
+
+        return drawAllInferences(inferences, inferences);
+    }
+
+    /**
+     * Executes all methods annotated as {@link Implication} on the given list of {@link Gadget} objects {@code gadgets}
+     * and the inferences that can be drawn from it, until there is no new implication to be drawn.
+     *
+     * @param targets list of {@link Gadget} objects to draw inferences for
+     * @param existing set of {@link Inference} that have been drawn previously
+     * @return set of {@link Inference} returned by the executed implication rules
+     */
+    public static Set<Inference> drawInferences(List<Gadget> targets, Set<Inference> existing) {
+        Set<Inference> inferences = drawSelfInferences(targets);
+
+        return drawAllInferences(inferences, Stream.concat(inferences.stream(), existing.stream()).collect(Collectors.toSet()));
+    }
+
+    /**
      * Executes all methods annotated as {@link Implication} on the {@link Gadget} objects in the given list
-     * {@code gadgets} and all inferences that can be drawn from it, until there is no new realization.
+     * {@code gadgets} and the inferences that can be drawn from it, until there is no new implication to be drawn.
      * <p>
      * To reduce the implication rules that will be run, a mapping of witness variables to the inferences they occur in
      * is used. This way only inferences containing common witnesses (thus, related inferences) are being used to run
      * implication rules.
      *
-     * @param gadgets list of gadgets to search inferences for
-     * @return set of {@link Inference} that could be drawn
+     * @param targets {@link Inference} objects to use as targets in implication rule invocations
+     * @param context {@link Inference} objects to use as context in implication rule invocations
+     * @return set of {@link Inference} returned by the executed implication rules
      */
-    public static Set<Inference> drawInferences(List<Gadget> gadgets) {
-        Set<Method> implicationRules = ReflectionHelper.getMethodsAnnotatedWith(Implication.class);
-        Set<Inference> inferences = drawSelfInferences(gadgets);
-        Map<WitnessVariable, Set<Inference>> inferenceMapping = createWitnessToInferenceMap(inferences);
+    private static Set<Inference> drawAllInferences(Set<Inference> targets, Set<Inference> context) {
+        Set<Inference> allInferences = new HashSet<>(context);
+        Map<WitnessVariable, Set<Inference>> targetMapping = createWitnessToInferenceMap(targets);
+        Map<WitnessVariable, Set<Inference>> contextMapping = createWitnessToInferenceMap(allInferences);
+        while (!targetMapping.isEmpty()) {
+            Set<Inference> newInferences = simplify(drawDirectInferences(targetMapping, contextMapping), allInferences);
+            targetMapping = createWitnessToInferenceMap(newInferences);
+            targetMapping.forEach((var, inf) -> contextMapping.computeIfAbsent(var, s -> new HashSet<>()).addAll(inf));
+            allInferences.addAll(newInferences);
+        }
+        return allInferences;
+    }
 
-        Map<WitnessVariable, Set<Inference>> roundMapping = inferenceMapping;
-        while (!roundMapping.isEmpty()) {
-            Set<Inference> roundInferences = new HashSet<>();
+    /**
+     * Triggers {@link ImplicationHelper#runAllImplicationRules(Set, Set)} for all common inference sets in the provided
+     * {@code targetMapping}. This will lead to the implication of all direct inferences (implications that can be drawn
+     * from the current state).
+     *
+     * @param targetMapping  inferences to use as targets in implication rule invocations
+     * @param contextMapping inferences to use as context in implication rule invocations
+     * @return set of inferences returned by the executed implication rules
+     */
+    private static Set<Inference> drawDirectInferences(
+            Map<WitnessVariable, Set<Inference>> targetMapping,
+            Map<WitnessVariable, Set<Inference>> contextMapping
+    ) {
+        Set<Inference> inferences = new HashSet<>();
 
-            for (Map.Entry<WitnessVariable, Set<Inference>> newInference : roundMapping.entrySet())
-                for (Inference assumption : newInference.getValue())
-                    roundInferences.addAll(runImplicationRules(
-                            assumption,
-                            inferenceMapping.getOrDefault(newInference.getKey(), Collections.emptySet()),
-                            implicationRules
-                    ));
+        for (Map.Entry<WitnessVariable, Set<Inference>> commonInferences : targetMapping.entrySet()) {
+            Set<Inference> targets = commonInferences.getValue();
+            // limit context to all gadgets that use the same witness variable
+            Set<Inference> context = contextMapping.getOrDefault(commonInferences.getKey(), Collections.emptySet());
+            inferences.addAll(runAllImplicationRules(targets, context));
+        }
 
-            roundInferences = simplify(roundInferences, inferences);
+        return inferences;
+    }
 
-            roundMapping = createWitnessToInferenceMap(roundInferences);
-            roundMapping.forEach((var, inf) -> inferenceMapping.computeIfAbsent(var, s -> new HashSet<>()).addAll(inf));
-            inferences.addAll(roundInferences);
+    /**
+     * Triggers the execution of all methods annotated as {@link Implication} for the inferences in {@code targets}
+     * using the provided context objects {@code context}.
+     *
+     * @param targets objects to run implication rules for
+     * @param context objects to use as context in implication rule invocations
+     * @return set of inferences returned by the executed implication rules
+     */
+    private static Set<Inference> runAllImplicationRules(Set<Inference> targets, Set<Inference> context) {
+        Set<Inference> inferences = new HashSet<>();
+        for (Inference target : targets) {
+            inferences.addAll(runImplicationRules(target, context));
         }
         return inferences;
     }
@@ -104,12 +162,11 @@ public class ImplicationHelper {
      * Invokes all provided methods annotated as {@link Implication} for the given {@code assumption} using the given
      * set of {@link Inference} of related inferences as basic assumptions.
      *
-     * @param testee  {@link Inference} to include into implication rule invocations
+     * @param target  {@link Inference} to include into implication rule invocations
      * @param context set of {@link Inference} to complete implication rule invocations with
-     * @param methods set of {@link Method} annotated as {@link Implication}
      * @return set of newly drawn {@link Inference}
      */
-    private static Set<Inference> runImplicationRules(Inference testee, Set<Inference> context, Set<Method> methods) {
+    private static Set<Inference> runImplicationRules(Inference target, Set<Inference> context) {
         // create mapping to store gadgets to the inferences was drawn from
         Map<Gadget, List<Inference>> inferenceMapping = new HashMap<>();
         // initially fill map with given inferences (a gadget could already be drawn from different inferences)
@@ -117,8 +174,8 @@ public class ImplicationHelper {
             inferenceMapping.computeIfAbsent(inference.getConclusion(), s -> new ArrayList<>()).add(inference);
 
         Set<Inference> newInferences = new HashSet<>();
-        for (Method method : methods) {
-            Set<List<Gadget>> setOfArguments = prepareArguments(method, testee.getConclusion(), inferenceMapping.keySet());
+        for (Method method : IMPLICATION_RULES) {
+            Set<List<Gadget>> setOfArguments = prepareArguments(method, target.getConclusion(), inferenceMapping.keySet());
             for (List<Gadget> arguments : setOfArguments) {
                 Optional<Gadget> impliedGadget = invokeImplicationRule(method, arguments.toArray());
                 if (impliedGadget.isPresent()) {
