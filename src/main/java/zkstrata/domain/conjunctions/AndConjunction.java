@@ -21,18 +21,31 @@ public class AndConjunction extends AbstractConjunction {
         super(parts);
     }
 
+    /**
+     * Checks whether the given {@link AndConjunction} only consists of {@link TrueProposition} objects. If this is the
+     * case, replace the conjunction by a {@link TrueProposition}.
+     *
+     * @param andConjunction {@link AndConjunction} to check
+     * @return {@link TrueProposition} if the check succeeds, an empty {@link Optional} otherwise
+     */
     @Substitution(target = {AndConjunction.class})
     public static Optional<Proposition> removeTautology(AndConjunction andConjunction) {
-        if(andConjunction.getParts().isEmpty())
+        if (andConjunction.getParts().isEmpty())
             return Optional.of(Proposition.trueProposition());
 
         return Optional.empty();
     }
 
-    // TODO: docs
+    /**
+     * Checks whether the given {@link AndConjunction} has only one part. If this is the case, replace the conjunction
+     * by that part.
+     *
+     * @param andConjunction {@link AndConjunction} to check
+     * @return {@link TrueProposition} if the check succeeds, an empty {@link Optional} otherwise
+     */
     @Substitution(target = {AndConjunction.class})
     public static Optional<Proposition> liftUpSinglePart(AndConjunction andConjunction) {
-        if(andConjunction.getParts().size() == 1)
+        if (andConjunction.getParts().size() == 1)
             return Optional.of(andConjunction.getParts().get(0));
 
         return Optional.empty();
