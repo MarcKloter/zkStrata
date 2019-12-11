@@ -75,11 +75,13 @@ public class OrConjunction extends AbstractConjunction {
                         else if (filtered.size() == 1)
                             return filtered.get(0);
                         else
-                            return null;
-                    }).filter(Objects::nonNull).collect(Collectors.toList());
+                            return Proposition.trueProposition();
+                    }).collect(Collectors.toList());
 
             List<Proposition> liftedPropositions = new ArrayList<>(commonPropositions);
-            liftedPropositions.add(new OrConjunction(filteredParts));
+            // drop the or conjunction if it became a tautology
+            if (filteredParts.stream().noneMatch(Proposition.trueProposition()::equals))
+                liftedPropositions.add(new OrConjunction(filteredParts));
             return Optional.of(new AndConjunction(liftedPropositions));
         }
 
