@@ -15,6 +15,7 @@ import zkstrata.utils.ReflectionHelper;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 import static zkstrata.utils.CombinatoricsUtils.getCombinations;
@@ -224,7 +225,21 @@ public class Optimizer {
         }
 
         // return the substitute that leads to the biggest cost reduction
-        return substitutes.stream().max(Comparator.comparing(Substitute::getCostReduction));
+        return substitutes.stream().reduce(Optimizer.maxBy(Comparator.comparing(Substitute::getCostReduction)));
+    }
+
+    /**
+     * Comparator to reduce possible substitutes to the one with the biggest cost reduction.
+     *
+     * Using an own implementation instead of using {@link java.util.stream.Stream#max(Comparator)}, as the behavior
+     * concerning duplicates is unspecified and could be subject to change.
+     *
+     * @param comparator {@link Comparator} to compare elements of this stream
+     * @return an {@code Optional} describing the maximum element of this stream, in case of duplicates return the first
+     */
+    private static <T> BinaryOperator<T> maxBy(Comparator<? super T> comparator) {
+        Objects.requireNonNull(comparator);
+        return (a, b) -> comparator.compare(a, b) >= 0 ? a : b;
     }
 
     /**
