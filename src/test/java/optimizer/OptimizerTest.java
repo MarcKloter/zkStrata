@@ -163,4 +163,15 @@ public class OptimizerTest {
         Proposition result = Optimizer.process(claim, premise);
         assertEquals(BOUNDS_CHECK_GADGET_2, result);
     }
+
+    /**
+     * Check whether implications that can be drawn from premises are being replaced in the given claim.
+     */
+    @Test
+    void Optimization_Test_8() {
+        Proposition premise = new AndConjunction(List.of(EQUALITY_GADGET_1, EQUALITY_GADGET_2, EQUALITY_GADGET_3));
+        Proposition claim = new AndConjunction(List.of(EQUALITY_GADGET_1, EQUALITY_GADGET_2));
+        Proposition result = Optimizer.process(claim, premise);
+        assertEquals(Proposition.trueProposition(), result);
+    }
 }
