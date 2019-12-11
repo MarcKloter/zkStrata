@@ -15,7 +15,7 @@ public class TrueProposition implements Proposition {
 
     @Override
     public List<TargetFormat> toTargetFormat() {
-        throw new InternalCompilerException("Invalid call to method toTargetFormat of TrueProposition.");
+        return List.of(new TargetFormat("", Collections.emptyMap()));
     }
 
     @Override
