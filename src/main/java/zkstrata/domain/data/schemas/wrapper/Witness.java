@@ -24,14 +24,8 @@ public class Witness extends AbstractStructuredData<Variable> {
 
     @Override
     public Variable getVariable(Selector selector, Position.Absolute position) {
-        try {
-            Value value = resolve(getSchema(), selector);
-            Reference reference = new Reference(value.getType(), getAlias(), selector);
-            return new WitnessVariable(value, reference, position);
-        } catch (ClassCastException e) {
-            String msg = String.format("Witness data %s does not match the structure of schema %s.",
-                    getAlias(), getSchema().getClass().getSimpleName());
-            throw new IllegalArgumentException(msg);
-        }
+        Value value = resolve(getSchema(), selector);
+        Reference reference = new Reference(value.getType(), getAlias(), selector);
+        return new WitnessVariable(value, reference, position);
     }
 }
