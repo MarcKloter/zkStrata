@@ -1,6 +1,7 @@
 package gadgets;
 
 import org.junit.jupiter.api.Test;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
@@ -82,6 +83,25 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
 
         Optional<Gadget> result = BoundsCheckGadget.implyBounds(equalityGadget, boundsCheckGadget);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void Imply_Equality_Upper() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_2, INSTANCE_VAR_17, INSTANCE_VAR_17);
+        EqualityGadget implication = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_17);
+
+        Optional<Gadget> result = BoundsCheckGadget.implyEquality(boundsCheckGadget);
+        assertTrue(result.isPresent());
+        assertTrue(result.get() instanceof EqualityGadget);
+        assertEquals(implication, result.get());
+    }
+
+    @Test
+    void Imply_Equality_None() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+
+        Optional<Gadget> result = BoundsCheckGadget.implyEquality(boundsCheckGadget);
         assertTrue(result.isEmpty());
     }
 
@@ -218,5 +238,49 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
         BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_2, INSTANCE_VAR_17, INSTANCE_VAR_29);
         assertEquals(Optional.empty(), BoundsCheckGadget.replaceEquality2(boundsCheckGadget1, boundsCheckGadget2));
+    }
+
+    @Test
+    void Loose_Bounds_Substitution() {
+        BoundsCheckGadget target = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_53);
+        BoundsCheckGadget context = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        assertEquals(Optional.of(Proposition.trueProposition()), BoundsCheckGadget.removeLooseBounds(target, context));
+    }
+
+    @Test
+    void Loose_Bounds_No_Substitution_1() {
+        BoundsCheckGadget target = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_53);
+        BoundsCheckGadget context = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        assertEquals(Optional.empty(), BoundsCheckGadget.removeLooseBounds(target, context));
+    }
+
+    @Test
+    void Loose_Bounds_No_Substitution_2() {
+        BoundsCheckGadget target = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        BoundsCheckGadget context = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_53);
+        assertEquals(Optional.empty(), BoundsCheckGadget.removeLooseBounds(target, context));
+    }
+
+    @Test
+    void Merge_Bounds_Substitution_1() {
+        BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_53);
+        BoundsCheckGadget substitution = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        assertEquals(Optional.of(substitution), BoundsCheckGadget.mergeBounds(boundsCheckGadget1, boundsCheckGadget2));
+    }
+
+    @Test
+    void Merge_Bounds_Substitution_2() {
+        BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_53);
+        BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        BoundsCheckGadget substitution = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        assertEquals(Optional.of(substitution), BoundsCheckGadget.mergeBounds(boundsCheckGadget1, boundsCheckGadget2));
+    }
+
+    @Test
+    void Merge_Bounds_No_Substitution() {
+        BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_53);
+        BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_2, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        assertEquals(Optional.empty(), BoundsCheckGadget.mergeBounds(boundsCheckGadget1, boundsCheckGadget2));
     }
 }

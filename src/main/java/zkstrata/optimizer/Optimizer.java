@@ -478,6 +478,7 @@ public class Optimizer {
                     .map(Gadget::getVariables)
                     .flatMap(Collection::stream)
                     .map(Variable::getPosition)
+                    .filter(Objects::nonNull)
                     .mapToInt(Position.Absolute::hashCode)
                     .sum();
         }

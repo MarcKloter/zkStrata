@@ -62,6 +62,15 @@ public class BoundsCheckGadget extends AbstractGadget {
         return Optional.empty();
     }
 
+    @Implication(assumption = {BoundsCheckGadget.class})
+    public static Optional<Gadget> implyEquality(BoundsCheckGadget bc) {
+        if (bc.getMaxValue().subtract(bc.getMinValue()).equals(BigInteger.valueOf(0))) {
+            return Optional.of(new EqualityGadget(bc.getValue(), bc.getMin()));
+        }
+
+        return Optional.empty();
+    }
+
     @Contradiction(propositions = {BoundsCheckGadget.class, BoundsCheckGadget.class})
     public static void checkTwoBoundsChecksContradiction(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
         if (bc1.getValue().equals(bc2.getValue())) {
@@ -119,6 +128,31 @@ public class BoundsCheckGadget extends AbstractGadget {
         return Optional.empty();
     }
 
+    @Substitution(target = {BoundsCheckGadget.class}, context = {BoundsCheckGadget.class})
+    public static Optional<Proposition> removeLooseBounds(BoundsCheckGadget target, BoundsCheckGadget context) {
+        if (target.getValue().equals(context.getValue())
+                && target.getMinValue().compareTo(context.getMinValue()) <= 0
+                && target.getMaxValue().compareTo(context.getMaxValue()) >= 0) {
+            LOGGER.info("Remove bounds predicate that is more loose than its context.");
+            return Optional.of(Proposition.trueProposition());
+        }
+
+        return Optional.empty();
+    }
+
+    @Substitution(target = {BoundsCheckGadget.class, BoundsCheckGadget.class})
+    public static Optional<Proposition> mergeBounds(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
+        if (bc1.getValue().equals(bc2.getValue())) {
+            InstanceVariable upperBound = bc1.getMaxValue().compareTo(bc2.getMaxValue()) <= 0 ? bc1.getMax() : bc2.getMax();
+            InstanceVariable lowerBound = bc1.getMinValue().compareTo(bc2.getMinValue()) >= 0 ? bc1.getMin() : bc2.getMin();
+
+            LOGGER.info("Merge two bounds predicates of the same witness variable.");
+
+            return Optional.of(new BoundsCheckGadget(bc1.getValue(), lowerBound, upperBound));
+        }
+
+        return Optional.empty();
+    }
 
     public BigInteger getMinValue() {
         return (BigInteger) min.getValue().getValue();
