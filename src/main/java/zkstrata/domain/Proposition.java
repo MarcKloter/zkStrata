@@ -46,6 +46,9 @@ public interface Proposition {
                     .flatMap(Collection::stream)
                     .collect(Collectors.toList());
 
+        if (this instanceof TrueProposition)
+            return new ArrayList<>();
+
         throw new InternalCompilerException("Unhandled instance %s found.", this.getClass());
     }
 

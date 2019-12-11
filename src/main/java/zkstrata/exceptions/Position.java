@@ -54,5 +54,13 @@ public abstract class Position implements Serializable {
         public String getStatement() {
             return statement;
         }
+
+        @Override
+        public int hashCode() {
+            int hash = 17;
+            hash = hash * 31 + getLine();
+            hash = hash * 31 + getPosition();
+            return hash;
+        }
     }
 }
