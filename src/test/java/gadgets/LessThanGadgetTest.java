@@ -1,11 +1,8 @@
 package gadgets;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import zkstrata.domain.data.Selector;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Literal;
-import zkstrata.domain.data.types.Reference;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.Gadget;
@@ -13,40 +10,21 @@ import zkstrata.domain.gadgets.impl.BoundsCheckGadget;
 import zkstrata.domain.gadgets.impl.EqualityGadget;
 import zkstrata.domain.gadgets.impl.LessThanGadget;
 import zkstrata.exceptions.CompileTimeException;
-import zkstrata.exceptions.Position;
 
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+import static zkstrata.utils.TestHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class LessThanGadgetTest {
-    private static final Position.Absolute MOCK_POS = Mockito.mock(Position.Absolute.class);
+    private static final InstanceVariable INSTANCE_VAR_17 = createInstanceVariable(new Literal(BigInteger.valueOf(17)));
+    private static final InstanceVariable INSTANCE_VAR_29 = createInstanceVariable(new Literal(BigInteger.valueOf(29)));
 
-    private static final InstanceVariable INSTANCE_VAR_17 = new InstanceVariable(new Literal(BigInteger.valueOf(17)), null, MOCK_POS);
-    private static final InstanceVariable INSTANCE_VAR_29 = new InstanceVariable(new Literal(BigInteger.valueOf(29)), null, MOCK_POS);
-
-    private static final Reference REF_1 = new Reference(BigInteger.class, "alias1", new Selector(List.of("selector1")));
-    private static final Reference REF_2 = new Reference(BigInteger.class, "alias2", new Selector(List.of("selector2")));
-    private static final Reference REF_3 = new Reference(BigInteger.class, "alias3", new Selector(List.of("selector3")));
-    private static final Reference REF_4 = new Reference(BigInteger.class, "alias4", new Selector(List.of("selector4")));
-
-    private static final WitnessVariable WITNESS_VAR_1 = new WitnessVariable(REF_1, REF_1, MOCK_POS);
-    private static final WitnessVariable WITNESS_VAR_2 = new WitnessVariable(REF_2, REF_2, MOCK_POS);
-    private static final WitnessVariable WITNESS_VAR_3 = new WitnessVariable(REF_3, REF_3, MOCK_POS);
-    private static final WitnessVariable WITNESS_VAR_4 = new WitnessVariable(REF_4, REF_4, MOCK_POS);
-
-    @BeforeAll
-    static void init() {
-        Mockito.when(MOCK_POS.getLine()).thenReturn(1);
-        Mockito.when(MOCK_POS.getPosition()).thenReturn(0);
-        Mockito.when(MOCK_POS.getSource()).thenReturn(EqualityGadgetTest.class.getSimpleName());
-        Mockito.when(MOCK_POS.getStatement()).thenReturn("");
-        Mockito.when(MOCK_POS.getTarget()).thenReturn("");
-    }
+    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class);
+    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class);
+    private static final WitnessVariable WITNESS_VAR_3 = createWitnessVariable(BigInteger.class);
+    private static final WitnessVariable WITNESS_VAR_4 = createWitnessVariable(BigInteger.class);
 
     @Test
     void Is_Equal_To() {
@@ -108,7 +86,8 @@ public class LessThanGadgetTest {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_29);
-        assertEquals(Collections.emptySet(), LessThanGadget.removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
+        assertEquals(Optional.of(Proposition.trueProposition()),
+                LessThanGadget.removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
     }
 
     @Test
@@ -116,7 +95,8 @@ public class LessThanGadgetTest {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
-        assertEquals(Set.of(lessThanGadget), LessThanGadget.removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
+        assertEquals(Optional.empty(),
+                LessThanGadget.removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
     }
 
     @Test

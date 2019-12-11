@@ -1,47 +1,27 @@
 package gadgets;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import zkstrata.domain.data.Selector;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Literal;
-import zkstrata.domain.data.types.Reference;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.gadgets.impl.EqualityGadget;
 import zkstrata.exceptions.CompileTimeException;
-import zkstrata.exceptions.Position;
 
 import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
+import static zkstrata.utils.TestHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class EqualityGadgetTest {
-    private static final Position.Absolute MOCK_POS = Mockito.mock(Position.Absolute.class);
+    private static final InstanceVariable INSTANCE_VAR_17 = createInstanceVariable(new Literal(BigInteger.valueOf(17)));
+    private static final InstanceVariable INSTANCE_VAR_41 = createInstanceVariable(new Literal(BigInteger.valueOf(41)));
+    private static final InstanceVariable INSTANCE_VAR_STRING = createInstanceVariable(new Literal("String"));
 
-    private static final InstanceVariable INSTANCE_VAR_17 = new InstanceVariable(new Literal(BigInteger.valueOf(17)), null, MOCK_POS);
-    private static final InstanceVariable INSTANCE_VAR_41 = new InstanceVariable(new Literal(BigInteger.valueOf(41)), null, MOCK_POS);
-    private static final InstanceVariable INSTANCE_VAR_STRING = new InstanceVariable(new Literal("String"), null, MOCK_POS);
-
-    private static final Reference REF_1 = new Reference(BigInteger.class, "alias1", new Selector(List.of("selector1")));
-    private static final Reference REF_2 = new Reference(BigInteger.class, "alias2", new Selector(List.of("selector2")));
-
-    private static final WitnessVariable WITNESS_VAR_1 = new WitnessVariable(REF_1, REF_1, MOCK_POS);
-    private static final WitnessVariable WITNESS_VAR_2 = new WitnessVariable(REF_2, REF_2, MOCK_POS);
-
-    @BeforeAll
-    static void init() {
-        Mockito.when(MOCK_POS.getLine()).thenReturn(1);
-        Mockito.when(MOCK_POS.getPosition()).thenReturn(0);
-        Mockito.when(MOCK_POS.getSource()).thenReturn(EqualityGadgetTest.class.getSimpleName());
-        Mockito.when(MOCK_POS.getStatement()).thenReturn("");
-        Mockito.when(MOCK_POS.getTarget()).thenReturn("");
-    }
+    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class);
+    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class);
 
     @Test
     void Instance_Equals_Instance_Contradiction() {
@@ -73,49 +53,49 @@ public class EqualityGadgetTest {
     @Test
     void Witness_Equals_Self_Substitution() {
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_1);
-        assertEquals(Collections.emptySet(), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
+        assertEquals(Optional.of(Proposition.trueProposition()), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
     }
 
     @Test
     void Witness_Equals_Self_No_Substitution_1() {
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
-        assertEquals(Set.of(equalityGadget), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
+        assertEquals(Optional.empty(), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
     }
 
     @Test
     void Witness_Equals_Self_No_Substitution_2() {
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_41);
-        assertEquals(Set.of(equalityGadget), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
+        assertEquals(Optional.empty(), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
     }
 
     @Test
     void Witness_Equals_Self_No_Substitution_3() {
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_41, WITNESS_VAR_1);
-        assertEquals(Set.of(equalityGadget), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
+        assertEquals(Optional.empty(), EqualityGadget.removeWitnessEqualsSelf(equalityGadget));
     }
 
     @Test
     void Instance_Equals_Instance_Substitution() {
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_17, INSTANCE_VAR_17);
-        assertEquals(Collections.emptySet(), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
+        assertEquals(Optional.of(Proposition.trueProposition()), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
     }
 
     @Test
     void Instance_Equals_Instance_No_Substitution_1() {
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_17, INSTANCE_VAR_41);
-        assertEquals(Set.of(equalityGadget), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
+        assertEquals(Optional.empty(), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
     }
 
     @Test
     void Instance_Equals_Instance_No_Substitution_2() {
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_41);
-        assertEquals(Set.of(equalityGadget), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
+        assertEquals(Optional.empty(), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
     }
 
     @Test
     void Instance_Equals_Instance_No_Substitution_3() {
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_17, WITNESS_VAR_2);
-        assertEquals(Set.of(equalityGadget), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
+        assertEquals(Optional.empty(), EqualityGadget.removeInstanceEqualsInstance(equalityGadget));
     }
 
     @Test
