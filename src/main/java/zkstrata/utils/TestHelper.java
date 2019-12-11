@@ -19,18 +19,13 @@ public class TestHelper {
     private static final int CHAR_POSITION = 0;
     private static final Position.Relative REL_POSITION = new Position.Relative(TARGET, LINE_NUMBER, CHAR_POSITION);
     public static final Position.Absolute ABS_POSITION = new Position.Absolute(SOURCE, STATEMENT, REL_POSITION);
-    private static long idCounter = 0;
 
     private TestHelper() {
         throw new IllegalStateException("Utility class");
     }
 
-    private static synchronized String createID() {
-        return String.valueOf(idCounter++);
-    }
-
-    public static WitnessVariable createWitnessVariable(Class<?> type) {
-        Reference reference = createReference(type, createID());
+    public static WitnessVariable createWitnessVariable(Class<?> type, int id) {
+        Reference reference = createReference(type, id);
         return new WitnessVariable(reference, reference, ABS_POSITION);
     }
 
@@ -38,7 +33,7 @@ public class TestHelper {
         return new InstanceVariable(literal, null, ABS_POSITION);
     }
 
-    private static Reference createReference(Class<?> type, String id) {
+    private static Reference createReference(Class<?> type, int id) {
         return new Reference(type, SUBJECT_PREFIX + id, new Selector(List.of(SELECTOR_PREFIX + id)));
     }
 }

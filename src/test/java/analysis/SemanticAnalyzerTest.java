@@ -22,10 +22,10 @@ public class SemanticAnalyzerTest {
     private static final InstanceVariable INSTANCE_VAR_29 = createInstanceVariable(new Literal(BigInteger.valueOf(29)));
     private static final InstanceVariable INSTANCE_VAR_41 = createInstanceVariable(new Literal(BigInteger.valueOf(41)));
 
-    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class);
-    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class);
-    private static final WitnessVariable WITNESS_VAR_3 = createWitnessVariable(BigInteger.class);
-    private static final WitnessVariable WITNESS_VAR_4 = createWitnessVariable(BigInteger.class);
+    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class, 1);
+    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class, 2);
+    private static final WitnessVariable WITNESS_VAR_3 = createWitnessVariable(BigInteger.class, 3);
+    private static final WitnessVariable WITNESS_VAR_4 = createWitnessVariable(BigInteger.class, 4);
 
     @Test
     void Complex_Contradiction_Should_Throw_1() {

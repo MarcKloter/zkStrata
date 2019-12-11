@@ -22,13 +22,13 @@ public class MiMCHashGadgetTest {
     private static final InstanceVariable INSTANCE_VAR_NEG = createInstanceVariable(new HexLiteral(BigInteger.valueOf(-5)));
     private static final InstanceVariable INSTANCE_VAR_LARGE = createInstanceVariable(new HexLiteral(Constants.ED25519_PRIME_ORDER));
 
-    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class);
-    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class);
+    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class, 1);
+    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class, 2);
 
     @Test
     void Image_Too_Large() {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
-            new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_LARGE)
+                new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_LARGE)
         );
 
         assertTrue(exception.getMessage().toLowerCase().contains("invalid mimc-hash image"));
@@ -37,7 +37,7 @@ public class MiMCHashGadgetTest {
     @Test
     void Image_Negative() {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
-            new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_NEG)
+                new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_NEG)
         );
 
         assertTrue(exception.getMessage().toLowerCase().contains("invalid mimc-hash image"));
@@ -69,7 +69,7 @@ public class MiMCHashGadgetTest {
         MiMCHashGadget miMCHashGadget1 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_1);
         MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_2);
         CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
-            MiMCHashGadget.checkContradiction(miMCHashGadget1, miMCHashGadget2)
+                MiMCHashGadget.checkContradiction(miMCHashGadget1, miMCHashGadget2)
         );
 
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
@@ -89,7 +89,7 @@ public class MiMCHashGadgetTest {
     void Equal_No_Contradiction() {
         MiMCHashGadget miMCHashGadget = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_1);
         assertDoesNotThrow(() ->
-            MiMCHashGadget.checkContradiction(miMCHashGadget, miMCHashGadget)
+                MiMCHashGadget.checkContradiction(miMCHashGadget, miMCHashGadget)
         );
     }
 

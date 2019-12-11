@@ -29,8 +29,8 @@ public class MerkleTreeGadgetTest {
     private static final InstanceVariable INSTANCE_VAR_INT = createInstanceVariable(new Literal(BigInteger.valueOf(41)));
     private static final InstanceVariable INSTANCE_VAR_STRING = createInstanceVariable(new Literal("String"));
 
-    private static final WitnessVariable WITNESS_VAR_INT = createWitnessVariable(BigInteger.class);
-    private static final WitnessVariable WITNESS_VAR_STRING = createWitnessVariable(String.class);
+    private static final WitnessVariable WITNESS_VAR_INT = createWitnessVariable(BigInteger.class, 1);
+    private static final WitnessVariable WITNESS_VAR_STRING = createWitnessVariable(String.class, 2);
 
     private static final Node<Variable> LEAF_1 = new Node<>(INSTANCE_VAR_INT);
     private static final Node<Variable> LEAF_2 = new Node<>(INSTANCE_VAR_STRING);

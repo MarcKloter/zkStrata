@@ -22,8 +22,8 @@ public class SetMembershipGadgetTest {
     private static final InstanceVariable INSTANCE_VAR_41 = createInstanceVariable(new Literal(BigInteger.valueOf(41)));
     private static final InstanceVariable INSTANCE_VAR_53 = createInstanceVariable(new Literal(BigInteger.valueOf(53)));
 
-    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class);
-    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class);
+    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class, 1);
+    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class, 2);
 
     private static final Set<Variable> SET_1A = Set.of(INSTANCE_VAR_17, WITNESS_VAR_2, INSTANCE_VAR_41);
     private static final Set<Variable> SET_1B = Set.of(WITNESS_VAR_2, INSTANCE_VAR_41, INSTANCE_VAR_17);

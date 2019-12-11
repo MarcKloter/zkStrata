@@ -18,15 +18,14 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static zkstrata.utils.TestHelper.createInstanceVariable;
-import static zkstrata.utils.TestHelper.createWitnessVariable;
+import static zkstrata.utils.TestHelper.*;
 
 public class OrConjunctionTest {
     private static final InstanceVariable INSTANCE_VAR_17 = createInstanceVariable(new Literal(BigInteger.valueOf(17)));
     private static final InstanceVariable INSTANCE_VAR_41 = createInstanceVariable(new Literal(BigInteger.valueOf(41)));
 
-    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class);
-    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class);
+    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class, 1);
+    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class, 2);
 
     private static final TrueProposition TRUE_PROPOSITION = new TrueProposition();
     private static final EqualityGadget EQUALITY_GADGET = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);

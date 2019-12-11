@@ -453,7 +453,10 @@ public class Optimizer {
         }
 
         private int getReferenceHashCode() {
-            return replacement.listAllGadgets().stream()
+            return Stream.concat(
+                    replacement.listAllGadgets().stream(),
+                    getTargets().stream().map(Proposition::listAllGadgets).flatMap(Collection::stream)
+            )
                     .map(Gadget::getVariables)
                     .flatMap(Collection::stream)
                     .map(Variable::getReference)

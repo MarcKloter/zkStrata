@@ -24,10 +24,10 @@ public class OptimizerTest {
     private static final InstanceVariable INSTANCE_VAR_29 = createInstanceVariable(new Literal(BigInteger.valueOf(29)));
     private static final InstanceVariable INSTANCE_VAR_41 = createInstanceVariable(new Literal(BigInteger.valueOf(41)));
 
-    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class);
-    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class);
-    private static final WitnessVariable WITNESS_VAR_3 = createWitnessVariable(BigInteger.class);
-    private static final WitnessVariable WITNESS_VAR_4 = createWitnessVariable(BigInteger.class);
+    private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class, 1);
+    private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class, 2);
+    private static final WitnessVariable WITNESS_VAR_3 = createWitnessVariable(BigInteger.class, 3);
+    private static final WitnessVariable WITNESS_VAR_4 = createWitnessVariable(BigInteger.class, 4);
 
     private static final EqualityGadget EQUALITY_GADGET_1 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
     private static final EqualityGadget EQUALITY_GADGET_2 = new EqualityGadget(WITNESS_VAR_2, WITNESS_VAR_3);
@@ -105,7 +105,7 @@ public class OptimizerTest {
                 EQUALITY_GADGET_1,
                 EQUALITY_GADGET_2,
                 EQUALITY_GADGET_3,
-                BOUNDS_CHECK_GADGET_2
+                BOUNDS_CHECK_GADGET_1
         ));
         assertEquals(expected, result);
     }
@@ -161,7 +161,7 @@ public class OptimizerTest {
         Proposition premise = new AndConjunction(List.of(EQUALITY_GADGET_1, EQUALITY_GADGET_2, EQUALITY_GADGET_3));
         Proposition claim = new AndConjunction(List.of(BOUNDS_CHECK_GADGET_1, BOUNDS_CHECK_GADGET_2));
         Proposition result = Optimizer.process(claim, premise);
-        assertEquals(BOUNDS_CHECK_GADGET_2, result);
+        assertEquals(BOUNDS_CHECK_GADGET_1, result);
     }
 
     /**
