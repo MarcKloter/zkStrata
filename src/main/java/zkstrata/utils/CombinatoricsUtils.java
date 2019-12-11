@@ -2,7 +2,6 @@ package zkstrata.utils;
 
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
-import zkstrata.domain.gadgets.Gadget;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,47 +12,51 @@ public class CombinatoricsUtils {
     }
 
     /**
-     * Returns a set containing all possible combinations (lists) of {@link Gadget} objects according to the order of
-     * the provided list of types.
+     * Returns a set containing all possible combinations (lists) of objects according to the order of the provided list
+     * of types.
      * <p>
-     * Example: Given a list of types [ONE, TWO] and a list of gadgets [A:ONE, B:ONE, C:TWO], this function will
+     * Example: Given a list of types [ONE, TWO] and a list of objects [A:ONE, B:ONE, C:TWO], this function will
      * return all possible lists starting with an object of type ONE followed by an object of type TWO. In this case:
-     * [A, C], [B, C]. A combination will never contain a gadget twice or duplicate combinations (even if differently
+     * [A, C], [B, C]. A combination will never contain a objects twice or duplicate combinations (even if differently
      * arranged). If the list of types contains the same type multiple times, such as [ONE, ONE] and the list as before,
      * the only combinations will be: [A, B].
      *
-     * @param pattern list of gadget types describing the pattern a combination should conform
-     * @param gadgets set of gadgets to draw objects from
-     * @return all possible combinations of objects drawn from {@code gadgets} satisfying the given {@code pattern}
+     * @param pattern list of types describing the pattern a combination should conform
+     * @param objects list of objects to draw from
+     * @return all possible combinations of objects drawn from {@code objects} satisfying the given {@code pattern}
      */
-    public static Set<List<Gadget>> getCombinations(List<Class<? extends Gadget>> pattern, Set<Gadget> gadgets) {
+    public static <T> Set<List<T>> getCombinations(List<Class<? extends T>> pattern, List<T> objects) {
         if (pattern.isEmpty())
             return Collections.emptySet();
 
         int lastIndex = pattern.size() - 1;
-        Class<? extends Gadget> type = pattern.get(lastIndex);
-        List<Class<? extends Gadget>> remainingTypes = new ArrayList<>(pattern);
+        Class<? extends T> type = pattern.get(lastIndex);
+        List<Class<? extends T>> remainingTypes = new ArrayList<>(pattern);
         remainingTypes.remove(lastIndex);
 
-        return gadgets.stream()
-                .filter(gadget -> gadget.getClass().equals(type))
-                .map(gadget -> {
+        return objects.stream()
+                .filter(object -> object.getClass().equals(type))
+                .map(object -> {
                     if (remainingTypes.isEmpty()) {
-                        List<List<Gadget>> listOfLists = new ArrayList<>();
-                        List<Gadget> list = new ArrayList<>();
-                        list.add(gadget);
+                        List<List<T>> listOfLists = new ArrayList<>();
+                        List<T> list = new ArrayList<>();
+                        list.add(object);
                         listOfLists.add(list);
                         return listOfLists;
                     } else {
-                        Set<Gadget> remainingGadgets = new HashSet<>(gadgets);
-                        remainingGadgets.remove(gadget);
-                        Set<List<Gadget>> combinations = getCombinations(remainingTypes, remainingGadgets);
-                        combinations.forEach(list -> list.add(gadget));
+                        List<T> remainingObjects = new ArrayList<>(objects);
+                        remainingObjects.remove(object);
+                        Set<List<T>> combinations = getCombinations(remainingTypes, remainingObjects);
+                        combinations.forEach(list -> list.add(object));
                         return combinations;
                     }
                 })
                 .flatMap(Collection::stream)
                 .collect(Collectors.toSet());
+    }
+    
+    public static <T> Set<List<T>> getCombinations(List<Class<? extends T>> pattern, Set<T> objects) {
+        return getCombinations(pattern, new ArrayList<>(objects));
     }
 
     /**
