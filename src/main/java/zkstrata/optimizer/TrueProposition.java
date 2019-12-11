@@ -3,7 +3,6 @@ package zkstrata.optimizer;
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.gadgets.Gadget;
-import zkstrata.exceptions.InternalCompilerException;
 
 import java.util.Collections;
 import java.util.List;
