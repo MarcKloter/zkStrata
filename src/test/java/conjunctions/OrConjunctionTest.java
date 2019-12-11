@@ -71,7 +71,7 @@ public class OrConjunctionTest {
     @Test
     void Lift_Up_Substitution_2() {
         OrConjunction orConjunction = new OrConjunction(List.of(
-                new AndConjunction(List.of(EQUALITY_GADGET, BOUNDS_CHECK_GADGET, INEQUALITY_GADGET)),
+                new AndConjunction(List.of(EQUALITY_GADGET, BOUNDS_CHECK_GADGET, INEQUALITY_GADGET, LESS_THAN_GADGET)),
                 new AndConjunction(List.of(LESS_THAN_GADGET, BOUNDS_CHECK_GADGET, EQUALITY_GADGET)),
                 new AndConjunction(List.of(BOUNDS_CHECK_GADGET, EQUALITY_GADGET))
         ));
@@ -79,8 +79,7 @@ public class OrConjunctionTest {
                 EQUALITY_GADGET,
                 BOUNDS_CHECK_GADGET
         ));
-        Optional<Proposition> result = OrConjunction.liftUpCommonPropositions(orConjunction);
-        assertEquals(expected, result.get());
+        assertEquals(Optional.of(expected), OrConjunction.liftUpCommonPropositions(orConjunction));
     }
 
     @Test
