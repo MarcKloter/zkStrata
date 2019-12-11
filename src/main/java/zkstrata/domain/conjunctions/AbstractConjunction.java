@@ -13,6 +13,19 @@ public abstract class AbstractConjunction implements Conjunction {
         this.parts = parts;
     }
 
+    /**
+     * Checks whether the {@code first} and {@code second} are of the same type and connect the same parts.
+     * If this is the case, remove the {@code second}.
+     *
+     * @param first  {@link Conjunction} to check
+     * @param second {@link Conjunction} to check
+     * @return {@link Optional} of {@code first} if the check succeeds, an empty {@link Optional} otherwise
+     */
+    @Substitution(target = {Conjunction.class, Conjunction.class})
+    public static Optional<Proposition> removeDuplicateConjunction(Conjunction first, Conjunction second) {
+        return first.equals(second) ? Optional.of(first) : Optional.empty();
+    }
+
     @Override
     public List<Proposition> getParts() {
         return parts;
@@ -36,18 +49,12 @@ public abstract class AbstractConjunction implements Conjunction {
         if (getClass() != obj.getClass())
             return false;
 
-        return getParts().equals(((Conjunction) obj).getParts());
+        Conjunction other = (Conjunction) obj;
+        return getParts().containsAll(other.getParts()) && other.getParts().containsAll(getParts());
     }
 
     @Override
     public int hashCode() {
         return parts.hashCode();
-    }
-
-
-
-    @Substitution(target = {Conjunction.class, Conjunction.class})
-    public static Optional<Proposition> removeDuplicateConjunction(Conjunction first, Conjunction second) {
-        return first.getParts().containsAll(second.getParts()) ? Optional.of(first) : Optional.empty();
     }
 }
