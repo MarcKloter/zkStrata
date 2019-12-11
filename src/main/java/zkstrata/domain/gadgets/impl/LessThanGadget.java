@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
@@ -57,7 +58,7 @@ public class LessThanGadget extends AbstractGadget {
     }
 
     @Substitution(target = LessThanGadget.class, context = {EqualityGadget.class, EqualityGadget.class})
-    public static Set<Gadget> removeExposedComparison(LessThanGadget lt, EqualityGadget eq1, EqualityGadget eq2) {
+    public static Optional<Proposition> removeExposedComparison(LessThanGadget lt, EqualityGadget eq1, EqualityGadget eq2) {
         Variable left = EqualityGadget.getEqual(eq1, lt.getLeft())
                 .orElse(EqualityGadget.getEqual(eq2, lt.getLeft())
                         .orElse(null));
@@ -73,11 +74,11 @@ public class LessThanGadget extends AbstractGadget {
             if (leftValue.compareTo(rightValue) < 0) {
                 // TODO: maybe add statements information
                 LOGGER.info("Removed a witness comparison of two exposed witnesses (tautology).");
-                return Collections.emptySet();
+                return Optional.of(Proposition.trueProposition());
             }
         }
 
-        return Set.of(lt);
+        return Optional.empty();
     }
 
     @Implication(assumption = {LessThanGadget.class, LessThanGadget.class})

@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Null;
@@ -91,32 +92,33 @@ public class BoundsCheckGadget extends AbstractGadget {
         }
     }
 
+    @Substitution(target = {BoundsCheckGadget.class})
+    public static Optional<Proposition> replaceEquality1(BoundsCheckGadget bc) {
+        if (bc.getMaxValue().subtract(bc.getMinValue()).equals(BigInteger.valueOf(0))) {
+            LOGGER.info("Replaced bounds predicate with max = min by equality predicate.");
+            return Optional.of(new EqualityGadget(bc.getValue(), bc.getMin()));
+        }
+
+        return Optional.empty();
+    }
+
     @Substitution(target = {BoundsCheckGadget.class, BoundsCheckGadget.class})
-    public static Set<Gadget> replaceEquality2(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
+    public static Optional<Proposition> replaceEquality2(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
         if (bc1.getValue().equals(bc2.getValue())) {
             if (bc1.getMaxValue().subtract(bc2.getMinValue()).equals(BigInteger.valueOf(0))) {
                 LOGGER.info("Removed equality predicate of two instance variables.");
-                return Set.of(new EqualityGadget(bc1.getValue(), bc2.getMin()));
+                return Optional.of(new EqualityGadget(bc1.getValue(), bc2.getMin()));
             }
 
             if (bc2.getMaxValue().subtract(bc1.getMinValue()).equals(BigInteger.valueOf(0))) {
                 LOGGER.info("Removed equality predicate of two instance variables.");
-                return Set.of(new EqualityGadget(bc1.getValue(), bc1.getMin()));
+                return Optional.of(new EqualityGadget(bc1.getValue(), bc1.getMin()));
             }
         }
 
-        return Set.of(bc1, bc2);
+        return Optional.empty();
     }
 
-    @Substitution(target = {BoundsCheckGadget.class})
-    public static Set<Gadget> replaceEquality1(BoundsCheckGadget bc) {
-        if (bc.getMaxValue().subtract(bc.getMinValue()).equals(BigInteger.valueOf(0))) {
-            LOGGER.info("Replaced bounds predicate with max = min by equality predicate.");
-            return Set.of(new EqualityGadget(bc.getValue(), bc.getMin()));
-        }
-
-        return Set.of(bc);
-    }
 
     public BigInteger getMinValue() {
         return (BigInteger) min.getValue().getValue();

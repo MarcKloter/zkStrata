@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
@@ -57,26 +58,26 @@ public class EqualityGadget extends AbstractGadget {
     }
 
     @Substitution(target = {EqualityGadget.class})
-    public static Set<Gadget> removeWitnessEqualsSelf(EqualityGadget eq) {
+    public static Optional<Proposition> removeWitnessEqualsSelf(EqualityGadget eq) {
         if (isWitnessVariable(eq.getLeft()) && isWitnessVariable(eq.getRight()) && eq.getLeft().equals(eq.getRight())) {
             // TODO: maybe add statements information
             LOGGER.info("Removed equality predicate of single witness variable.");
-            return Collections.emptySet();
+            return Optional.of(Proposition.trueProposition());
         }
 
-        return Set.of(eq);
+        return Optional.empty();
     }
 
     @Substitution(target = {EqualityGadget.class})
-    public static Set<Gadget> removeInstanceEqualsInstance(EqualityGadget eq) {
+    public static Optional<Proposition> removeInstanceEqualsInstance(EqualityGadget eq) {
         if (isInstanceVariable(eq.getLeft()) && isInstanceVariable(eq.getRight())
                 && eq.getLeft().getValue().equals(eq.getRight().getValue())) {
             // TODO: maybe add statements information
             LOGGER.info("Removed equality predicate of two instance variables.");
-            return Collections.emptySet();
+            return Optional.of(Proposition.trueProposition());
         }
 
-        return Set.of(eq);
+        return Optional.empty();
     }
 
     /**

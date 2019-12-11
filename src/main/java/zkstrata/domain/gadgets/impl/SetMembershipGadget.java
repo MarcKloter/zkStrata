@@ -3,12 +3,12 @@ package zkstrata.domain.gadgets.impl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zkstrata.codegen.TargetFormat;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
 import zkstrata.domain.visitor.AstElement;
-import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.SetMembership;
@@ -41,28 +41,28 @@ public class SetMembershipGadget extends AbstractGadget {
     }
 
     @Substitution(target = {SetMembershipGadget.class})
-    public static Set<Gadget> removeSelfContained(SetMembershipGadget sm) {
+    public static Optional<Proposition> removeSelfContained(SetMembershipGadget sm) {
         if (sm.getSet().contains(sm.getMember())) {
             // TODO: maybe add statements information
             LOGGER.info("Removed set membership predicate where the member is part of the set declaration (tautology).");
-            return Collections.emptySet();
+            return Optional.of(Proposition.trueProposition());
         }
 
-        return Set.of(sm);
+        return Optional.empty();
     }
 
     @Substitution(target = {SetMembershipGadget.class}, context = {EqualityGadget.class})
-    public static Set<Gadget> removeEqualityContained(SetMembershipGadget sm, EqualityGadget eq) {
+    public static Optional<Proposition> removeEqualityContained(SetMembershipGadget sm, EqualityGadget eq) {
         if (isWitnessVariable(sm.getMember())) {
             Optional<Variable> equal = EqualityGadget.getEqual(eq, (WitnessVariable) sm.getMember());
             if (equal.isPresent() && sm.getSet().contains(equal.get())) {
                 // TODO: maybe add statements information
                 LOGGER.info("Removed set membership predicate where the member is part of the set declaration (tautology).");
-                return Collections.emptySet();
+                return Optional.of(Proposition.trueProposition());
             }
         }
 
-        return Set.of(sm);
+        return Optional.empty();
     }
 
     @Override

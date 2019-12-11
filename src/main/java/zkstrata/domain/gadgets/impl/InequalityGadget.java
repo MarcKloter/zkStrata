@@ -4,11 +4,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.codegen.TargetFormat;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.gadgets.AbstractGadget;
 import zkstrata.domain.visitor.AstElement;
-import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
@@ -54,15 +54,15 @@ public class InequalityGadget extends AbstractGadget {
     }
 
     @Substitution(target = {InequalityGadget.class})
-    public static Set<Gadget> removeInstanceUnequalsInstance(InequalityGadget iq) {
+    public static Optional<Proposition> removeInstanceUnequalsInstance(InequalityGadget iq) {
         if (isInstanceVariable(iq.getLeft()) && isInstanceVariable(iq.getRight())
                 && !iq.getLeft().getValue().equals(iq.getRight().getValue())) {
             // TODO: maybe add statements information
             LOGGER.info("Removed inequality predicate of two instance variables.");
-            return Collections.emptySet();
+            return Optional.of(Proposition.trueProposition());
         }
 
-        return Set.of(iq);
+        return Optional.empty();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package zkstrata.domain.gadgets;
 
 import org.apache.commons.lang3.StringUtils;
+import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Null;
 import zkstrata.domain.data.types.wrapper.Variable;
@@ -126,9 +127,14 @@ public abstract class AbstractGadget implements Gadget {
     public void performChecks() {
     }
 
-    @Substitution(target = {AbstractGadget.class}, context = {AbstractGadget.class})
-    public Optional<Set<Gadget>> removeDuplicate(Gadget other) {
-        return equals(other) ? Optional.empty() : Optional.of(Set.of(this));
+    @Substitution(target = {Gadget.class, Gadget.class})
+    public static Optional<Proposition> removeDuplicateGadget(Gadget first, Gadget second) {
+        return first.equals(second) ? Optional.of(first) : Optional.empty();
+    }
+
+    @Substitution(target = {Gadget.class}, context = {Gadget.class})
+    public static Optional<Proposition> removeConclusion(Gadget target, Gadget context) {
+        return target.equals(context) ? Optional.of(Proposition.trueProposition()) : Optional.empty();
     }
 
     @Override
