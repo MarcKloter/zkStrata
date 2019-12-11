@@ -29,7 +29,19 @@ public interface Conjunction extends Proposition {
      */
     List<Proposition> getParts();
 
+    /**
+     * Returns {@code true} if this conjunction contains no parts.
+     *
+     * @return {@code true} if this conjunction contains no parts
+     */
     boolean isEmpty();
 
+    /**
+     * Returns a disjunct list of combinations of {@link Proposition} formed from the parts of this conjunction, where
+     * each combination (list of {@link Proposition}) is cohesive (this part of the conjunction can only be proven by
+     * showing, that all of the {@link Proposition} evaluate to true).
+     *
+     * @return list of proposition combinations (list of {@link Proposition})
+     */
     List<List<Proposition>> getCohesivePropositions();
 }
