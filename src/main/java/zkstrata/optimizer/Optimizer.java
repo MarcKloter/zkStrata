@@ -165,7 +165,7 @@ public class Optimizer {
             improvement = pickSubstitute(List.of(state), context, false);
             if (improvement.isPresent()) {
                 Substitute substitute = improvement.get();
-                LOGGER.debug("Applying substitution `{}` (cost reduction: {}): Replace %s by {} [context: {}].",
+                LOGGER.debug("Applying substitution `{}` (cost reduction: {}): Replace {} by {} [context: {}].",
                         substitute.getSource(), substitute.getCostReduction(), substitute.getTargets(),
                         substitute.getReplacement(), substitute.getContext());
                 state = substitute.getReplacement();
