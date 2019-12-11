@@ -56,38 +56,38 @@ public class OrConjunctionTest {
     }
 
     @Test
-    void Lift_Up_Substitution() {
+    void Lift_Up_Substitution_1() {
         OrConjunction orConjunction = new OrConjunction(List.of(
-                new AndConjunction(List.of(
-                        EQUALITY_GADGET,
-                        INEQUALITY_GADGET
-                )),
-                new AndConjunction(List.of(
-                        LESS_THAN_GADGET,
-                        EQUALITY_GADGET
-                ))
+                new AndConjunction(List.of(EQUALITY_GADGET, INEQUALITY_GADGET)),
+                new AndConjunction(List.of(LESS_THAN_GADGET, EQUALITY_GADGET))
         ));
         AndConjunction expected = new AndConjunction(List.of(
                 EQUALITY_GADGET,
-                new OrConjunction(List.of(
-                        INEQUALITY_GADGET,
-                        LESS_THAN_GADGET
-                ))
+                new OrConjunction(List.of(INEQUALITY_GADGET, LESS_THAN_GADGET))
         ));
         assertEquals(Optional.of(expected), OrConjunction.liftUpCommonPropositions(orConjunction));
     }
 
     @Test
+    void Lift_Up_Substitution_2() {
+        OrConjunction orConjunction = new OrConjunction(List.of(
+                new AndConjunction(List.of(EQUALITY_GADGET, BOUNDS_CHECK_GADGET, INEQUALITY_GADGET)),
+                new AndConjunction(List.of(LESS_THAN_GADGET, BOUNDS_CHECK_GADGET, EQUALITY_GADGET)),
+                new AndConjunction(List.of(BOUNDS_CHECK_GADGET, EQUALITY_GADGET))
+        ));
+        AndConjunction expected = new AndConjunction(List.of(
+                EQUALITY_GADGET,
+                BOUNDS_CHECK_GADGET
+        ));
+        Optional<Proposition> result = OrConjunction.liftUpCommonPropositions(orConjunction);
+        assertEquals(expected, result.get());
+    }
+
+    @Test
     void Lift_Up_No_Substitution() {
         OrConjunction orConjunction = new OrConjunction(List.of(
-                new AndConjunction(List.of(
-                        EQUALITY_GADGET,
-                        INEQUALITY_GADGET
-                )),
-                new AndConjunction(List.of(
-                        BOUNDS_CHECK_GADGET,
-                        LESS_THAN_GADGET
-                ))
+                new AndConjunction(List.of(EQUALITY_GADGET, INEQUALITY_GADGET)),
+                new AndConjunction(List.of(BOUNDS_CHECK_GADGET, LESS_THAN_GADGET))
         ));
         assertEquals(Optional.empty(), OrConjunction.liftUpCommonPropositions(orConjunction));
     }
