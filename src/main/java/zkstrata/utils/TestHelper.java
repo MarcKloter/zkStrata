@@ -19,8 +19,11 @@ public class TestHelper {
     private static final int CHAR_POSITION = 0;
     private static final Position.Relative REL_POSITION = new Position.Relative(TARGET, LINE_NUMBER, CHAR_POSITION);
     public static final Position.Absolute ABS_POSITION = new Position.Absolute(SOURCE, STATEMENT, REL_POSITION);
-
     private static long idCounter = 0;
+
+    private TestHelper() {
+        throw new IllegalStateException("Utility class");
+    }
 
     private static synchronized String createID() {
         return String.valueOf(idCounter++);
