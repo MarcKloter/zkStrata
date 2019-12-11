@@ -7,10 +7,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static zkstrata.utils.BinaryTree.Node;
 
 public class BinaryTreeTest {
-    private static final BinaryTree.Node<String> LEAF_1 = new BinaryTree.Node<>("One");
-    private static final BinaryTree.Node<String> LEAF_2 = new BinaryTree.Node<>("Two");
-    private static final BinaryTree.Node<String> LEAF_3 = new BinaryTree.Node<>("Three");
-    private static final BinaryTree.Node<String> LEAF_4 = new BinaryTree.Node<>("Four");
+    private static final Node<String> LEAF_1 = new Node<>("One");
+    private static final Node<String> LEAF_2 = new Node<>("Two");
+    private static final Node<String> LEAF_3 = new Node<>("Three");
+    private static final Node<String> LEAF_4 = new Node<>("Four");
 
     @Test
     void Not_Equals_Null() {
