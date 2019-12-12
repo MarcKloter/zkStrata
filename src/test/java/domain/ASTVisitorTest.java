@@ -35,11 +35,6 @@ public class ASTVisitorTest {
     private static final IntegerLiteral INT_13 = createIntegerLiteral(13);
     private static final IntegerLiteral INT_LARGE = createIntegerLiteral(Constants.UNSIGNED_65BIT_MIN);
 
-    // TODO: either here or integration test: negative number, number that is out of range
-
-    // TODO: undefined schema
-    // TODO: reserved keyword
-
     private ASTVisitor visitor;
 
     @BeforeEach
