@@ -1,0 +1,12 @@
+{
+  "title": "schema",
+  "type": "object",
+  "properties": {
+    "selectorString": {
+      "type": "string"
+    },
+    "selectorNumber": {
+      "type": "number"
+    }
+  }
+}
