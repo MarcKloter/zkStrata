@@ -3,6 +3,16 @@ PROOF FOR
 THAT
     pass.dateOfBirth.year IS GREATER THAN 1900
 AND
-    pass.dateOfBirth.month IS GREATER THAN 1 AND LESS THAN 12
+    pass.dateOfBirth.month IS GREATER THAN OR EQUAL TO 1 AND LESS THAN OR EQUAL TO 12
+AND
+    pass.dateOfBirth.month IS LESS THAN OR EQUAL TO 12 AND GREATER THAN OR EQUAL TO 1
 AND
     pass.dateOfBirth.day IS LESS THAN 15
+AND
+    pass.dateOfBirth.year > 1900
+AND
+    pass.dateOfBirth.month >= 1 AND <= 12
+AND
+    pass.dateOfBirth.month <= 12 AND >= 1
+AND
+    pass.dateOfBirth.day < 15

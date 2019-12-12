@@ -92,11 +92,11 @@ public class StatementBuilder {
         if (min == null && max == null)
             return this;
         else if (min == null)
-            predicates.add(String.format("%s IS LESS THAN %s", value, max));
+            predicates.add(String.format("%s IS LESS THAN OR EQUAL TO %s", value, max));
         else if (max == null)
-            predicates.add(String.format("%s IS GREATER THAN %s", value, min));
+            predicates.add(String.format("%s IS GREATER THAN OR EQUAL TO %s", value, min));
         else
-            predicates.add(String.format("%s IS LESS THAN %s AND GREATER THAN %s", value, max, min));
+            predicates.add(String.format("%s IS LESS THAN OR EQUAL TO %s AND GREATER THAN OR EQUAL TO %s", value, max, min));
 
         return this;
     }

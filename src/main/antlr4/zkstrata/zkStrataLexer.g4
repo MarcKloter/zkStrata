@@ -34,6 +34,10 @@ RPAREN  : ')' ;
 COMMA   : ',' ;
 DOT     : '.' ;
 SCOL    : ';' ;
+LT      : '<' ;
+LT_EQ   : '<=' ;
+GT      : '>' ;
+GT_EQ   : '>=' ;
 
 /**
  * zkStrata Lexer Rules
