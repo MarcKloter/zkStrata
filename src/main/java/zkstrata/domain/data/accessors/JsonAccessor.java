@@ -26,8 +26,7 @@ public class JsonAccessor implements ValueAccessor {
         try {
             this.jsonObject = new JSONObject(Files.readString(Path.of(filename), StandardCharsets.UTF_8));
         } catch (IOException e) {
-            String msg = String.format("Unable to read file %s.", filename);
-            throw new IllegalArgumentException(msg);
+            throw new IllegalArgumentException(String.format("Unable to read file %s.", filename));
         }
     }
 
