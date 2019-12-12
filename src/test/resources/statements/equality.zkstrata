@@ -10,3 +10,13 @@ AND
     pass.dateOfBirth.month IS EQUAL TO 6
 AND
     pass.dateOfBirth.year IS EQUAL TO 1980
+AND
+    pass.firstName = 'John'
+AND
+    pass.lastName = 'Doe'
+AND
+    pass.dateOfBirth.day = 12
+AND
+    pass.dateOfBirth.month = 6
+AND
+    pass.dateOfBirth.year = 1980

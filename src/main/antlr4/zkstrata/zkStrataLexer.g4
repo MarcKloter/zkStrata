@@ -34,6 +34,7 @@ RPAREN  : ')' ;
 COMMA   : ',' ;
 DOT     : '.' ;
 SCOL    : ';' ;
+EQ      : '=' ;
 LT      : '<' ;
 LT_EQ   : '<=' ;
 GT      : '>' ;
