@@ -2,8 +2,6 @@ package zkstrata.domain.data.schemas.predefined;
 
 import zkstrata.domain.data.schemas.AbstractSchema;
 
-import java.util.Date;
-
 @Schema(name = "drivers_license_ch")
 public class DriversLicense extends AbstractSchema {
     private String firstName;
