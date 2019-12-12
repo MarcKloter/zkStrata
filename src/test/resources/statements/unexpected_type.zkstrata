@@ -1,0 +1,6 @@
+PROOF FOR
+    passport_ch AS pass
+THAT
+    pass.dateOfBirth.year > 'string'
+AND
+    pass.dateOfBirth.day < 'string'
