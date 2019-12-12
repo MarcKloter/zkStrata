@@ -205,4 +205,16 @@ public class IntegrationTest {
         });
         assertTrue(exception.getMessage().toLowerCase().contains("type mismatch"));
     }
+
+    @Test
+    void Unexpected_Type_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("unexpected_type")
+                    .withWitness("pass", "passport_missing_entry")
+                    .build();
+            Compiler.run(args);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("unexpected type"));
+    }
 }
