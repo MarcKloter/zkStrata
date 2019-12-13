@@ -178,4 +178,8 @@ public class StatementBuilder {
             return encoding;
         }
     }
+
+    public int getNumberOfPredicates() {
+        return predicates.size();
+    }
 }

@@ -27,9 +27,7 @@ public class AbstractGadgetTest {
     private static final Identifier IDENTIFIER_2 = createIdentifier("", "Number");
 
     private static final Subject SUBJECT = createSubject(true, "");
-
     private static final IntegerLiteral INT_LIT_13 = createIntegerLiteral(13);
-
     private static final StringLiteral STRING_LIT = createStringLiteral("string");
 
     private ASTVisitor visitor;

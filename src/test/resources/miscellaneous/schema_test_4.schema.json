@@ -1,0 +1,14 @@
+{
+  "title": "schema_test_4",
+  "type": "object",
+  "properties": {
+    "numberConstraint1": {
+      "type": "number",
+      "maximum": 15
+    },
+    "numberConstraint2": {
+      "type": "number",
+      "minimum": 23
+    }
+  }
+}

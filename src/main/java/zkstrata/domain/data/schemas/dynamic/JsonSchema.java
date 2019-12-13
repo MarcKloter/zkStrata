@@ -70,6 +70,15 @@ public class JsonSchema extends AbstractSchema {
         return typeString.toString();
     }
 
+    /**
+     * Constructs a list of strings that can be used to access a property within a JSON Schema.
+     * <p>
+     * Example: The type definition of property 'passport.dateOfBirth.month' is located under
+     * 'properties.dateOfBirth.properties.month' in the corresponding schema.
+     *
+     * @param selectors selectors to access a property within a JSON object
+     * @return selectors to access the description of a property within a JSON Schema object
+     */
     private List<String> constructPropertySelector(List<String> selectors) {
         List<String> propertySelector = new ArrayList<>();
         for (String selector : selectors) {
@@ -81,26 +90,37 @@ public class JsonSchema extends AbstractSchema {
 
     @Override
     public boolean hasValidationRule() {
-        return accessor.getValue(new Selector("validationRule")) != null;
+        return getExplicitValidationRule() != null || hasImplicitValidationRules();
     }
 
     @Override
     public String getValidationRule() {
+        AbstractSyntaxTree explicit = getExplicitValidationRule();
+
+        StatementBuilder validationRule = explicit == null ? new StatementBuilder() : new StatementBuilder(explicit);
+        parseValidationKeywords(Collections.emptyList(), validationRule);
+
+        return validationRule.getNumberOfPredicates() == 0 ? null : validationRule.build();
+    }
+
+    private AbstractSyntaxTree getExplicitValidationRule() {
         Value validationRule = accessor.getValue(new Selector("validationRule"));
 
         if (validationRule == null)
             return null;
 
         if (validationRule.getType() != String.class) {
-            String msg = String.format("Invalid validation rule in schema %s. The statement must be a string.", accessor.getSource());
-            throw new IllegalArgumentException(msg);
+            throw new IllegalArgumentException(String.format("Invalid validation rule in schema %s. " +
+                    "The statement must be a string.", accessor.getSource()));
         }
 
-        AbstractSyntaxTree ast = new ParseTreeVisitor().parse(accessor.getSource(), validationRule.toString(), "THIS");
-        StatementBuilder statementBuilder = new StatementBuilder(ast);
-        parseValidationKeywords(Collections.emptyList(), statementBuilder);
+        return new ParseTreeVisitor().parse(accessor.getSource(), validationRule.toString(), "THIS");
+    }
 
-        return statementBuilder.build();
+    private boolean hasImplicitValidationRules() {
+        StatementBuilder statementBuilder = new StatementBuilder();
+        parseValidationKeywords(Collections.emptyList(), statementBuilder);
+        return statementBuilder.getNumberOfPredicates() > 0;
     }
 
     private void parseValidationKeywords(List<String> selectors, StatementBuilder statementBuilder) {
@@ -114,8 +134,10 @@ public class JsonSchema extends AbstractSchema {
             propertySelector.add(property);
             String type = getTypeDefinition(propertySelector);
 
-            propertiesSelector.add(property);
-            Set<String> validationKeywords = accessor.getKeySet(propertiesSelector);
+            List<String> keywordSelector = new ArrayList<>(propertiesSelector);
+            keywordSelector.add(property);
+            Set<String> validationKeywords = accessor.getKeySet(keywordSelector);
+
             String witness = String.format("private.%s", String.join(".", propertySelector));
 
             switch (type) {
@@ -137,6 +159,14 @@ public class JsonSchema extends AbstractSchema {
         }
     }
 
+    /**
+     * Checks whether the property accessible through the given {@code selectors} has a validation keyword
+     * {@code keyword} whose value is a numeric type.
+     *
+     * @param keyword   validation keyword to check
+     * @param selectors selector of a property
+     * @return value of the numeric validation keyword as string
+     */
     private String getNumberConstraint(String keyword, List<String> selectors) {
         List<String> assertionSelector = constructPropertySelector(selectors);
         assertionSelector.add(keyword);
