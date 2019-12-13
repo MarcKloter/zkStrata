@@ -46,6 +46,7 @@ public class CommandLineInterface {
 
     private Arguments parseArguments(String[] args) throws ParseException {
         CommandLineParser parser = new DefaultParser();
+        checkFlags(parser.parse(new OptionBuilder().withFlags().build(), args, true));
         CommandLine cmd = parser.parse(options, args);
         checkFlags(cmd);
 
