@@ -2,6 +2,8 @@ package cli;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.Test;
 import zkstrata.api.cli.SpecialOptionException;
 import zkstrata.compiler.Arguments;
@@ -94,6 +96,17 @@ public class CommandLineInterfaceTest {
         };
         CommandLineInterface cli = new CommandLineInterface(new PrintWriter(System.out));
         assertThrows(IllegalArgumentException.class, () -> cli.parse(command));
+    }
+
+    @Test
+    void Verbose_Flag() {
+        String[] command = new String[]{
+                "--statement",
+                STATEMENT_FILE,
+                "--verbose"
+        };
+        new CommandLineInterface(new PrintWriter(System.out)).parse(command);
+        assertEquals(Level.DEBUG, LogManager.getRootLogger().getLevel());
     }
 
     @Test
