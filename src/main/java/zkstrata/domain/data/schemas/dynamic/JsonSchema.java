@@ -97,10 +97,10 @@ public class JsonSchema extends AbstractSchema {
     public String getValidationRule() {
         AbstractSyntaxTree explicit = getExplicitValidationRule();
 
-        StatementBuilder validationRule = explicit == null ? new StatementBuilder() : new StatementBuilder(explicit);
-        parseValidationKeywords(Collections.emptyList(), validationRule);
+        StatementBuilder rule = explicit == null ? new StatementBuilder().subjectThis() : new StatementBuilder(explicit);
+        parseValidationKeywords(Collections.emptyList(), rule);
 
-        return validationRule.getNumberOfPredicates() == 0 ? null : validationRule.build();
+        return rule.getNumberOfPredicates() == 0 ? null : rule.build();
     }
 
     private AbstractSyntaxTree getExplicitValidationRule() {

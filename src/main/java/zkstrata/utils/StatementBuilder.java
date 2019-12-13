@@ -70,6 +70,12 @@ public class StatementBuilder {
         return this;
     }
 
+    public StatementBuilder subjectThis() {
+        subjects.add(THIS);
+
+        return this;
+    }
+
     public StatementBuilder conjunction(String predicate) {
         predicates.add(predicate);
 

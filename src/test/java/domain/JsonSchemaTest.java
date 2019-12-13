@@ -85,6 +85,7 @@ public class JsonSchemaTest {
     void Only_Implicit_Validation_Rule() {
         assertTrue(schema4.hasValidationRule());
         String exptected = new StatementBuilder()
+                .subjectThis()
                 .boundsCheck("private.numberConstraint2", "23" ,null)
                 .boundsCheck("private.numberConstraint1", null ,"15")
                 .build();
