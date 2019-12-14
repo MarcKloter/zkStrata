@@ -22,6 +22,11 @@ public class Compiler {
         throw new IllegalStateException("Utility class");
     }
 
+    /**
+     * Compiles the given {@link Arguments} into files of the target format.
+     *
+     * @param args {@link Arguments} to compile
+     */
     public static void run(Arguments args) {
         Statement statement = parse(args, null, null);
 
@@ -47,6 +52,14 @@ public class Compiler {
         new CodeGenerator(args.getName()).run(claim, args.hasWitnessData());
     }
 
+    /**
+     * Parses the statement of the given {@code args} into the internal {@link Statement} representation.
+     *
+     * @param args         {@link Arguments} to parse
+     * @param parentAlias  alias to use for relative statements (validation rules using the THIS keyword)
+     * @param parentSchema schema to use for relative statements
+     * @return {@link Statement} object containing the parsed {@code args}
+     */
     private static Statement parse(Arguments args, String parentAlias, String parentSchema) {
         AbstractSyntaxTree ast = new ParseTreeVisitor().parse(
                 args.getStatement().getSource(),
@@ -61,6 +74,14 @@ public class Compiler {
         return new ASTVisitor(args, parentAlias).visit(ast);
     }
 
+    /**
+     * Checks the schemas declared within the given {@code subjects} for validation rules that apply to the usage of
+     * such. Returns a list of {@link Statement} objects representing all validation rules found.
+     *
+     * @param subjects map of alias to {@link StructuredData} to check
+     * @param args     {@link Arguments} containing available data (witness/instance)
+     * @return list of {@link Statement} objects containing all validation rules found
+     */
     private static List<Statement> parseValidationRules(Map<String, StructuredData> subjects, Arguments args) {
         List<Statement> validationRules = new ArrayList<>();
 
@@ -83,6 +104,12 @@ public class Compiler {
         return validationRules;
     }
 
+    /**
+     * Parses all statement files listed as premises within the given {@code args}.
+     *
+     * @param args {@link Arguments} to check for premises
+     * @return {@link Proposition} of all premises found
+     */
     private static Proposition parsePremises(Arguments args) {
         Proposition premises = Proposition.trueProposition();
 
