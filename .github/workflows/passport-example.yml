@@ -39,10 +39,10 @@ jobs:
     - name: "Prover: Compile zkStrata statement"
       run: java -jar zkstratac.jar --statement passport-example.zkstrata --schema passport_ch=passport_ch.schema.json --witness-data myPassport=myPassport.json --instance-data myPassport=myPassport.metadata.json 
     - name: "Prover: Generate Zero-Knowledge Proof"
-      run: prover passport-example
+      run: ./prover passport-example
     - name: "Verifier: compile zkStrata statement"
       run: java -jar zkstratac.jar --statement passport-example.zkstrata --schema passport_ch=passport_ch.schema.json --instance-data myPassport=myPassport.metadata.json 
     - name: "Verifier: Verify Zero-Knowledge Proof"
-      run: verifier passport-example
+      run: ./verifier passport-example
     - name: Check signature
       run: openssl rsautl -verify -inkey public.pem -pubin -keyform PEM -in signature.crt
