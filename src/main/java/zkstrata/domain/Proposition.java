@@ -99,9 +99,9 @@ public interface Proposition {
             for (Iterator<Proposition> it = ((Conjunction) this).getParts().iterator(); it.hasNext(); ) {
                 Proposition next = it.next();
                 if (it.hasNext()) {
-                    next.append(builder.appendNewLine(), childrenPrefix + "├── ", childrenPrefix + "│   ");
+                    next.append(builder.appendNewLine(), childrenPrefix + "|-- ", childrenPrefix + "|   ");
                 } else {
-                    next.append(builder.appendNewLine(), childrenPrefix + "└── ", childrenPrefix + "    ");
+                    next.append(builder.appendNewLine(), childrenPrefix + "\\-- ", childrenPrefix + "    ");
                 }
             }
         }

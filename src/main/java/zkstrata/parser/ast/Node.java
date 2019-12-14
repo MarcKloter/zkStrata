@@ -30,10 +30,10 @@ public interface Node {
             ((Connective) this).getRight().append(builder, prefix + (isTail ? "│   " : "    "), false);
         }
 
-        builder.append(prefix).append(isTail ? "└── " : "┌── ").append(this.toString()).appendNewLine();
+        builder.append(prefix).append(isTail ? "\\-- " : "/-- ").append(this.toString()).appendNewLine();
 
         if (this instanceof Connective && ((Connective) this).getLeft() != null) {
-            ((Connective) this).getLeft().append(builder, prefix + (isTail ? "    " : "│   "), true);
+            ((Connective) this).getLeft().append(builder, prefix + (isTail ? "    " : "|   "), true);
         }
     }
 }
