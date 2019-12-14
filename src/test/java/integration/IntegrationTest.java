@@ -2,6 +2,8 @@ package integration;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.Test;
 import zkstrata.compiler.Arguments;
 import zkstrata.compiler.Compiler;
@@ -9,6 +11,18 @@ import zkstrata.exceptions.CompileTimeException;
 import zkstrata.utils.ArgumentsBuilder;
 
 public class IntegrationTest {
+    @Test
+    void Default_Verbose_Should_Succeed() {
+        Configurator.setRootLevel(Level.DEBUG);
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("default")
+                    .withInstance("pass", "passport.metadata")
+                    .build();
+            Compiler.run(args);
+        });
+    }
+
     @Test
     void Duplicate_Alias_Should_Throw() {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
