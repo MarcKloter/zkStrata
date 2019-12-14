@@ -210,9 +210,7 @@ public class ParseTreeVisitor {
             Constructor constructor = getConstructor(node.getSymbol().getType());
 
             try {
-                @SuppressWarnings("unchecked")
-                Value value = (Value) constructor.newInstance(node.getText(), ParserUtils.getPosition(ctx.getStart()));
-                return value;
+                return (Value) constructor.newInstance(node.getText(), ParserUtils.getPosition(ctx.getStart()));
             } catch (ReflectiveOperationException e) {
                 throw new InternalCompilerException("Error during invocation of constructor of %s. "
                         + "Ensure that the constructor takes two arguments (String value, Position.Absolute position)",
