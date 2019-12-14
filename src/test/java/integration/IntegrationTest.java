@@ -131,6 +131,18 @@ public class IntegrationTest {
     }
 
     @Test
+    void Unused_Subject_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("unused_subject")
+                    .withInstance("pass1", "passport.metadata")
+                    .withInstance("pass2", "passport.metadata")
+                    .build();
+            Compiler.run(args);
+        });
+    }
+
+    @Test
     void Instance_Data_Referenced_Should_Succeed() {
         assertDoesNotThrow(() -> {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
