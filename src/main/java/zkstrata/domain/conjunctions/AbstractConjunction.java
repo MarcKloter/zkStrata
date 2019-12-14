@@ -37,11 +37,6 @@ public abstract class AbstractConjunction implements Conjunction {
     }
 
     @Override
-    public boolean isEmpty() {
-        return getParts().isEmpty();
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if (obj == null)
             return false;
