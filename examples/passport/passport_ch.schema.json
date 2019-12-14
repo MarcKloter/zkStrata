@@ -1,0 +1,57 @@
+{
+    "title": "passport_ch",
+    "type": "object",
+    "properties": {
+        "firstName": {
+            "type": "string",
+            "description": "The owner's first name."
+        },
+        "lastName": {
+            "type": "string",
+            "description": "The owner's last name."
+        },
+        "dateOfBirth": {
+            "description": "The owner's date of birth.",
+            "type": "object",
+            "properties": {
+                "day": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 31
+                },
+                "month": {
+                    "type": "number",
+                    "minimum": 1,
+                    "maximum": 12
+                },
+                "year": {
+                    "type": "number"
+                }
+            }
+        },
+        "expiresOn": {
+          "description": "This passport's date of expiration.",
+          "type": "object",
+          "properties": {
+            "day": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 31
+            },
+            "month": {
+              "type": "number",
+              "minimum": 1,
+              "maximum": 12
+            },
+            "year": {
+              "type": "number"
+            }
+          }
+        },
+        "rootHash_hex": {
+            "type": "string",
+            "description": "The merkle tree root hash of this passport."
+        }
+    },
+    "validationRule": "PROOF FOR THIS THAT public.rootHash_hex IS MERKLE ROOT OF (((private.firstName, private.lastName), (private.dateOfBirth.day, private.dateOfBirth.month)), ((private.dateOfBirth.year, private.expiresOn.day), (private.expiresOn.month, private.expiresOn.year)))"
+}
