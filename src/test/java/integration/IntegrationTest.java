@@ -24,6 +24,30 @@ public class IntegrationTest {
     }
 
     @Test
+    void And_Conjunction_Verbose_Should_Succeed() {
+        Configurator.setRootLevel(Level.DEBUG);
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("and_conjunction")
+                    .withInstance("pass", "passport.metadata")
+                    .build();
+            Compiler.run(args);
+        });
+    }
+
+    @Test
+    void Or_Conjunction_Verbose_Should_Succeed() {
+        Configurator.setRootLevel(Level.DEBUG);
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("or_conjunction")
+                    .withInstance("pass", "passport.metadata")
+                    .build();
+            Compiler.run(args);
+        });
+    }
+
+    @Test
     void Duplicate_Alias_Should_Throw() {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
