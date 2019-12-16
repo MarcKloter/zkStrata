@@ -25,16 +25,14 @@ public class SchemaHelper {
         for (Class<?> schema : schemas) {
             Schema annotation = schema.getAnnotation(Schema.class);
             if (annotation.name().equals(name)) {
-                if (!zkstrata.domain.data.schemas.Schema.class.isAssignableFrom(schema)) {
-                    String msg = String.format("The predefined schema %s does not implement %s.",
+                if (!zkstrata.domain.data.schemas.Schema.class.isAssignableFrom(schema))
+                    throw new InternalCompilerException("The predefined schema %s does not implement %s.",
                             name, zkstrata.domain.data.schemas.Schema.class);
-                    throw new InternalCompilerException(msg);
-                }
 
                 try {
                     return (zkstrata.domain.data.schemas.Schema) schema.getConstructor().newInstance();
                 } catch (Exception e) {
-                    throw new InternalCompilerException(String.format("Invalid implementation of schema: %s", name));
+                    throw new InternalCompilerException("Invalid implementation of schema: %s", name);
                 }
             }
         }
