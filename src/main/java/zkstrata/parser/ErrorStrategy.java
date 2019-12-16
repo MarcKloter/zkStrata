@@ -12,11 +12,6 @@ import zkstrata.parser.exceptions.UnwantedTokenException;
 public class ErrorStrategy extends DefaultErrorStrategy {
     @Override
     protected void reportUnwantedToken(Parser recognizer) {
-        if (inErrorRecoveryMode(recognizer))
-            return;
-
-        beginErrorCondition(recognizer);
-
         Token offendingToken = recognizer.getCurrentToken();
         RecognitionException e = new UnwantedTokenException(recognizer, recognizer.getInputStream(), recognizer.getRuleContext());
 
@@ -25,11 +20,6 @@ public class ErrorStrategy extends DefaultErrorStrategy {
 
     @Override
     protected void reportMissingToken(Parser recognizer) {
-        if (inErrorRecoveryMode(recognizer))
-            return;
-
-        beginErrorCondition(recognizer);
-
         Token offendingToken = recognizer.getCurrentToken();
         RecognitionException e = new MissingTokenException(recognizer, recognizer.getInputStream(), recognizer.getRuleContext());
 
