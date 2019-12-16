@@ -31,9 +31,6 @@ public class MerkleTree extends Predicate {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
 
-        if (values.size() != 2)
-            throw new InternalCompilerException("Expected 2 children in subtree, found %s.", values.size());
-
         return new BinaryTree.Node<>(values.get(0), values.get(1));
     }
 
