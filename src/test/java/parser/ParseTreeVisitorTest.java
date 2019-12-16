@@ -26,6 +26,7 @@ public class ParseTreeVisitorTest {
     private static final String ALIAS = "alias";
     private static final String UNEXPECTED_SYMBOL = "%";
     private static final String UNEXPECTED_TOKEN = "FOR";
+    private static final String UNWANTED_TOKEN = "THAT schema";
     private static final String MISSING_TOKEN = "";
     private static final String IDENTIFIER_1 = "alias.identifier1";
     private static final String IDENTIFIER_2 = "alias.identifier2";
@@ -347,6 +348,18 @@ public class ParseTreeVisitorTest {
     void Unexpected_Token_Should_Throw() {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             new ParseTreeVisitor().parse(SOURCE, UNEXPECTED_TOKEN, PARENT_SCHEMA);
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("unexpected token"));
+    }
+
+    @Test
+    void Unwanted_Token_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            String statement = new StatementBuilder()
+                    .subject(UNWANTED_TOKEN, ALIAS, true)
+                    .equality(IDENTIFIER_1, stringLiteral(STRING_LITERAL))
+                    .build();
+            new ParseTreeVisitor().parse(SOURCE, statement, PARENT_SCHEMA);
         });
         assertTrue(exception.getMessage().toLowerCase().contains("unexpected token"));
     }
