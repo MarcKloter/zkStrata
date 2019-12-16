@@ -14,5 +14,5 @@ There are the following examples with a detailed walkthrough available, make sur
 ## Playground
 For a quick hands-on of zkStrata, there is the [zkStrata Playground](https://github.com/MarcKloter/zkStrata-playground) available, which can be launched as docker container to get a web interface that provides access to some of the core features of zkStrata.
 
-![zkStrata-playground](zkstrata-playground.png)
+![zkStrata-playground](https://github.com/MarcKloter/zkStrata-playground/blob/master/zkstrata-playground.png?raw=true)
 
