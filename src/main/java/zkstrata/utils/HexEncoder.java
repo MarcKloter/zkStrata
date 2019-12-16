@@ -29,17 +29,12 @@ public class HexEncoder {
             LOGGER.warn("No specific hex encoding method found for {}. Default to hex encoding of toString representation.", type);
             return encode(object.toString());
         } catch (ReflectiveOperationException e) {
-            String msg = String.format("Invalid implementation of method encode for type %s.", type);
-            throw new IllegalStateException(msg);
+            throw new IllegalStateException(String.format("Invalid implementation of method encode for type %s.", type));
         }
     }
 
     public static String encode(BigInteger bigInteger) {
         return pad(String.format("%x", bigInteger));
-    }
-
-    public static String encode(Integer integer) {
-        return pad(String.format("%x", integer));
     }
 
     public static String encode(String string) {
