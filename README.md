@@ -11,3 +11,8 @@ There are the following examples with a detailed walkthrough available, make sur
 | ---- | --------- | ------ |
 | Passport | [examples/passport/](examples/passport/) | [![build](https://github.com/MarcKloter/zkStrata/workflows/example%3A%20passport/badge.svg)](https://github.com/MarcKloter/zkStrata/actions?query=workflow:"example:+passport") |
 
+## Playground
+For a quick hands-on of zkStrata, there is the [zkStrata Playground](https://github.com/MarcKloter/zkStrata-playground) available, which can be launched as docker container to get a web interface that provides access to some of the core features of zkStrata.
+
+![zkStrata-playground](zkstrata-playground.png)
+
