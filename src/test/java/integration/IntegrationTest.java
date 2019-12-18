@@ -163,8 +163,7 @@ public class IntegrationTest {
                     .withWitness("pass_1", "passport")
                     .withWitness("pass_2", "passport")
                     .withInstance("pass_1", "passport.metadata")
-                    .withInstance("pass_2", "passport.metadata")
-                    .withInstance("pass_3", "passport_instance")
+                    .withInstance("pass_2", "passport_instance")
                     .build();
             Compiler.run(args);
         });

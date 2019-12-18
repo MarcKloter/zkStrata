@@ -14,11 +14,11 @@ statement           : K_PROOF K_FOR subjects K_THAT predicate EOF ;
 predicate           : clause (SCOL)? ;
 subjects            : subject ((K_AND | SCOL) subject)* (SCOL)? ;
 subject             : K_INSTANCE? schema K_AS alias
-                    | (K_WITNESS? | K_INSTANCE) alias K_COMPLIANT K_TO schema
+                    | (K_WITNESS | K_INSTANCE) alias K_COMPLIANT K_TO schema
                     | K_THIS ;
 
-witness_var         : reference # WitnessVariable;
-instance_var        : (reference | literal) # InstanceVariable;
+witness_var         : reference             # WitnessVariable ;
+instance_var        : (reference | literal) # InstanceVariable ;
 
 reference           : alias (DOT property)+ ;
 
