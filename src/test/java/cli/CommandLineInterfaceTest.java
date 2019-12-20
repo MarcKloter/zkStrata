@@ -46,9 +46,9 @@ public class CommandLineInterfaceTest {
         assertEquals(NAME, arguments.getName());
         assertEquals(STATEMENT_FILE, arguments.getStatement().getSource());
         assertNotNull(arguments.getStatement().getValue());
-        assertEquals(JsonAccessor.class, arguments.getInstanceData().get(INSTANCE_ALIAS).getClass());
-        assertEquals(JsonSchema.class, arguments.getSchemas().get(SCHEMA).getClass());
-        assertEquals(JsonAccessor.class, arguments.getWitnessData().get(WITNESS_ALIAS).getClass());
+        assertEquals(JsonAccessor.class, arguments.getSubjectData().getInstanceData().get(INSTANCE_ALIAS).getClass());
+        assertEquals(JsonSchema.class, arguments.getSubjectData().getSchemas().get(SCHEMA).getClass());
+        assertEquals(JsonAccessor.class, arguments.getSubjectData().getWitnessData().get(WITNESS_ALIAS).getClass());
         assertEquals(PREMISE_FILE, arguments.getPremises().get(0).getSource());
     }
 

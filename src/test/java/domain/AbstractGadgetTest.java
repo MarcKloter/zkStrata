@@ -37,7 +37,7 @@ public class AbstractGadgetTest {
         Arguments args = new ArgumentsBuilder(ASTVisitorTest.class)
                 .withSchema("schema", "schema")
                 .build();
-        this.visitor = new ASTVisitor(args, "test");
+        this.visitor = new ASTVisitor(args.getSubjectData(), "test");
     }
 
     @Test

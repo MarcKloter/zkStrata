@@ -10,33 +10,18 @@ public class Arguments {
     private String name;
     private Statement statement;
     private List<Statement> premises;
-    private Map<String, ValueAccessor> witnessData;
-    private Map<String, ValueAccessor> instanceData;
-    private Map<String, Schema> schemas;
+    private SubjectData subjectData;
 
     public Arguments(
             String name,
             Statement statement,
             List<Statement> premises,
-            Map<String, ValueAccessor> witnessData,
-            Map<String, ValueAccessor> instanceData,
-            Map<String, Schema> schemas
+            SubjectData subjectData
     ) {
         this.name = name;
         this.statement = statement;
         this.premises = premises;
-        this.witnessData = witnessData;
-        this.instanceData = instanceData;
-        this.schemas = schemas;
-    }
-
-    public Arguments(Arguments arguments) {
-        this.name = arguments.getName();
-        this.statement = arguments.getStatement();
-        this.premises = arguments.getPremises();
-        this.witnessData = arguments.getWitnessData();
-        this.instanceData = arguments.getInstanceData();
-        this.schemas = arguments.getSchemas();
+        this.subjectData = subjectData;
     }
 
     public String getName() {
@@ -55,20 +40,12 @@ public class Arguments {
         return premises;
     }
 
-    public Map<String, ValueAccessor> getWitnessData() {
-        return witnessData;
-    }
-
-    public Map<String, ValueAccessor> getInstanceData() {
-        return instanceData;
-    }
-
-    public Map<String, Schema> getSchemas() {
-        return schemas;
+    public SubjectData getSubjectData() {
+        return subjectData;
     }
 
     public boolean hasWitnessData() {
-        return !witnessData.isEmpty();
+        return !getSubjectData().getWitnessData().isEmpty();
     }
 
     public static class Statement {
@@ -86,6 +63,34 @@ public class Arguments {
 
         public String getValue() {
             return value;
+        }
+    }
+
+    public static class SubjectData {
+        private Map<String, ValueAccessor> witnessData;
+        private Map<String, ValueAccessor> instanceData;
+        private Map<String, Schema> schemas;
+
+        public SubjectData(
+                Map<String, ValueAccessor> witnessData,
+                Map<String, ValueAccessor> instanceData,
+                Map<String, Schema> schemas
+        ) {
+            this.witnessData = witnessData;
+            this.instanceData = instanceData;
+            this.schemas = schemas;
+        }
+
+        public Map<String, ValueAccessor> getWitnessData() {
+            return witnessData;
+        }
+
+        public Map<String, ValueAccessor> getInstanceData() {
+            return instanceData;
+        }
+
+        public Map<String, Schema> getSchemas() {
+            return schemas;
         }
     }
 }

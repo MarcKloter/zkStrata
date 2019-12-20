@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static zkstrata.compiler.Arguments.Statement;
+import static zkstrata.compiler.Arguments.*;
 
 public class ArgumentsBuilder {
     private static final String STATEMENTS_PATH = "statements/";
@@ -65,7 +65,7 @@ public class ArgumentsBuilder {
     }
 
     public Arguments build() {
-        return new Arguments(name, statement, premises, witnessData, instanceData, schemas);
+        return new Arguments(name, statement, premises, new SubjectData(witnessData, instanceData, schemas));
     }
 
     private String getStatements(String name) {

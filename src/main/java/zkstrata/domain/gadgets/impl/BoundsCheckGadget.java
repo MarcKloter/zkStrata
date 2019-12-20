@@ -28,8 +28,8 @@ import static zkstrata.utils.GadgetUtils.*;
 @AstElement(BoundsCheck.class)
 public class BoundsCheckGadget extends AbstractGadget {
     private static final Logger LOGGER = LogManager.getRootLogger();
-    private static final BigInteger MIN = BigInteger.ZERO;
-    private static final BigInteger MAX = Constants.UNSIGNED_64BIT_MAX;
+    private static final BigInteger MIN_VALUE = BigInteger.ZERO;
+    private static final BigInteger MAX_VALUE = Constants.UNSIGNED_64BIT_MAX;
 
     @Type({BigInteger.class})
     private WitnessVariable value;
@@ -182,10 +182,10 @@ public class BoundsCheckGadget extends AbstractGadget {
     @Override
     public void performChecks() {
         if (this.min == null)
-            this.min = InstanceVariable.of(MIN);
+            this.min = InstanceVariable.of(MIN_VALUE);
 
         if (this.max == null)
-            this.max = InstanceVariable.of(MAX);
+            this.max = InstanceVariable.of(MAX_VALUE);
     }
 
     @Override

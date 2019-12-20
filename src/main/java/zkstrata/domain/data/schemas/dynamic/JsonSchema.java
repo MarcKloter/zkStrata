@@ -114,7 +114,7 @@ public class JsonSchema extends AbstractSchema {
                     "The statement must be a string.", accessor.getSource()));
         }
 
-        return new ParseTreeVisitor().parse(accessor.getSource(), validationRule.toString(), "THIS");
+        return new ParseTreeVisitor(accessor.getSource(), "THIS").visit(validationRule.toString());
     }
 
     private boolean hasImplicitValidationRules() {

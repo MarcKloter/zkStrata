@@ -31,11 +31,27 @@ import java.util.stream.Collectors;
 import static zkstrata.parser.ast.Subject.*;
 
 /**
- * Transforms a zkStrata statement ({@link String}) into a parse tree ({@link ParseTree}) using ANTLR.
- * Then visits this parse tree to form an abstract syntax tree ({@link AbstractSyntaxTree}).
+ * Transforms a zkStrata statement ({@link String}) into a visit tree ({@link ParseTree}) using ANTLR.
+ * Then visits this visit tree to form an abstract syntax tree ({@link AbstractSyntaxTree}).
  */
 public class ParseTreeVisitor {
-    public AbstractSyntaxTree parse(String source, String statement, String parentSchema) {
+    private String source;
+    private String parentSchema;
+
+    public ParseTreeVisitor(String source) {
+        this(source, null);
+    }
+
+    /**
+     * @param source       source information to use in case of an error
+     * @param parentSchema schema identifier to use by the THIS keyword
+     */
+    public ParseTreeVisitor(String source, String parentSchema) {
+        this.source = source;
+        this.parentSchema = parentSchema;
+    }
+
+    public AbstractSyntaxTree visit(String statement) {
         ANTLRErrorListener errorListener = new ErrorListener();
 
         zkStrataLexer lexer = new zkStrataLexer(CharStreams.fromString(statement));
@@ -54,38 +70,8 @@ public class ParseTreeVisitor {
             throw new CompileTimeException(source, statement, e);
         }
 
-        StatementVisitor visitor = new StatementVisitor(source, statement, parser.getRuleNames(), parentSchema);
+        StatementVisitor visitor = new StatementVisitor(statement, parser.getRuleNames());
         return visitor.visit(tree);
-    }
-
-
-    public static class StatementVisitor extends zkStrataBaseVisitor<AbstractSyntaxTree> {
-        private String source;
-        private String statement;
-        private String[] rules;
-        private String parentSchema;
-
-        StatementVisitor(String source, String statement, String[] rules, String parentSchema) {
-            this.source = source;
-            this.statement = statement;
-            this.rules = rules;
-            this.parentSchema = parentSchema;
-        }
-
-        @Override
-        public AbstractSyntaxTree visitStatement(zkStrata.StatementContext ctx) {
-            SubjectVisitor subjectVisitor = new SubjectVisitor(parentSchema);
-            List<Subject> subjects = ctx.subjects().subject()
-                    .stream()
-                    .map(subject -> subject.accept(subjectVisitor))
-                    .flatMap(List::stream)
-                    .collect(Collectors.toList());
-
-            ClauseVisitor clauseVisitor = new ClauseVisitor(this.rules);
-            Node predicate = ctx.predicate().clause().accept(clauseVisitor);
-
-            return new AbstractSyntaxTree(source, statement, subjects, predicate);
-        }
     }
 
     private static class ClauseVisitor extends zkStrataBaseVisitor<Node> {
@@ -259,6 +245,31 @@ public class ParseTreeVisitor {
             Subject instance = new Subject(schema, publicAlias, false);
 
             return List.of(witness, instance);
+        }
+    }
+
+    public class StatementVisitor extends zkStrataBaseVisitor<AbstractSyntaxTree> {
+        private String statement;
+        private String[] rules;
+
+        StatementVisitor(String statement, String[] rules) {
+            this.statement = statement;
+            this.rules = rules;
+        }
+
+        @Override
+        public AbstractSyntaxTree visitStatement(zkStrata.StatementContext ctx) {
+            SubjectVisitor subjectVisitor = new SubjectVisitor(parentSchema);
+            List<Subject> subjects = ctx.subjects().subject()
+                    .stream()
+                    .map(subject -> subject.accept(subjectVisitor))
+                    .flatMap(List::stream)
+                    .collect(Collectors.toList());
+
+            ClauseVisitor clauseVisitor = new ClauseVisitor(this.rules);
+            Node rootPredicate = ctx.predicate().clause().accept(clauseVisitor);
+
+            return new AbstractSyntaxTree(source, statement, subjects, rootPredicate);
         }
     }
 }

@@ -32,13 +32,19 @@ public class CodeGenerator {
         witnessFileName = name + WITNESS_FILE_EXT;
     }
 
-    public void run(Proposition proposition, boolean writeWitnesses) {
-        LOGGER.debug("Starting target code generation");
+    public void generateProverTarget(Proposition proposition) {
+        LOGGER.debug("Starting prover target code generation");
 
         generateGadgetsFile(proposition);
         generateInstanceFile(instanceVariables);
-        if (writeWitnesses)
-            generateWitnessFile(witnessVariables);
+        generateWitnessFile(witnessVariables);
+    }
+
+    public void generateVerifierTarget(Proposition proposition) {
+        LOGGER.debug("Starting verifier target code generation");
+
+        generateGadgetsFile(proposition);
+        generateInstanceFile(instanceVariables);
     }
 
     /**
@@ -49,7 +55,7 @@ public class CodeGenerator {
      */
     private void generateGadgetsFile(Proposition proposition) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(gadgetsFileName))) {
-            LOGGER.debug("Writing to {}", gadgetsFileName);
+            LOGGER.debug("Writing gadgets to {}", gadgetsFileName);
 
             List<TargetFormat> target = proposition.toTargetFormat();
 
@@ -60,10 +66,10 @@ public class CodeGenerator {
                 writer.write(line);
                 writer.newLine();
 
-                LOGGER.debug("Generated line: {}", line);
+                LOGGER.debug("Generated gadget: {}", line);
             }
         } catch (IOException e) {
-            throw new InternalCompilerException("Error while writing to {}.", gadgetsFileName);
+            throw new InternalCompilerException("Error while writing gadgets to {}.", gadgetsFileName);
         }
     }
 
@@ -108,16 +114,16 @@ public class CodeGenerator {
      */
     private void generateInstanceFile(Map<InstanceVariable, String> variables) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(instanceFileName))) {
-            LOGGER.debug("Writing to {}", instanceFileName);
+            LOGGER.debug("Writing instance data to {}", instanceFileName);
 
             for (Map.Entry<InstanceVariable, String> entry : variables.entrySet()) {
                 String line = String.format("%s = 0x%s", entry.getValue(), entry.getKey().getValue().toHex());
                 writer.write(line);
                 writer.newLine();
-                LOGGER.debug("Generated line: {}", line);
+                LOGGER.debug("Generated instance data: {}", line);
             }
         } catch (IOException e) {
-            throw new InternalCompilerException(e, "Error while writing to {}.", instanceFileName);
+            throw new InternalCompilerException(e, "Error while writing instance data to {}.", instanceFileName);
         }
     }
 
@@ -129,16 +135,16 @@ public class CodeGenerator {
      */
     private void generateWitnessFile(Map<WitnessVariable, String> variables) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(witnessFileName))) {
-            LOGGER.debug("Writing to {}", witnessFileName);
+            LOGGER.debug("Writing witness data to {}", witnessFileName);
 
             for (Map.Entry<WitnessVariable, String> entry : variables.entrySet()) {
                 String line = String.format("%s = 0x%s", entry.getValue(), entry.getKey().getValue().toHex());
                 writer.write(line);
                 writer.newLine();
-                LOGGER.debug("Generated line: {}", line);
+                LOGGER.debug("Generated witness data: {}", line);
             }
         } catch (IOException e) {
-            throw new InternalCompilerException(e, "Error while writing to {}.", witnessFileName);
+            throw new InternalCompilerException(e, "Error while writing witness data to {}.", witnessFileName);
         }
     }
 }

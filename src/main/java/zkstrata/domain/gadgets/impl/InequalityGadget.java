@@ -57,7 +57,6 @@ public class InequalityGadget extends AbstractGadget {
     public static Optional<Proposition> removeInstanceUnequalsInstance(InequalityGadget iq) {
         if (isInstanceVariable(iq.getLeft()) && isInstanceVariable(iq.getRight())
                 && !iq.getLeft().getValue().equals(iq.getRight().getValue())) {
-            // TODO: maybe add statements information
             LOGGER.info("Removed inequality predicate of two instance variables.");
             return Optional.of(Proposition.trueProposition());
         }

@@ -16,7 +16,7 @@ public class ConjunctionTest {
                     .withStatement("or_conjunction")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            Compiler.run(args);
+            new Compiler(args).run();
         });
     }
 
@@ -27,7 +27,7 @@ public class ConjunctionTest {
                     .withStatement("or_conjunction_contradiction")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            Compiler.run(args);
+            new Compiler(args).run();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
@@ -39,7 +39,7 @@ public class ConjunctionTest {
                     .withStatement("and_conjunction")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            Compiler.run(args);
+            new Compiler(args).run();
         });
     }
 
@@ -50,7 +50,7 @@ public class ConjunctionTest {
                     .withStatement("and_conjunction_contradiction")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            Compiler.run(args);
+            new Compiler(args).run();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }

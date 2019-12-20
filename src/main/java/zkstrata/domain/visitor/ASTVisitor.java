@@ -46,10 +46,14 @@ public class ASTVisitor {
 
     private AbstractSyntaxTree ast;
 
-    public ASTVisitor(Arguments args, String parentAlias) {
-        this.witnessData = args.getWitnessData();
-        this.instanceData = args.getInstanceData();
-        this.schemas = args.getSchemas();
+    public ASTVisitor(Arguments.SubjectData subjectData) {
+        this(subjectData, null);
+    }
+
+    public ASTVisitor(Arguments.SubjectData subjectData, String parentAlias) {
+        this.witnessData = subjectData.getWitnessData();
+        this.instanceData = subjectData.getInstanceData();
+        this.schemas = subjectData.getSchemas();
         this.subjects = new MapListener<>(new HashMap<>());
         this.parentAlias = parentAlias;
     }
@@ -72,9 +76,8 @@ public class ASTVisitor {
 
         this.checkUnusedSubjects();
 
-        // TODO
-        /*LOGGER.debug("Finishing visit of AST for {}: Found {} gadgets over {} subjects",
-                ast.getSource(), gadgets.size(), subjects.getUsedMap().size());*/
+        LOGGER.debug("Finishing visit of AST for {}", ast.getSource());
+
         return new Statement(subjects.getUsedMap(), predicate);
     }
 

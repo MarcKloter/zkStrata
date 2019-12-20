@@ -3,6 +3,7 @@ package zkstrata.domain;
 import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -35,11 +36,12 @@ public class Statement {
     }
 
     /**
-     * Adds the given proposition to the {@code claim} of this statement using an {@link AndConjunction}.
+     * Adds the given validation rules to the {@code claim} of this statement using an {@link AndConjunction}.
      *
-     * @param proposition {@link Proposition} to add
+     * @param validationRules {@link Statement} to add
      */
-    public void addProposition(Proposition proposition) {
-        this.claim = this.claim.combine(proposition);
+    public void setValidationRules(List<Statement> validationRules) {
+        for (Statement validationRule : validationRules)
+            this.claim = this.claim.combine(validationRule.getClaim());
     }
 }

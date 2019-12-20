@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
-import static zkstrata.compiler.Arguments.Statement;
+import static zkstrata.compiler.Arguments.*;
 
 public class CommandLineInterface {
     private Options options;
@@ -84,11 +84,9 @@ public class CommandLineInterface {
         List<Statement> premises = getPremises(cmd);
         setVerbosity(cmd);
 
-        HashMap<String, ValueAccessor> witnessFiles = getWitnessData(cmd);
-        HashMap<String, Schema> schemaFiles = getSchemas(cmd);
-        HashMap<String, ValueAccessor> instanceFiles = getInstanceData(cmd);
+        SubjectData subjectData = new SubjectData(getWitnessData(cmd), getInstanceData(cmd), getSchemas(cmd));
 
-        return new Arguments(name, statement, premises, witnessFiles, instanceFiles, schemaFiles);
+        return new Arguments(name, statement, premises, subjectData);
     }
 
     /**

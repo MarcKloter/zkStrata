@@ -16,7 +16,7 @@ public class Starter {
         try {
             CommandLineInterface cli = new CommandLineInterface(new PrintWriter(System.out));
             Arguments arguments = cli.parse(args);
-            Compiler.run(arguments);
+            new Compiler(arguments).run();
         } catch (SpecialOptionException e) {
             System.exit(1);
         } catch (Exception e) {

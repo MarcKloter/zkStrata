@@ -21,7 +21,7 @@ public class PremisesTest {
                     .withWitness("pass", "passport")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            Compiler.run(args);
+            new Compiler(args).run();
         });
     }
 
@@ -35,7 +35,7 @@ public class PremisesTest {
                     .withInstance("pass", "passport.metadata")
                     .withInstance("pass_i", "passport")
                     .build();
-            Compiler.run(args);
+            new Compiler(args).run();
         });
 
         assertTrue(exception.getMessage().toLowerCase().contains("simultaneously"));
@@ -49,7 +49,7 @@ public class PremisesTest {
                     .withPremise("default_contradiction")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            Compiler.run(args);
+            new Compiler(args).run();
         });
 
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));

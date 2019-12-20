@@ -25,27 +25,35 @@ import static zkstrata.utils.CombinatoricsUtils.getCombinations;
 
 public class Optimizer {
     private static final Logger LOGGER = LogManager.getRootLogger();
-    private static final Set<Class<? extends Gadget>> GADGET_TYPES = ReflectionHelper.getAllGadgets();
-    private static final Set<Class<? extends Conjunction>> CONJUNCTION_TYPES = ReflectionHelper.getAllConjunctions();
-    private static final List<SubstitutionRule> SUBSTITUTION_RULES = prepareSubstitutionRules();
 
-    private Optimizer() {
-        throw new IllegalStateException("Utility class");
+    private final Set<Class<? extends Gadget>> gadgetTypes;
+    private final Set<Class<? extends Conjunction>> conjunctionTypes;
+    private final List<SubstitutionRule> substitutionRules;
+
+    private Proposition premises;
+
+    /**
+     * @param premises {@link Proposition} of premises that were proven before
+     */
+    public Optimizer(Proposition premises) {
+        this.premises = premises;
+        this.gadgetTypes = ReflectionHelper.getAllGadgets();
+        this.conjunctionTypes = ReflectionHelper.getAllConjunctions();
+        this.substitutionRules = prepareSubstitutionRules();
     }
 
     /**
-     * Applies methods annotated as {@link Substitution} on the given {@code claim} using the provided {@code premises}
-     * as assumptions to remove implications with.
+     * Applies methods annotated as {@link Substitution} on the given {@code claim} using the known
+     * {@link Optimizer#premises} as assumptions to remove implications with.
      *
-     * @param claim    {@link Proposition} to optimize
-     * @param premises {@link Proposition} of premises that were proven before
-     * @return a semantically equal {@link Proposition} to the union of {@code claim} and {@code premises}, which has
-     * the same or less {@link Proposition#getCostEstimate()}.
+     * @param claim {@link Proposition} to optimize
+     * @return a semantically equal {@link Proposition} to the union of {@code claim} and {@link Optimizer#premises},
+     * which has the same or less {@link Proposition#getCostEstimate()}.
      */
-    public static Proposition process(Proposition claim, Proposition premises) {
+    public Proposition process(Proposition claim) {
         LOGGER.debug("Starting optimization");
 
-        Set<Inference> baseAssumptions = determineBaseAssumptions(premises);
+        Set<Inference> baseAssumptions = determineBaseAssumptions();
         Proposition optimizedClaim = dispatch(claim, baseAssumptions, baseAssumptions);
 
         LOGGER.debug("Finishing optimization");
@@ -54,17 +62,16 @@ public class Optimizer {
     }
 
     /**
-     * Determines all {@link Gadget} that are always true in the given {@code premises}.
+     * Determines all {@link Gadget} that are always true in the known {@link Optimizer#premises}.
      * <p>
      * This is done by taking the intersection of the {@link Proposition#getEvaluationPaths()} (all distinct gadget
      * combinations that can be shown to evaluate to true to prove a statement), which is the set of {@link Gadget}
      * that must (at least) always be true. All inferences that can be drawn from this set will be returned as the
      * base assumption.
      *
-     * @param premises {@link Proposition} to derive the base assumptions from
      * @return set of {@link Inference} that can be assumed as proven
      */
-    private static Set<Inference> determineBaseAssumptions(Proposition premises) {
+    private Set<Inference> determineBaseAssumptions() {
         List<List<Gadget>> evaluationPaths = premises.getEvaluationPaths();
         Set<Gadget> commonGadgets = CombinatoricsUtils.computeIntersection(evaluationPaths);
 
@@ -79,7 +86,7 @@ public class Optimizer {
      * @param contextAssumptions set of {@link Inference} which are true for {@link Conjunction}
      * @return a semantically identical {@link Proposition} to the given {@code proposition} with equal or less cost
      */
-    private static Proposition dispatch(Proposition proposition, Set<Inference> baseAssumptions, Set<Inference> contextAssumptions) {
+    private Proposition dispatch(Proposition proposition, Set<Inference> baseAssumptions, Set<Inference> contextAssumptions) {
         if (proposition instanceof Conjunction)
             return processConjunction((Conjunction) proposition, contextAssumptions);
 
@@ -96,7 +103,7 @@ public class Optimizer {
      * @param baseAssumptions set of {@link Inference} that are assumed to be true within this conjunction
      * @return a semantically identical {@link Proposition} to the given {@code conjunction} with equal or less cost
      */
-    private static Proposition processConjunction(Conjunction conjunction, Set<Inference> baseAssumptions) {
+    private Proposition processConjunction(Conjunction conjunction, Set<Inference> baseAssumptions) {
         Set<Inference> contextAssumptions = determineConjunctionAssumptions(conjunction, baseAssumptions);
 
         List<Proposition> parts = new ArrayList<>();
@@ -125,7 +132,7 @@ public class Optimizer {
      * @param assumptions set of {@link Inference} of inferences that are already assumed for this conjunction
      * @return set of {@link Inference} that can be assumed for the children of the provided {@code conjunction}
      */
-    private static Set<Inference> determineConjunctionAssumptions(Conjunction conjunction, Set<Inference> assumptions) {
+    private Set<Inference> determineConjunctionAssumptions(Conjunction conjunction, Set<Inference> assumptions) {
         if (conjunction instanceof AndConjunction) {
             List<Gadget> targets = conjunction.getParts().stream()
                     .map(proposition -> (proposition instanceof Gadget) ? (Gadget) proposition : null)
@@ -147,7 +154,7 @@ public class Optimizer {
      * @param conjunctionType type of the parent conjunction
      * @return list of {@link Proposition} containing the collapsed representation of the given {@code proposition}
      */
-    private static List<Proposition> collapse(Proposition proposition, Class<? extends Conjunction> conjunctionType) {
+    private List<Proposition> collapse(Proposition proposition, Class<? extends Conjunction> conjunctionType) {
         if (proposition instanceof Conjunction && conjunctionType.isInstance(proposition)) {
             return ((Conjunction) proposition).getParts();
         } else
@@ -161,7 +168,7 @@ public class Optimizer {
      * @param context set of {@link Inference} of assumptions as the context of the target
      * @return a semantically identical {@link Proposition} to the given {@code target} with equal or less cost
      */
-    private static Proposition runSubstitutionRules(Proposition target, Set<Inference> context) {
+    private Proposition runSubstitutionRules(Proposition target, Set<Inference> context) {
         Proposition state = target;
         Optional<Substitute> improvement;
         do {
@@ -185,7 +192,7 @@ public class Optimizer {
      * @param context set of {@link Inference} of assumptions as the context of the targets
      * @return a semantically identical {@link Proposition} to the given {@code target} with equal or less cost
      */
-    private static List<Proposition> runSubstitutionRules(List<Proposition> targets, Set<Inference> context) {
+    private List<Proposition> runSubstitutionRules(List<Proposition> targets, Set<Inference> context) {
         // create local assumptions between targets
         List<Proposition> state = new ArrayList<>(targets);
         Optional<Substitute> improvement;
@@ -214,9 +221,9 @@ public class Optimizer {
      * @param filterContext boolean flag whether to allow duplicate implications from context
      * @return {@link Substitute} object that, when applied, reduces the cost of {@code targets} by >= 0
      */
-    private static Optional<Substitute> pickSubstitute(List<Proposition> targets, Set<Inference> context, boolean filterContext) {
+    private Optional<Substitute> pickSubstitute(List<Proposition> targets, Set<Inference> context, boolean filterContext) {
         List<Substitute> substitutes = new ArrayList<>();
-        for (SubstitutionRule rule : SUBSTITUTION_RULES) {
+        for (SubstitutionRule rule : substitutionRules) {
             for (Substitute.Arguments arguments : getSatisfyingArgs(rule, targets, context, filterContext)) {
                 invokeSubstitutionRule(rule.getMethod(), arguments)
                         .ifPresent(proposition -> {
@@ -247,7 +254,7 @@ public class Optimizer {
      * @param filterContext flag whether to allow the replacement of mutual inferences
      * @return list of {@link Substitute.Arguments} that satisfy the signature of the given {@link SubstitutionRule}
      */
-    private static List<Substitute.Arguments> getSatisfyingArgs(SubstitutionRule rule, List<Proposition> targets, Set<Inference> context, boolean filterContext) {
+    private List<Substitute.Arguments> getSatisfyingArgs(SubstitutionRule rule, List<Proposition> targets, Set<Inference> context, boolean filterContext) {
         List<Substitute.Arguments> satisfyingArguments = new ArrayList<>();
 
         // check whether this substitution rule can be satisfied using the provided targets
@@ -284,7 +291,7 @@ public class Optimizer {
      * @param doFilter flag whether to filter mutual inferences
      * @return set of conclusions ({@link Proposition}) to use as context
      */
-    private static Set<Proposition> filterTargetContext(Set<Inference> context, List<Proposition> targets, boolean doFilter) {
+    private Set<Proposition> filterTargetContext(Set<Inference> context, List<Proposition> targets, boolean doFilter) {
         return context.stream()
                 .filter(inference -> !doFilter || inference.getAssumptions().stream().noneMatch(targets::contains))
                 .map(Inference::getConclusion)
@@ -298,7 +305,7 @@ public class Optimizer {
      * @param arguments        arguments to use for method invocation
      * @return {@link Optional} of {@link Proposition} returned by the invoked method
      */
-    private static Optional<Proposition> invokeSubstitutionRule(Method substitutionRule, Substitute.Arguments arguments) {
+    private Optional<Proposition> invokeSubstitutionRule(Method substitutionRule, Substitute.Arguments arguments) {
         if (!ReflectionHelper.checkReturnType(substitutionRule, Optional.class, Proposition.class))
             throw new InternalCompilerException("Invalid implementation of @Substitution annotated method %s in %s. "
                     + "Return type must be Optional<Proposition>.", substitutionRule.getName(), substitutionRule.getDeclaringClass());
@@ -322,10 +329,9 @@ public class Optimizer {
      *
      * @return list of {@link SubstitutionRule}
      */
-    private static List<SubstitutionRule> prepareSubstitutionRules() {
-        Set<Method> substitutionRules = ReflectionHelper.getMethodsAnnotatedWith(Substitution.class);
-        return substitutionRules.stream()
-                .map(Optimizer::processSubstitutionRule)
+    private List<SubstitutionRule> prepareSubstitutionRules() {
+        return ReflectionHelper.getMethodsAnnotatedWith(Substitution.class).stream()
+                .map(this::processSubstitutionRule)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
@@ -337,14 +343,14 @@ public class Optimizer {
      * @param method {@link Method} to process
      * @return list of all {@link SubstitutionRule} that could be derived from the given {@code method}
      */
-    private static List<SubstitutionRule> processSubstitutionRule(Method method) {
+    private List<SubstitutionRule> processSubstitutionRule(Method method) {
         Substitution annotation = method.getAnnotation(Substitution.class);
         List<Class<? extends Proposition>> targetTypes = Arrays.asList(annotation.target());
         List<Class<? extends Proposition>> contextTypes = Arrays.asList(annotation.context());
 
         SubstitutionRule rule = new SubstitutionRule(method, targetTypes, contextTypes);
         return replaceGadgetWildcard(rule).stream()
-                .map(Optimizer::replaceConjunctionWildcard)
+                .map(this::replaceConjunctionWildcard)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }
@@ -357,9 +363,9 @@ public class Optimizer {
      * @return list of {@link SubstitutionRule}, where each object represents a wildcard replacement or the given
      * {@code rule} if the wildcard is not present
      */
-    private static List<SubstitutionRule> replaceGadgetWildcard(SubstitutionRule rule) {
+    private List<SubstitutionRule> replaceGadgetWildcard(SubstitutionRule rule) {
         if (rule.getTargetTypes().contains(Gadget.class) || rule.getContextTypes().contains(Gadget.class))
-            return GADGET_TYPES.stream()
+            return gadgetTypes.stream()
                     .map(gadget -> createPermutation(rule, Gadget.class, gadget))
                     .collect(Collectors.toList());
         else
@@ -374,9 +380,9 @@ public class Optimizer {
      * @return list of {@link SubstitutionRule}, where each object represents a wildcard replacement or the given
      * {@code rule} if the wildcard is not present
      */
-    private static List<SubstitutionRule> replaceConjunctionWildcard(SubstitutionRule rule) {
+    private List<SubstitutionRule> replaceConjunctionWildcard(SubstitutionRule rule) {
         if (rule.getTargetTypes().contains(Conjunction.class) || rule.getContextTypes().contains(Conjunction.class))
-            return CONJUNCTION_TYPES.stream()
+            return conjunctionTypes.stream()
                     .map(conjunction -> createPermutation(rule, Conjunction.class, conjunction))
                     .collect(Collectors.toList());
         else
@@ -392,7 +398,7 @@ public class Optimizer {
      * @param replacement type to replace with
      * @return permutation of {@code rule} with all {@code wildcard} replaced by {@code replacement}
      */
-    private static SubstitutionRule createPermutation(
+    private SubstitutionRule createPermutation(
             SubstitutionRule rule,
             Class<? extends Proposition> wildcard,
             Class<? extends Proposition> replacement
@@ -414,7 +420,7 @@ public class Optimizer {
      * @param replacement object to replace by
      * @return {@code replacement} if the {@code target} matches the {@code wildcard}, {@code target} otherwise
      */
-    private static <T> T replaceWildcard(T target, T wildcard, T replacement) {
+    private <T> T replaceWildcard(T target, T wildcard, T replacement) {
         return target == wildcard ? replacement : target;
     }
 

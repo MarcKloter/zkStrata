@@ -25,15 +25,16 @@ import java.util.Map;
 public class ExposureAnalyzer {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
-    private ExposureAnalyzer() {
-        throw new IllegalStateException("Utility class");
+    private Map<String, ValueAccessor> witnessData;
+    private Map<String, ValueAccessor> instanceData;
+
+    public ExposureAnalyzer(Arguments.SubjectData subjectData) {
+        this.witnessData = subjectData.getWitnessData();
+        this.instanceData = subjectData.getInstanceData();
     }
 
-    public static void process(Statement statement, Arguments args) {
-        Map<String, ValueAccessor> witnessData = args.getWitnessData();
-        Map<String, ValueAccessor> instanceData = args.getInstanceData();
-
-        List<String> susceptibleData = getSusceptibleData(witnessData, instanceData);
+    public void process(Statement statement) {
+        List<String> susceptibleData = getSusceptibleData();
 
         if (susceptibleData.isEmpty())
             return;
@@ -44,7 +45,7 @@ public class ExposureAnalyzer {
 
         for (Gadget gadget : gadgets)
             for (Variable variable : gadget.getVariables())
-                markVariable(variable, susceptibleData, checkList, witnessData, instanceData);
+                markVariable(variable, susceptibleData, checkList);
     }
 
     /**
@@ -54,16 +55,8 @@ public class ExposureAnalyzer {
      * @param variable        {@link Variable} to check
      * @param susceptibleData {@link List} of aliases used as confidential and public data source at the same time
      * @param checkList       {@link Map} of source to {@link VariableExposure} objects
-     * @param witnessData     {@link Map} of source to {@link ValueAccessor} of confidential data
-     * @param instanceData    {@link Map} of source to {@link ValueAccessor} of public data
      */
-    private static void markVariable(
-            Variable variable,
-            List<String> susceptibleData,
-            Map<String, VariableExposure> checkList,
-            Map<String, ValueAccessor> witnessData,
-            Map<String, ValueAccessor> instanceData
-    ) {
+    private void markVariable(Variable variable, List<String> susceptibleData, Map<String, VariableExposure> checkList) {
         if (variable.getReference() != null) {
             String alias = variable.getReference().getSubject();
             Selector selector = variable.getReference().getSelector();
@@ -88,17 +81,13 @@ public class ExposureAnalyzer {
     }
 
     /**
-     * Checks the given lists of witness and instance sources for overlap (sources that are being used as confidential
-     * and public data source at the same time).
+     * Checks the known lists of witness {@link ExposureAnalyzer#witnessData} and instance
+     * {@link ExposureAnalyzer#instanceData} sources for overlap (sources that are being used to retrieve confidential
+     * and public data from at the same time).
      *
-     * @param witnessData  {@link Map} of source to {@link ValueAccessor} of confidential data
-     * @param instanceData {@link Map} of source to {@link ValueAccessor} of public data
      * @return {@link List} of sources used as confidential and public data source at the same time
      */
-    private static List<String> getSusceptibleData(
-            Map<String, ValueAccessor> witnessData,
-            Map<String, ValueAccessor> instanceData
-    ) {
+    private List<String> getSusceptibleData() {
         List<String> susceptibleData = new ArrayList<>();
 
         for (Map.Entry<String, ValueAccessor> witness : witnessData.entrySet()) {

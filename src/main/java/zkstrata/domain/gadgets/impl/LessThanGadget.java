@@ -72,7 +72,6 @@ public class LessThanGadget extends AbstractGadget {
             BigInteger rightValue = (BigInteger) ((InstanceVariable) right).getValue().getValue();
 
             if (leftValue.compareTo(rightValue) < 0) {
-                // TODO: maybe add statements information
                 LOGGER.info("Removed a witness comparison of two exposed witnesses (tautology).");
                 return Optional.of(Proposition.trueProposition());
             }

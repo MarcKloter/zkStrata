@@ -60,7 +60,6 @@ public class EqualityGadget extends AbstractGadget {
     @Substitution(target = {EqualityGadget.class})
     public static Optional<Proposition> removeWitnessEqualsSelf(EqualityGadget eq) {
         if (isWitnessVariable(eq.getLeft()) && isWitnessVariable(eq.getRight()) && eq.getLeft().equals(eq.getRight())) {
-            // TODO: maybe add statements information
             LOGGER.info("Removed equality predicate of single witness variable.");
             return Optional.of(Proposition.trueProposition());
         }
@@ -72,7 +71,6 @@ public class EqualityGadget extends AbstractGadget {
     public static Optional<Proposition> removeInstanceEqualsInstance(EqualityGadget eq) {
         if (isInstanceVariable(eq.getLeft()) && isInstanceVariable(eq.getRight())
                 && eq.getLeft().getValue().equals(eq.getRight().getValue())) {
-            // TODO: maybe add statements information
             LOGGER.info("Removed equality predicate of two instance variables.");
             return Optional.of(Proposition.trueProposition());
         }
