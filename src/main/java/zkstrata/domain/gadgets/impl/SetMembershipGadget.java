@@ -2,6 +2,7 @@ package zkstrata.domain.gadgets.impl;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import zkstrata.analysis.Contradiction;
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Any;
@@ -10,9 +11,11 @@ import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
 import zkstrata.domain.visitor.AstElement;
 import zkstrata.domain.gadgets.Type;
+import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.SetMembership;
 import zkstrata.utils.Constants;
+import zkstrata.utils.GadgetUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,10 +43,30 @@ public class SetMembershipGadget extends AbstractGadget {
         this.performChecks();
     }
 
+    /**
+     * Check whether there is an equality predicate claimed on a set of instance variables that contradict.
+     *
+     * @param sm {@link SetMembershipGadget} to check
+     * @param eq {@link EqualityGadget} to check
+     */
+    @Contradiction(propositions = {SetMembershipGadget.class, EqualityGadget.class})
+    public static void checkInstanceEqualityContradiction(SetMembershipGadget sm, EqualityGadget eq) {
+        if (GadgetUtils.isWitnessVariable(sm.getMember())
+                && sm.getSet().stream().allMatch((GadgetUtils::isInstanceVariable))) {
+            Optional<Variable> equal = EqualityGadget.getEqual(eq, (WitnessVariable) sm.getMember());
+            if (equal.isPresent()
+                    && GadgetUtils.isInstanceVariable(equal.get())
+                    && !sm.getSet().contains(equal.get())) {
+                List<Variable> variables = new ArrayList<>(sm.getSet());
+                variables.add(equal.get());
+                throw new CompileTimeException("Contradiction.", variables);
+            }
+        }
+    }
+
     @Substitution(target = {SetMembershipGadget.class})
     public static Optional<Proposition> removeSelfContained(SetMembershipGadget sm) {
         if (sm.getSet().contains(sm.getMember())) {
-            // TODO: maybe add statements information
             LOGGER.info("Removed set membership predicate where the member is part of the set declaration (tautology).");
             return Optional.of(Proposition.trueProposition());
         }
@@ -56,7 +79,6 @@ public class SetMembershipGadget extends AbstractGadget {
         if (isWitnessVariable(sm.getMember())) {
             Optional<Variable> equal = EqualityGadget.getEqual(eq, (WitnessVariable) sm.getMember());
             if (equal.isPresent() && sm.getSet().contains(equal.get())) {
-                // TODO: maybe add statements information
                 LOGGER.info("Removed set membership predicate where the member is part of the set declaration (tautology).");
                 return Optional.of(Proposition.trueProposition());
             }

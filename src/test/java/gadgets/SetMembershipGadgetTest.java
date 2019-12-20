@@ -8,6 +8,7 @@ import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.impl.EqualityGadget;
 import zkstrata.domain.gadgets.impl.SetMembershipGadget;
+import zkstrata.exceptions.CompileTimeException;
 
 import java.math.BigInteger;
 import java.util.Optional;
@@ -82,5 +83,52 @@ public class SetMembershipGadgetTest {
         SetMembershipGadget setMembershipGadget = new SetMembershipGadget(WITNESS_VAR_1, SET_3);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_53);
         assertEquals(Optional.empty(), SetMembershipGadget.removeEqualityContained(setMembershipGadget, equalityGadget));
+    }
+
+    @Test
+    void Instance_Equality_Contradiction() {
+        SetMembershipGadget setMembershipGadget = new SetMembershipGadget(WITNESS_VAR_1, SET_3);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_53);
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+                SetMembershipGadget.checkInstanceEqualityContradiction(setMembershipGadget, equalityGadget)
+        );
+
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
+    }
+
+    @Test
+    void Instance_Equality_No_Contradiction_1() {
+        SetMembershipGadget setMembershipGadget = new SetMembershipGadget(WITNESS_VAR_1, SET_3);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_53);
+        assertDoesNotThrow(() ->
+                SetMembershipGadget.checkInstanceEqualityContradiction(setMembershipGadget, equalityGadget)
+        );
+    }
+
+    @Test
+    void Instance_Equality_No_Contradiction_2() {
+        SetMembershipGadget setMembershipGadget = new SetMembershipGadget(WITNESS_VAR_1, SET_2);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_53);
+        assertDoesNotThrow(() ->
+                SetMembershipGadget.checkInstanceEqualityContradiction(setMembershipGadget, equalityGadget)
+        );
+    }
+
+    @Test
+    void Instance_Equality_No_Contradiction_3() {
+        SetMembershipGadget setMembershipGadget = new SetMembershipGadget(WITNESS_VAR_1, SET_3);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        assertDoesNotThrow(() ->
+                SetMembershipGadget.checkInstanceEqualityContradiction(setMembershipGadget, equalityGadget)
+        );
+    }
+
+    @Test
+    void Instance_Equality_No_Contradiction_4() {
+        SetMembershipGadget setMembershipGadget = new SetMembershipGadget(WITNESS_VAR_1, SET_3);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        assertDoesNotThrow(() ->
+                SetMembershipGadget.checkInstanceEqualityContradiction(setMembershipGadget, equalityGadget)
+        );
     }
 }
