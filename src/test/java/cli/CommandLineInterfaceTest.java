@@ -43,7 +43,6 @@ public class CommandLineInterfaceTest {
         };
         CommandLineInterface cli = new CommandLineInterface(new PrintWriter(System.out));
         Arguments arguments = cli.parse(command);
-        assertEquals(NAME, arguments.getName());
         assertEquals(STATEMENT_FILE, arguments.getStatement().getSource());
         assertNotNull(arguments.getStatement().getValue());
         assertEquals(JsonAccessor.class, arguments.getSubjectData().getInstanceData().get(INSTANCE_ALIAS).getClass());

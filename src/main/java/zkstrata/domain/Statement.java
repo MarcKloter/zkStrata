@@ -1,9 +1,7 @@
 package zkstrata.domain;
 
-import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
 
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -13,10 +11,19 @@ public class Statement {
     private Map<String, StructuredData> subjects;
     private Proposition claim;
     private Proposition premises;
+    private Proposition validationRules;
+
+    public Statement(Proposition claim, Proposition premises, Proposition validationRules) {
+        this.claim = claim;
+        this.premises = premises;
+        this.validationRules = validationRules;
+    }
 
     public Statement(Map<String, StructuredData> subjects, Proposition claim) {
         this.subjects = subjects;
         this.claim = claim;
+        this.premises = null;
+        this.validationRules = null;
     }
 
     public Map<String, StructuredData> getSubjects() {
@@ -27,21 +34,23 @@ public class Statement {
         return claim;
     }
 
+    public void setClaim(Proposition claim) {
+        this.claim = claim;
+    }
+
     public Proposition getPremises() {
         return premises;
     }
 
-    public void setPremises(Proposition premises) {
-        this.premises = premises;
+    public Proposition getValidationRules() {
+        return validationRules;
     }
 
-    /**
-     * Adds the given validation rules to the {@code claim} of this statement using an {@link AndConjunction}.
-     *
-     * @param validationRules {@link Statement} to add
-     */
-    public void setValidationRules(List<Statement> validationRules) {
-        for (Statement validationRule : validationRules)
-            this.claim = this.claim.combine(validationRule.getClaim());
+    public void setValidationRules(Proposition validationRules) {
+        this.validationRules = this.validationRules == null ? validationRules : this.validationRules.combine(validationRules);
+    }
+
+    public void addPremises(Proposition premises) {
+        this.premises = this.premises == null ? premises : this.premises.combine(premises);
     }
 }

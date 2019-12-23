@@ -54,7 +54,7 @@ public class AndConjunction extends AbstractConjunction {
     @Override
     public List<Proposition> getParts() {
         return super.getParts().stream()
-                .filter(Predicate.not(TrueProposition::isTrueProposition))
+                .filter(Predicate.not(Proposition::isTrueProposition))
                 .collect(Collectors.toList());
     }
 

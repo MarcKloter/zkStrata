@@ -2,6 +2,7 @@ package optimizer;
 
 import org.junit.jupiter.api.Test;
 import zkstrata.domain.Proposition;
+import zkstrata.domain.Statement;
 import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.conjunctions.OrConjunction;
 import zkstrata.domain.data.types.Literal;
@@ -16,6 +17,7 @@ import zkstrata.optimizer.Optimizer;
 import java.math.BigInteger;
 import java.util.List;
 
+import static zkstrata.domain.Proposition.trueProposition;
 import static zkstrata.utils.TestHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,7 +52,7 @@ public class OptimizerTest {
                         new AndConjunction(List.of(EQUALITY_GADGET_1, INEQUALITY_GADGET_1))
                 ))
         ));
-        Proposition result = new Optimizer(Proposition.trueProposition()).process(claim);
+        Proposition result = new Optimizer(new Statement(claim, trueProposition(), trueProposition())).process();
         Proposition expected = new AndConjunction(List.of(
                 EQUALITY_GADGET_1,
                 new OrConjunction(List.of(
@@ -77,7 +79,7 @@ public class OptimizerTest {
                         new AndConjunction(List.of(EQUALITY_GADGET_1, INEQUALITY_GADGET_1))
                 ))
         ));
-        Proposition result = new Optimizer(Proposition.trueProposition()).process(claim);
+        Proposition result = new Optimizer(new Statement(claim, trueProposition(), trueProposition())).process();
         Proposition expected = new AndConjunction(List.of(
                 EQUALITY_GADGET_1,
                 new OrConjunction(List.of(
@@ -100,7 +102,7 @@ public class OptimizerTest {
                 EQUALITY_GADGET_3,
                 BOUNDS_CHECK_GADGET_2
         ));
-        Proposition result = new Optimizer(Proposition.trueProposition()).process(claim);
+        Proposition result = new Optimizer(new Statement(claim, trueProposition(), trueProposition())).process();
         Proposition expected = new AndConjunction(List.of(
                 EQUALITY_GADGET_1,
                 EQUALITY_GADGET_2,
@@ -122,7 +124,7 @@ public class OptimizerTest {
                 )),
                 EQUALITY_GADGET_1
         ));
-        Proposition result = new Optimizer(Proposition.trueProposition()).process(claim);
+        Proposition result = new Optimizer(new Statement(claim, trueProposition(), trueProposition())).process();
         assertEquals(EQUALITY_GADGET_1, result);
     }
 
@@ -137,7 +139,7 @@ public class OptimizerTest {
                 new AndConjunction(List.of(EQUALITY_GADGET_1, BOUNDS_CHECK_GADGET_1, INEQUALITY_GADGET_1)),
                 new AndConjunction(List.of(BOUNDS_CHECK_GADGET_1, INEQUALITY_GADGET_1))
         ));
-        Proposition result = new Optimizer(Proposition.trueProposition()).process(claim);
+        Proposition result = new Optimizer(new Statement(claim, trueProposition(), trueProposition())).process();
         Proposition expected = new AndConjunction(List.of(BOUNDS_CHECK_GADGET_1, INEQUALITY_GADGET_1));
         assertEquals(expected, result);
     }
@@ -149,7 +151,7 @@ public class OptimizerTest {
     void Optimization_Test_6() {
         Proposition premise = new AndConjunction(List.of(BOUNDS_CHECK_GADGET_1, EQUALITY_GADGET_2, EQUALITY_GADGET_3));
         Proposition claim = new AndConjunction(List.of(EQUALITY_GADGET_1, BOUNDS_CHECK_GADGET_2));
-        Proposition result = new Optimizer(premise).process(claim);
+        Proposition result = new Optimizer(new Statement(claim, premise, trueProposition())).process();
         assertEquals(EQUALITY_GADGET_1, result);
     }
 
@@ -160,7 +162,7 @@ public class OptimizerTest {
     void Optimization_Test_7() {
         Proposition premise = new AndConjunction(List.of(EQUALITY_GADGET_1, EQUALITY_GADGET_2, EQUALITY_GADGET_3));
         Proposition claim = new AndConjunction(List.of(BOUNDS_CHECK_GADGET_1, BOUNDS_CHECK_GADGET_2));
-        Proposition result = new Optimizer(premise).process(claim);
+        Proposition result = new Optimizer(new Statement(claim, premise, trueProposition())).process();
         assertEquals(BOUNDS_CHECK_GADGET_1, result);
     }
 
@@ -171,7 +173,7 @@ public class OptimizerTest {
     void Optimization_Test_8() {
         Proposition premise = new AndConjunction(List.of(EQUALITY_GADGET_1, EQUALITY_GADGET_2, EQUALITY_GADGET_3));
         Proposition claim = new AndConjunction(List.of(EQUALITY_GADGET_1, EQUALITY_GADGET_2));
-        Proposition result = new Optimizer(premise).process(claim);
-        assertEquals(Proposition.trueProposition(), result);
+        Proposition result = new Optimizer(new Statement(claim, premise, trueProposition())).process();
+        assertEquals(trueProposition(), result);
     }
 }

@@ -5,6 +5,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Inference;
 import zkstrata.domain.Proposition;
+import zkstrata.domain.Statement;
 import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.conjunctions.Conjunction;
 import zkstrata.domain.data.types.Reference;
@@ -12,9 +13,7 @@ import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.exceptions.Position;
-import zkstrata.utils.CombinatoricsUtils;
-import zkstrata.utils.ImplicationHelper;
-import zkstrata.utils.ReflectionHelper;
+import zkstrata.utils.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -30,35 +29,66 @@ public class Optimizer {
     private final Set<Class<? extends Conjunction>> conjunctionTypes;
     private final List<SubstitutionRule> substitutionRules;
 
+    private Proposition claim;
     private Proposition premises;
+    private Proposition validationRules;
 
-    /**
-     * @param premises {@link Proposition} of premises that were proven before
-     */
-    public Optimizer(Proposition premises) {
-        this.premises = premises;
+    public Optimizer(Statement statement) {
+        this.claim = statement.getClaim();
+        this.premises = statement.getPremises();
+        this.validationRules = statement.getValidationRules();
         this.gadgetTypes = ReflectionHelper.getAllGadgets();
         this.conjunctionTypes = ReflectionHelper.getAllConjunctions();
         this.substitutionRules = prepareSubstitutionRules();
     }
 
     /**
-     * Applies methods annotated as {@link Substitution} on the given {@code claim} using the known
-     * {@link Optimizer#premises} as assumptions to remove implications with.
+     * Applies methods annotated as {@link Substitution} on the given {@code statement} using the known
+     * {@link Statement#getPremises()} as assumptions to remove implications with.
      *
-     * @param claim {@link Proposition} to optimize
-     * @return a semantically equal {@link Proposition} to the union of {@code claim} and {@link Optimizer#premises},
+     * @return a semantically equal {@link Proposition} to the union of {@code statement} and {@link Optimizer#premises},
      * which has the same or less {@link Proposition#getCostEstimate()}.
      */
-    public Proposition process(Proposition claim) {
-        LOGGER.debug("Starting optimization");
+    public Proposition process() {
+        logEntryInformation();
 
         Set<Inference> baseAssumptions = determineBaseAssumptions();
-        Proposition optimizedClaim = dispatch(claim, baseAssumptions, baseAssumptions);
+        Proposition optimizedClaim = dispatch(this.claim, baseAssumptions, baseAssumptions);
 
-        LOGGER.debug("Finishing optimization");
+        Proposition optimizedStatement = combineStatement(optimizedClaim);
 
-        return optimizedClaim;
+        logExitInformation(optimizedStatement.toDebugString());
+
+        return optimizedStatement;
+    }
+
+    private void logEntryInformation() {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Starting optimization");
+
+            LOGGER.debug("Statement claim structure before optimization:{}{}",
+                    System.lineSeparator(), this.claim.toDebugString());
+
+            LOGGER.debug("Validation rule structure before optimization:{}{}",
+                    System.lineSeparator(), this.validationRules.toDebugString());
+        }
+    }
+
+    private void logExitInformation(String optimizedClaim) {
+        if (LOGGER.isDebugEnabled()) {
+            LOGGER.debug("Finishing optimization");
+
+            LOGGER.debug("Combined statement after optimization:{}{}", System.lineSeparator(), optimizedClaim);
+        }
+    }
+
+    private Proposition combineStatement(Proposition optimizedClaim) {
+        if (optimizedClaim.isTrueProposition()) {
+            return optimizedClaim;
+        } else {
+            Proposition statement = optimizedClaim.combine(this.validationRules);
+            return dispatch(statement, Collections.emptySet(), Collections.emptySet());
+        }
     }
 
     /**
@@ -92,6 +122,9 @@ public class Optimizer {
 
         if (proposition instanceof Gadget)
             return runSubstitutionRules(proposition, baseAssumptions);
+
+        if (proposition.isTrueProposition())
+            return proposition;
 
         throw new InternalCompilerException("Unknown proposition %s found.", proposition.getClass());
     }

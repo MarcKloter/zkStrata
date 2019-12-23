@@ -3,6 +3,7 @@ package zkstrata.analysis;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zkstrata.domain.Proposition;
+import zkstrata.domain.Statement;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
@@ -23,17 +24,13 @@ public class SemanticAnalyzer {
     }
 
     /**
-     * Combines the given claim and premises to draw all inferences that can be made from the provided information.
-     * Based on this, check for any contradiction between any inference and throw a {@link CompileTimeException} in case
-     * of a positive check.
-     *
-     * @param claim    {@link Proposition}
-     * @param premises list of {@link Proposition} of premises
+     * Draw all inferences that can be made from the provided information (given {@link Statement}) to check for any
+     * contradictions. Throws a {@link CompileTimeException} in case of a contradiction.
      */
-    public static void process(Proposition claim, Proposition premises) {
+    public static void process(Statement statement) {
         LOGGER.debug("Starting semantic analysis");
 
-        Proposition allPropositions = claim.combine(premises);
+        Proposition allPropositions = statement.getClaim().combine(statement.getPremises()).combine(statement.getValidationRules());
 
         // get all possible evaluation paths to prove the combined statement
         List<List<Gadget>> evaluationPaths = allPropositions.getEvaluationPaths();

@@ -4,7 +4,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zkstrata.api.cli.CommandLineInterface;
 import zkstrata.api.cli.SpecialOptionException;
-import zkstrata.compiler.Arguments;
+import zkstrata.api.representations.BulletproofsGadgetsFileWriter;
+import zkstrata.codegen.representations.BulletproofsGadgets;
 import zkstrata.compiler.Compiler;
 
 import java.io.PrintWriter;
@@ -15,8 +16,7 @@ public class Starter {
     public static void main(String[] args) {
         try {
             CommandLineInterface cli = new CommandLineInterface(new PrintWriter(System.out));
-            Arguments arguments = cli.parse(args);
-            new Compiler(arguments).run();
+            new BulletproofsGadgetsFileWriter().write((BulletproofsGadgets) new Compiler(cli.parse(args)).compile());
         } catch (SpecialOptionException e) {
             System.exit(1);
         } catch (Exception e) {

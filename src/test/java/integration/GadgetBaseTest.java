@@ -15,7 +15,7 @@ public class GadgetBaseTest {
                     .withStatement("equality")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -26,7 +26,7 @@ public class GadgetBaseTest {
                     .withStatement("inequality")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -37,7 +37,7 @@ public class GadgetBaseTest {
                     .withStatement("boundscheck")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -48,7 +48,7 @@ public class GadgetBaseTest {
                     .withStatement("mimchash")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -59,7 +59,7 @@ public class GadgetBaseTest {
                     .withStatement("merkletree")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -70,7 +70,7 @@ public class GadgetBaseTest {
                     .withStatement("lessthan")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -82,7 +82,7 @@ public class GadgetBaseTest {
                     .withInstance("pass1", "passport.metadata")
                     .withInstance("pass2", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 }

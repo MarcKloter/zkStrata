@@ -1,0 +1,14 @@
+{
+  "firstName": "Jane",
+  "lastName": "Doe",
+  "dateOfBirth": {
+    "year": 1982,
+    "month": 11,
+    "day": 26
+  },
+  "expiresOn": {
+    "year": 2027,
+    "month": 2,
+    "day": 9
+  }
+}

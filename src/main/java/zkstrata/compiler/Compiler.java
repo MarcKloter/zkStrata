@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.ExposureAnalyzer;
 import zkstrata.analysis.SemanticAnalyzer;
 import zkstrata.codegen.CodeGenerator;
+import zkstrata.codegen.TargetRepresentation;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
@@ -24,32 +25,24 @@ public class Compiler {
         this.arguments = arguments;
     }
 
-    public void run() {
+    public TargetRepresentation compile() {
         Statement statement = parseStatement();
+        statement.addPremises(parseAllPremises());
         statement.setValidationRules(parseAllValidationRules(statement.getSubjects()));
-        statement.setPremises(parseAllPremises());
 
         if (arguments.hasWitnessData())
             new ExposureAnalyzer(arguments.getSubjectData()).process(statement);
 
-        SemanticAnalyzer.process(statement.getClaim(), statement.getPremises());
+        SemanticAnalyzer.process(statement);
 
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("Statement claim structure before optimization:{}{}",
-                    System.lineSeparator(), statement.getClaim().toDebugString());
+        statement.setClaim(new Optimizer(statement).process());
 
-        Proposition optimizedProposition = new Optimizer(statement.getPremises()).process(statement.getClaim());
-
-        if (LOGGER.isDebugEnabled())
-            LOGGER.debug("Compiled the claim of the given statement into the following structure:{}{}",
-                    System.lineSeparator(), optimizedProposition.toDebugString());
-
-        CodeGenerator codeGenerator = new CodeGenerator(arguments.getName());
+        CodeGenerator codeGenerator = arguments.getCodeGenerator();
 
         if (arguments.hasWitnessData())
-            codeGenerator.generateProverTarget(optimizedProposition);
+            return codeGenerator.generateProverTargetRepresentation(statement.getClaim());
         else
-            codeGenerator.generateVerifierTarget(optimizedProposition);
+            return codeGenerator.generateVerifierTargetRepresentation(statement.getClaim());
     }
 
     private Statement parseStatement() {
@@ -65,37 +58,46 @@ public class Compiler {
 
     /**
      * Checks the schemas declared within the given {@code subjects} for validation rules that apply to the usage of
-     * such. Returns a list of {@link Statement} objects representing all validation rules found.
+     * such. Returns a {@link Proposition} representing all validation rules found.
      *
      * @param subjects map of alias to {@link StructuredData} to check
-     * @return list of {@link Statement} objects containing all validation rules found
+     * @return {@link Proposition} containing all validation rules connected using logical AND
      */
-    private List<Statement> parseAllValidationRules(Map<String, StructuredData> subjects) {
-        List<Statement> validationRules = new ArrayList<>();
+    private Proposition parseAllValidationRules(Map<String, StructuredData> subjects) {
+        Proposition validationRules = Proposition.trueProposition();
 
         for (Map.Entry<String, StructuredData> subject : subjects.entrySet()) {
-            if (subject.getValue().isWitness() && subject.getValue().getSchema().hasValidationRule()) {
-                String parentAlias = subject.getKey();
-                String source = subject.getValue().getSchema().getSource();
-                String parentSchema = subject.getValue().getSchema().getIdentifier();
-                String validationRule = subject.getValue().getSchema().getValidationRule();
-
-                LOGGER.debug("Processing validation rule of alias {} (schema: {}, source: {})",
-                        parentAlias, parentSchema, source);
-
-                ParseTreeVisitor parseTreeVisitor = new ParseTreeVisitor(source, parentSchema);
-                AbstractSyntaxTree ast = parseTreeVisitor.visit(validationRule);
-
-                if (LOGGER.isDebugEnabled())
-                    LOGGER.debug("Parsed the validation rule `{}` into the following AST:{}{}",
-                            source, System.lineSeparator(), ast.getRoot().toDebugString());
-
-                ASTVisitor astVisitor = new ASTVisitor(arguments.getSubjectData(), parentAlias);
-                validationRules.add(astVisitor.visit(ast));
+            if (isWitnessAndHasValidationRule(subject)) {
+                validationRules = validationRules.combine(parseValidationRule(subject));
             }
         }
 
         return validationRules;
+    }
+
+    private boolean isWitnessAndHasValidationRule(Map.Entry<String, StructuredData> subject) {
+        return subject.getValue().isWitness() && subject.getValue().getSchema().hasValidationRule();
+    }
+
+    private Proposition parseValidationRule(Map.Entry<String, StructuredData> subject) {
+        String parentAlias = subject.getKey();
+        String source = subject.getValue().getSchema().getSource();
+        String parentSchema = subject.getValue().getSchema().getIdentifier();
+        String validationRule = subject.getValue().getSchema().getValidationRule();
+
+        LOGGER.debug("Processing validation rule of alias {} (schema: {}, source: {})",
+                parentAlias, parentSchema, source);
+
+        ParseTreeVisitor parseTreeVisitor = new ParseTreeVisitor(source, parentSchema);
+        AbstractSyntaxTree ast = parseTreeVisitor.visit(validationRule);
+
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("Parsed the validation rule `{}` into the following AST:{}{}",
+                    source, System.lineSeparator(), ast.getRoot().toDebugString());
+
+        ASTVisitor astVisitor = new ASTVisitor(arguments.getSubjectData(), parentAlias);
+
+        return astVisitor.visit(ast).getClaim();
     }
 
     /**

@@ -1,0 +1,13 @@
+{
+  "title": "passport_ch",
+  "type": "object",
+  "properties": {
+    "firstName": {
+      "type": "string"
+    },
+    "lastName": {
+      "type": "string",
+    }
+  },
+  "validationRule": "PROOF FOR THIS THAT private.lastName IS MEMBER OF (private.firstName, private.lastName)"
+}

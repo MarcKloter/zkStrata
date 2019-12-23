@@ -8,13 +8,9 @@ import java.util.Collections;
 import java.util.List;
 
 public class TrueProposition implements Proposition {
-    public static boolean isTrueProposition(Proposition proposition) {
-        return proposition instanceof TrueProposition;
-    }
-
     @Override
     public List<TargetFormat> toTargetFormat() {
-        return List.of(new TargetFormat("", Collections.emptyMap()));
+        return Collections.emptyList();
     }
 
     @Override

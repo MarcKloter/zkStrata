@@ -1,6 +1,7 @@
 package integration;
 
 import org.junit.jupiter.api.Test;
+import zkstrata.codegen.representations.BulletproofsGadgets;
 import zkstrata.compiler.Arguments;
 import zkstrata.compiler.Compiler;
 import zkstrata.exceptions.CompileTimeException;
@@ -21,7 +22,7 @@ public class PremisesTest {
                     .withWitness("pass", "passport")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -35,7 +36,7 @@ public class PremisesTest {
                     .withInstance("pass", "passport.metadata")
                     .withInstance("pass_i", "passport")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
 
         assertTrue(exception.getMessage().toLowerCase().contains("simultaneously"));
@@ -49,9 +50,37 @@ public class PremisesTest {
                     .withPremise("default_contradiction")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
 
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
+    }
+
+    @Test
+    void Validation_Rule_Is_Repressed_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(PremisesTest.class)
+                    .withStatement("default")
+                    .withPremise("default")
+                    .withWitness("pass", "passport")
+                    .withInstance("pass", "passport.metadata")
+                    .build();
+            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            assertEquals(0, statement.getGadgets().size());
+        });
+    }
+
+    @Test
+    void Validation_Rule_Is_Preserved_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(PremisesTest.class)
+                    .withStatement("default_extended")
+                    .withPremise("default")
+                    .withWitness("pass", "passport")
+                    .withInstance("pass", "passport.metadata")
+                    .build();
+            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            assertEquals(2, statement.getGadgets().size());
+        });
     }
 }

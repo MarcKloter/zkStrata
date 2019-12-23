@@ -4,6 +4,7 @@ import org.apache.commons.cli.*;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeGenerator;
 import zkstrata.compiler.Arguments;
 import zkstrata.compiler.Compiler;
 import zkstrata.domain.data.accessors.ValueAccessor;
@@ -86,7 +87,7 @@ public class CommandLineInterface {
 
         SubjectData subjectData = new SubjectData(getWitnessData(cmd), getInstanceData(cmd), getSchemas(cmd));
 
-        return new Arguments(name, statement, premises, subjectData);
+        return new Arguments(new BulletproofsGadgetsCodeGenerator(name), statement, premises, subjectData);
     }
 
     /**

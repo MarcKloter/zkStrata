@@ -1,6 +1,8 @@
 package zkstrata.utils;
 
 import org.apache.commons.io.IOUtils;
+import zkstrata.codegen.CodeGenerator;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeGenerator;
 import zkstrata.compiler.Arguments;
 import zkstrata.domain.data.accessors.JsonAccessor;
 import zkstrata.domain.data.accessors.ValueAccessor;
@@ -25,7 +27,7 @@ public class ArgumentsBuilder {
     private static final String JSON_EXT = ".json";
     private static final String SCHEMA_EXT = ".schema.json";
 
-    private String name;
+    private CodeGenerator codeGenerator;
     private Statement statement;
     private List<Arguments.Statement> premises = new ArrayList<>();
     private Map<String, ValueAccessor> witnessData = new HashMap<>();
@@ -33,7 +35,7 @@ public class ArgumentsBuilder {
     private Map<String, Schema> schemas = new HashMap<>();
 
     public ArgumentsBuilder(Class clazz) {
-        this.name = clazz.getSimpleName();
+        this.codeGenerator = new BulletproofsGadgetsCodeGenerator(clazz.getSimpleName());
     }
 
     public ArgumentsBuilder withStatement(String filename) {
@@ -65,7 +67,7 @@ public class ArgumentsBuilder {
     }
 
     public Arguments build() {
-        return new Arguments(name, statement, premises, new SubjectData(witnessData, instanceData, schemas));
+        return new Arguments(codeGenerator, statement, premises, new SubjectData(witnessData, instanceData, schemas));
     }
 
     private String getStatements(String name) {

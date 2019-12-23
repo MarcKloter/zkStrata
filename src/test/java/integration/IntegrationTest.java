@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.Test;
+import zkstrata.codegen.representations.BulletproofsGadgets;
 import zkstrata.compiler.Arguments;
 import zkstrata.compiler.Compiler;
 import zkstrata.exceptions.CompileTimeException;
@@ -19,7 +20,7 @@ public class IntegrationTest {
                     .withStatement("default")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -31,7 +32,7 @@ public class IntegrationTest {
                     .withStatement("and_conjunction")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -43,7 +44,7 @@ public class IntegrationTest {
                     .withStatement("or_conjunction")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -54,7 +55,7 @@ public class IntegrationTest {
                     .withStatement("duplicate_alias")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("is already defined"));
     }
@@ -65,7 +66,7 @@ public class IntegrationTest {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
                     .withStatement("alias_private")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("reserved keyword"));
     }
@@ -76,7 +77,7 @@ public class IntegrationTest {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
                     .withStatement("alias_public")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("reserved keyword"));
     }
@@ -89,7 +90,7 @@ public class IntegrationTest {
                     .withInstance("pass", "passport.metadata")
                     .withSchema("passport_ch", "default_validation_rule")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -99,7 +100,7 @@ public class IntegrationTest {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
                     .withStatement("equality")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("missing instance data"));
     }
@@ -111,7 +112,7 @@ public class IntegrationTest {
                     .withStatement("default")
                     .withSchema("passport_ch", "statement_default_contradiction")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
@@ -125,7 +126,7 @@ public class IntegrationTest {
                     .withInstance("pass_w", "passport.metadata")
                     .withInstance("pass_i", "passport")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("simultaneously"));
     }
@@ -138,7 +139,7 @@ public class IntegrationTest {
                     .withInstance("pass1", "passport.metadata")
                     .withInstance("pass2", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -151,7 +152,7 @@ public class IntegrationTest {
                     .withInstance("pass_w", "passport.metadata")
                     .withInstance("pass_i", "passport_instance")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -165,7 +166,7 @@ public class IntegrationTest {
                     .withInstance("pass_1", "passport.metadata")
                     .withInstance("pass_2", "passport_instance")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -178,7 +179,7 @@ public class IntegrationTest {
                     .withWitness("pass", "passport")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
     }
 
@@ -188,7 +189,7 @@ public class IntegrationTest {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
                     .withStatement("undefined_schema")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("undefined schema"));
     }
@@ -202,7 +203,7 @@ public class IntegrationTest {
                     .withInstance("pass1", "passport.metadata")
                     .withInstance("pass2", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("missing witness data"));
     }
@@ -214,7 +215,7 @@ public class IntegrationTest {
                     .withStatement("duplicate_set_entries")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("duplicate element"));
     }
@@ -226,7 +227,7 @@ public class IntegrationTest {
                     .withStatement("undeclared_alias")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("undeclared alias"));
     }
@@ -238,7 +239,7 @@ public class IntegrationTest {
                     .withStatement("default")
                     .withWitness("pass", "passport_missing_entry")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("missing entry"));
     }
@@ -250,7 +251,7 @@ public class IntegrationTest {
                     .withStatement("default")
                     .withWitness("pass", "passport_invalid_entry")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("type mismatch"));
     }
@@ -262,9 +263,48 @@ public class IntegrationTest {
                     .withStatement("unexpected_type")
                     .withWitness("pass", "passport_missing_entry")
                     .build();
-            new Compiler(args).run();
+            new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("unexpected type"));
+    }
+
+    @Test
+    void Instance_Subject_Repress_Validation_Rule_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(PremisesTest.class)
+                    .withStatement("default_instance")
+                    .withInstance("pass_i", "passport")
+                    .build();
+            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            assertEquals(0, statement.getGadgets().size());
+        });
+    }
+
+    @Test
+    void Tautology_Validation_Rule_Removed_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("default")
+                    .withSchema("passport_ch", "tautology_validation_rule")
+                    .build();
+            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            assertEquals(1, statement.getGadgets().size());
+        });
+    }
+
+    @Test
+    void Multiple_Subjects_Preserve_Validation_Rules_Should_Suceed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("default_multiple_subjects")
+                    .withWitness("pass1", "passport")
+                    .withWitness("pass2", "passport2")
+                    .withInstance("pass1", "passport.metadata")
+                    .withInstance("pass2", "passport2.metadata")
+                    .build();
+            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            assertEquals(4, statement.getGadgets().size());
+        });
     }
 
     @Test

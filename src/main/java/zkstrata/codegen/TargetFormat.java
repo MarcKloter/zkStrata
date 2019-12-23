@@ -4,6 +4,9 @@ import zkstrata.domain.data.types.wrapper.Variable;
 
 import java.util.Map;
 
+/**
+ * This class is used for gadgets to state their target format representation as string with placeholders for variables.
+ */
 public class TargetFormat {
     private String format;
     private Map<String, Variable> args;

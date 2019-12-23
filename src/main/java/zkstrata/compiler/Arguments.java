@@ -1,5 +1,6 @@
 package zkstrata.compiler;
 
+import zkstrata.codegen.CodeGenerator;
 import zkstrata.domain.data.accessors.ValueAccessor;
 import zkstrata.domain.data.schemas.Schema;
 
@@ -7,25 +8,21 @@ import java.util.List;
 import java.util.Map;
 
 public class Arguments {
-    private String name;
+    private CodeGenerator codeGenerator;
     private Statement statement;
     private List<Statement> premises;
     private SubjectData subjectData;
 
     public Arguments(
-            String name,
+            CodeGenerator codeGenerator,
             Statement statement,
             List<Statement> premises,
             SubjectData subjectData
     ) {
-        this.name = name;
+        this.codeGenerator = codeGenerator;
         this.statement = statement;
         this.premises = premises;
         this.subjectData = subjectData;
-    }
-
-    public String getName() {
-        return name;
     }
 
     public Statement getStatement() {
@@ -34,6 +31,10 @@ public class Arguments {
 
     public void setStatement(Statement statement) {
         this.statement = statement;
+    }
+
+    public CodeGenerator getCodeGenerator() {
+        return codeGenerator;
     }
 
     public List<Statement> getPremises() {

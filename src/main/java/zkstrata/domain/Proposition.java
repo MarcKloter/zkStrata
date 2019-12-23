@@ -25,10 +25,19 @@ public interface Proposition {
      * Combines the given {@link Proposition} with this using an {@link AndConjunction}.
      *
      * @param proposition {@link Proposition} to combine with
-     * @return {@link AndConjunction} of the combination
+     * @return {@link AndConjunction} of the combination, just a proposition in case one of the two is always true
      */
     default Proposition combine(Proposition proposition) {
-        return new AndConjunction(List.of(this, proposition));
+        if (this.isTrueProposition())
+            return proposition;
+        else if (proposition.isTrueProposition())
+            return this;
+        else
+            return new AndConjunction(List.of(this, proposition));
+    }
+
+    default boolean isTrueProposition() {
+        return this instanceof TrueProposition;
     }
 
     /**
@@ -46,7 +55,7 @@ public interface Proposition {
                     .flatMap(Collection::stream)
                     .collect(Collectors.toList());
 
-        if (this instanceof TrueProposition)
+        if (this.isTrueProposition())
             return new ArrayList<>();
 
         throw new InternalCompilerException("Unhandled instance %s found.", this.getClass());

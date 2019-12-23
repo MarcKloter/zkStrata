@@ -3,6 +3,7 @@ package analysis;
 import org.junit.jupiter.api.Test;
 import zkstrata.analysis.SemanticAnalyzer;
 import zkstrata.domain.Proposition;
+import zkstrata.domain.Statement;
 import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
@@ -38,7 +39,7 @@ public class SemanticAnalyzerTest {
         Proposition claim = new AndConjunction(List.of(eq1, eq2, eq3, eq4, bc));
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
-                SemanticAnalyzer.process(claim, Proposition.trueProposition())
+                SemanticAnalyzer.process(new Statement(claim, Proposition.trueProposition(), Proposition.trueProposition()))
         );
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
@@ -55,7 +56,7 @@ public class SemanticAnalyzerTest {
         Proposition premises = new AndConjunction(List.of(new AndConjunction(List.of(eq2, eq4)), eq3));
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
-                SemanticAnalyzer.process(claim, premises)
+                SemanticAnalyzer.process(new Statement(claim, premises, Proposition.trueProposition()))
         );
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
