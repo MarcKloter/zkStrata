@@ -24,7 +24,9 @@ reference           : alias (DOT property)+ ;
 
 literal             : STRING_LITERAL
                     | INTEGER_LITERAL
-                    | HEX_LITERAL ;
+                    | HEX_LITERAL
+                    | BOOLEAN_LITERAL
+                    | CONSTANT ;
 
 alias               : IDENTIFIER ;
 schema              : IDENTIFIER ;

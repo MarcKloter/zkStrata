@@ -43,8 +43,6 @@ GT_EQ   : '>=' ;
 /**
  * zkStrata Lexer Rules
  */
-IDENTIFIER          : [a-zA-Z]([a-zA-Z0-9_])* ;
-
 NEWLINES            : ('\r'? '\n' | '\r')+ -> skip ;
 SPACES              : [ \u000B\t]          -> channel(HIDDEN) ;
 COMMENTS            : '/*' .*? '*/'        -> skip ;
@@ -53,6 +51,10 @@ LINE_COMMENTS       : '//' ~[\r\n]*        -> skip ;
 STRING_LITERAL      : '\'' ( ~'\'' | '\'\'' )* '\'';
 INTEGER_LITERAL     : DIGIT+;
 HEX_LITERAL         : '0x' HEX_DIGIT+;
+BOOLEAN_LITERAL     : T R U E | F A L S E ;
+
+IDENTIFIER          : [a-zA-Z]([a-zA-Z0-9_])* ;
+CONSTANT            : [_] IDENTIFIER ;
 
 /**
  * Fragments

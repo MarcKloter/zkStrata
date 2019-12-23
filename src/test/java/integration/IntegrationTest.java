@@ -266,4 +266,27 @@ public class IntegrationTest {
         });
         assertTrue(exception.getMessage().toLowerCase().contains("unexpected type"));
     }
+
+    @Test
+    void Boolean_Base_Test_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(PremisesTest.class)
+                    .withStatement("boolean")
+                    .withSchema("boolean", "boolean")
+                    .build();
+            new Compiler(args).compile();
+        });
+    }
+
+    @Test
+    void Boolean_Type_Mismatch_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("boolean_type_mismatch")
+                    .withSchema("boolean", "boolean")
+                    .build();
+            new Compiler(args).compile();
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("type mismatch"));
+    }
 }

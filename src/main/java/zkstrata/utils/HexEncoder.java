@@ -33,6 +33,10 @@ public class HexEncoder {
         }
     }
 
+    public static String encode(Boolean bool) {
+        return Boolean.TRUE.equals(bool) ? "01" : "00";
+    }
+
     public static String encode(BigInteger bigInteger) {
         return pad(String.format("%x", bigInteger));
     }

@@ -1,0 +1,8 @@
+PROOF FOR
+    WITNESS subject COMPLIANT TO boolean
+THAT
+    subject.boolean = TRUE
+AND
+    subject.boolean2 = FALSE
+AND
+    subject.string = 'false'

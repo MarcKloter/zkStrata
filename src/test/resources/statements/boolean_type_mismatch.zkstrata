@@ -1,0 +1,4 @@
+PROOF FOR
+    WITNESS subject COMPLIANT TO boolean
+THAT
+    subject.boolean = 'false'

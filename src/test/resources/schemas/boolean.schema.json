@@ -1,0 +1,15 @@
+{
+  "title": "boolean",
+  "type": "object",
+  "properties": {
+    "boolean": {
+      "type": "boolean"
+    },
+    "boolean2": {
+      "type": "boolean"
+    },
+    "string": {
+      "type": "string"
+    }
+  }
+}
