@@ -9,6 +9,10 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 public class DateConstants {
+    private DateConstants() {
+        throw new IllegalStateException("Utility class");
+    }
+
     @Constant ("UNIX_TIME_NOW")
     public static Literal getCurrentUnixTimestamp() {
         return new Literal(BigInteger.valueOf(Instant.now().getEpochSecond()));
