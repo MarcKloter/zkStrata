@@ -95,10 +95,17 @@ public class ReflectionHelper {
      * @param argumentType      expected class of the enclosed argument type
      */
     public static void assertParameterizedReturnType(Method method, Class<?> parameterizedType, Class<?> argumentType) {
-        ParameterizedType parent = (ParameterizedType) method.getGenericReturnType();
-        Class<?> child = (Class<?>) parent.getActualTypeArguments()[0];
-        if (method.getReturnType() != parameterizedType)
-            assertIsAssignableFrom(child, argumentType);
+        Type parent = method.getGenericReturnType();
+        if ((parent instanceof ParameterizedType)) {
+            Type[] children = ((ParameterizedType) parent).getActualTypeArguments();
+            if (children.length == 1) {
+                Class<?> child = (Class<?>) children[0];
+                if (method.getReturnType() == parameterizedType && child.isAssignableFrom(argumentType))
+                    return;
+            }
+        }
+        throw new InternalCompilerException("Return type of method %s does not match %s<%s>.",
+                method.getName(), parameterizedType.getSimpleName(), argumentType.getSimpleName());
     }
 
     /**
@@ -157,9 +164,6 @@ public class ReflectionHelper {
     public static Object invokeStaticMethod(Method method, Object... args) {
         try {
             return method.invoke(null, args);
-        } catch (IllegalAccessException e) {
-            throw new InternalCompilerException("Error during invocation of method %s in %s.",
-                    method.getName(), method.getDeclaringClass().getSimpleName());
         } catch (InvocationTargetException e) {
             Throwable cause = e.getCause();
             if (cause instanceof CompileTimeException)
@@ -169,6 +173,9 @@ public class ReflectionHelper {
             else
                 throw new InternalCompilerException(cause, "Invalid exception %s thrown by %s in %s.",
                         cause.getClass().getSimpleName(), method.getName(), method.getDeclaringClass());
+        } catch (Exception e) {
+            throw new InternalCompilerException("Error during invocation of method %s in %s.",
+                    method.getName(), method.getDeclaringClass().getSimpleName());
         }
     }
 }
