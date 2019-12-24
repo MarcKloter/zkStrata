@@ -12,12 +12,6 @@ public class ParserException extends RuntimeException {
         this.positions = List.of(position);
     }
 
-    public ParserException(String message, List<Position.Relative> positions) {
-        super(message);
-        this.message = message;
-        this.positions = positions;
-    }
-
     @Override
     public String getMessage() {
         return message;

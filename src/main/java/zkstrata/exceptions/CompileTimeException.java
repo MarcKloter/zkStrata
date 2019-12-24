@@ -8,8 +8,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class CompileTimeException extends RuntimeException {
-    private final Set<Position.Absolute> errors;
-
     public CompileTimeException(String source, String statement, ParserException e) {
         this(e.getMessage(), e.getPositions().stream()
                 .map(pos -> new Position.Absolute(source, statement, pos))
@@ -30,7 +28,6 @@ public class CompileTimeException extends RuntimeException {
 
     public CompileTimeException(String message, Set<Position.Absolute> positions) {
         super(String.format("%s: %s%n%s", createMessage(positions), message, ErrorUtils.underline(positions)));
-        this.errors = positions;
     }
 
     private static String createMessage(Set<Position.Absolute> positions) {
@@ -41,9 +38,5 @@ public class CompileTimeException extends RuntimeException {
         else
             return String.format("Error at lines %s",
                     lineNumbers.stream().map(Object::toString).collect(Collectors.joining(", ")));
-    }
-
-    public Set<Position.Absolute> getErrors() {
-        return errors;
     }
 }

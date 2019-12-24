@@ -41,12 +41,6 @@ public abstract class Position implements Serializable {
             this.statement = statement;
         }
 
-        public Absolute(String source, String statement, String target, int line, int charPositionInLine) {
-            super(target, line, charPositionInLine);
-            this.source = source;
-            this.statement = statement;
-        }
-
         public String getSource() {
             return source;
         }
