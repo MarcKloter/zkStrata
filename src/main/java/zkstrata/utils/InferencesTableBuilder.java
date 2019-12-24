@@ -64,7 +64,7 @@ public class InferencesTableBuilder {
     }
 
     private void addGadgetLines(Gadget gadget) {
-        for (String line : gadget.toDebugString().split(System.lineSeparator()))
+        for (String line : gadget.getVerboseInformation().split(System.lineSeparator()))
             this.simpleTable = this.simpleTable.addLine(pad(line));
     }
 

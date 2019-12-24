@@ -1,7 +1,10 @@
 package zkstrata.domain.gadgets;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.TextStringBuilder;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.wrapper.Variable;
+import zkstrata.utils.GadgetUtils;
 
 import java.util.Map;
 
@@ -24,4 +27,17 @@ public interface Gadget extends Proposition {
      * Hook method that will be called after @Type annotated fields were wired.
      */
     void performChecks();
+
+    default String getVerboseInformation() {
+        TextStringBuilder builder = new TextStringBuilder();
+        builder.appendln(getClass().getSimpleName());
+        getVariables().forEach((key, value) -> {
+            if (GadgetUtils.isWitnessVariable(value))
+                builder.appendln("  <%s: Witness<%s> = %s>", key, value.getType().getSimpleName(), value.toString());
+            else
+                builder.appendln("  <%s: Instance<%s> = %s>", key, value.getType().getSimpleName(),
+                        StringUtils.abbreviate(value.getValue().toString(), 12));
+        });
+        return builder.build();
+    }
 }

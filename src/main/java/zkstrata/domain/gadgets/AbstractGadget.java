@@ -1,7 +1,5 @@
 package zkstrata.domain.gadgets;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.TextStringBuilder;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Null;
@@ -9,7 +7,6 @@ import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.optimizer.Substitution;
-import zkstrata.utils.GadgetUtils;
 import zkstrata.utils.ReflectionHelper;
 
 import java.lang.reflect.Field;
@@ -128,20 +125,6 @@ public abstract class AbstractGadget implements Gadget {
     @Override
     public String toString() {
         return getClass().getSimpleName();
-    }
-
-    @Override
-    public String toDebugString() {
-        TextStringBuilder builder = new TextStringBuilder();
-        builder.appendln(getClass().getSimpleName());
-        getVariables().forEach((key, value) -> {
-            if (GadgetUtils.isWitnessVariable(value))
-                builder.appendln("  <%s: Witness<%s> = %s>", key, value.getType().getSimpleName(), value.toString());
-            else
-                builder.appendln("  <%s: Instance<%s> = %s>", key, value.getType().getSimpleName(),
-                        StringUtils.abbreviate(value.getValue().toString(), 12));
-        });
-        return builder.build();
     }
 
     @Override
