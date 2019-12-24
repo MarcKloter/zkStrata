@@ -178,4 +178,19 @@ public class ReflectionHelper {
                     method.getName(), method.getDeclaringClass().getSimpleName());
         }
     }
+
+    /**
+     * Returns the {@link Field} with name {@code name} from the given {@code clazz}.
+     *
+     * @param clazz class to access
+     * @param name  name of the field to access
+     * @return {@link Field} with name {@code name} of class {@code clazz}
+     */
+    public static Field getField(Class<?> clazz, String name) {
+        try {
+            return clazz.getDeclaredField(name);
+        } catch (NoSuchFieldException e) {
+            throw new InternalCompilerException("Missing field %s in %s.", name, clazz);
+        }
+    }
 }

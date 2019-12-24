@@ -18,15 +18,13 @@ public abstract class AbstractGadget implements Gadget {
     public void initFrom(Map<String, Object> sourceFields) {
         for (Map.Entry<String, Object> source : sourceFields.entrySet()) {
             try {
-                Field destination = this.getClass().getDeclaredField(source.getKey());
+                Field destination = ReflectionHelper.getField(this.getClass(), source.getKey());
                 Object destinationValue = source.getValue();
                 checkType(destination, destinationValue);
                 if (destinationValue.getClass() == Null.class)
                     destinationValue = null;
                 destination.setAccessible(true);
                 destination.set(this, destinationValue);
-            } catch (NoSuchFieldException e) {
-                throw new InternalCompilerException("Missing field %s in gadget %s.", source.getKey(), this.getClass());
             } catch (IllegalAccessException e) {
                 throw new InternalCompilerException("Unable to access field %s.", source.getKey());
             }

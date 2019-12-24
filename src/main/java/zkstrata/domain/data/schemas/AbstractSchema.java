@@ -19,7 +19,7 @@ public abstract class AbstractSchema implements Schema {
         Iterator<String> iterator = selector.getSelectors().iterator();
         while (iterator.hasNext()) {
             String accessor = iterator.next();
-            Field field = getField(schema, accessor);
+            Field field = ReflectionHelper.getField(schema, accessor);
             Class<?> type = field.getType();
 
             if (!iterator.hasNext()) {
@@ -31,14 +31,6 @@ public abstract class AbstractSchema implements Schema {
         }
 
         throw new IllegalArgumentException("Accessors cannot be empty.");
-    }
-
-    private Field getField(Class<? extends Schema> schema, String selector) {
-        try {
-            return schema.getDeclaredField(selector);
-        } catch (NoSuchFieldException e) {
-            throw new IllegalArgumentException(String.format("Field %s does not exist in schema %s.", selector, schema));
-        }
     }
 
     @Override

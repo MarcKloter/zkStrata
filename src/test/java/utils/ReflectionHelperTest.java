@@ -9,7 +9,7 @@ import java.util.Collection;
 import static zkstrata.utils.ReflectionHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class ReflectionUtilsTest {
+public class ReflectionHelperTest {
     @Test
     void Invoke_Wrong_Arguments_Should_Throw() {
         InternalCompilerException exception = assertThrows(InternalCompilerException.class, () ->
@@ -80,6 +80,15 @@ public class ReflectionUtilsTest {
         );
 
         assertTrue(exception.getMessage().toLowerCase().contains("return type of method"));
+    }
+
+    @Test
+    void Missing_Field_Should_Throw() {
+        InternalCompilerException exception = assertThrows(InternalCompilerException.class, () ->
+                getField(ReflectionMock.class, "missingField")
+        );
+
+        assertTrue(exception.getMessage().toLowerCase().contains("missing field"));
     }
 
     public static class ReflectionMock {
