@@ -10,6 +10,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 
 public class BulletproofsGadgetsFileWriter implements TargetRepresentationFileWriter<BulletproofsGadgets> {
     private static final Logger LOGGER = LogManager.getRootLogger();
@@ -31,47 +32,34 @@ public class BulletproofsGadgetsFileWriter implements TargetRepresentationFileWr
 
     private void writeGadgets() {
         String gadgetsFileName = bulletproofsGadgets.getName() + GADGETS_FILE_EXT;
-        try (BufferedWriter writer = new BufferedWriter(getWriter(gadgetsFileName))) {
-            LOGGER.debug("Writing gadgets to {}", gadgetsFileName);
-
-            for (String line : bulletproofsGadgets.getGadgets()) {
-                writer.write(line);
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            throw new InternalCompilerException("Error while writing gadgets to {}.", gadgetsFileName);
-        }
+        LOGGER.debug("Writing gadgets to {}", gadgetsFileName);
+        writeLinesToFile(gadgetsFileName, bulletproofsGadgets.getGadgets());
     }
 
     private void writeInstances() {
         String instanceFileName = bulletproofsGadgets.getName() + INSTANCE_FILE_EXT;
-        try (BufferedWriter writer = new BufferedWriter(getWriter(instanceFileName))) {
-            LOGGER.debug("Writing instance data to {}", instanceFileName);
-
-            for (String line : bulletproofsGadgets.getInstances()) {
-                writer.write(line);
-                writer.newLine();
-            }
-        } catch (IOException e) {
-            throw new InternalCompilerException(e, "Error while writing instance data to {}.", instanceFileName);
-        }
+        LOGGER.debug("Writing instance data to {}", instanceFileName);
+        writeLinesToFile(instanceFileName, bulletproofsGadgets.getInstances());
     }
 
     private void writeWitnesses() {
         String witnessFileName = bulletproofsGadgets.getName() + WITNESS_FILE_EXT;
-        try (BufferedWriter writer = new BufferedWriter(getWriter(witnessFileName))) {
-            LOGGER.debug("Writing witness data to {}", witnessFileName);
+        LOGGER.debug("Writing witness data to {}", witnessFileName);
+        writeLinesToFile(witnessFileName, bulletproofsGadgets.getWitnesses());
+    }
 
-            for (String line : bulletproofsGadgets.getWitnesses()) {
+    private void writeLinesToFile(String filename, List<String> lines) {
+        try (BufferedWriter writer = new BufferedWriter(getWriter(filename))) {
+            for (String line : lines) {
                 writer.write(line);
                 writer.newLine();
             }
         } catch (IOException e) {
-            throw new InternalCompilerException(e, "Error while writing witness data to {}.", witnessFileName);
+            throw new InternalCompilerException(e, "Error while writing data to {}.", filename);
         }
     }
 
-    protected Writer getWriter(String fileName) throws IOException {
-        return new FileWriter(fileName);
+    protected Writer getWriter(String filename) throws IOException {
+        return new FileWriter(filename);
     }
 }
