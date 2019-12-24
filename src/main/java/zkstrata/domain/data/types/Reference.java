@@ -1,6 +1,7 @@
 package zkstrata.domain.data.types;
 
 import zkstrata.domain.data.Selector;
+import zkstrata.exceptions.InternalCompilerException;
 
 import java.util.Objects;
 
@@ -27,7 +28,7 @@ public class Reference implements Value {
 
     @Override
     public String toHex() {
-        throw new IllegalStateException("Invalid method call toHex on Reference.");
+        throw new InternalCompilerException("Invalid method call toHex on Reference.");
     }
 
     public String getSubject() {

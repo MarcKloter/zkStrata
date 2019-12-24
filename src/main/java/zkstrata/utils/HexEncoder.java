@@ -3,6 +3,7 @@ package zkstrata.utils;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import zkstrata.exceptions.InternalCompilerException;
 
 import java.lang.reflect.Method;
 import java.math.BigInteger;
@@ -29,7 +30,7 @@ public class HexEncoder {
             LOGGER.warn("No specific hex encoding method found for {}. Default to hex encoding of toString representation.", type);
             return encode(object.toString());
         } catch (ReflectiveOperationException e) {
-            throw new IllegalStateException(String.format("Invalid implementation of method encode for type %s.", type));
+            throw new InternalCompilerException("Invalid implementation of method encode for type %s.", type);
         }
     }
 
