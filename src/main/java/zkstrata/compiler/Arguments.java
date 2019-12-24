@@ -29,10 +29,6 @@ public class Arguments {
         return statement;
     }
 
-    public void setStatement(Statement statement) {
-        this.statement = statement;
-    }
-
     public CodeGenerator getCodeGenerator() {
         return codeGenerator;
     }
