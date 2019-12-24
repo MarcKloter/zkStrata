@@ -1,0 +1,10 @@
+PROOF FOR
+    date AS date
+THAT
+    date.unixDate IS LESS THAN _UNIX_TIME_NOW
+AND
+    date.dateSchema.day IS EQUAL TO _TODAY_DAY_OF_MONTH
+AND
+    date.dateSchema.month <= _TODAY_MONTH
+AND
+    date.dateSchema.year = _TODAY_YEAR

@@ -14,8 +14,10 @@ import zkstrata.parser.ast.Subject;
 import zkstrata.parser.ast.connectives.Connective;
 import zkstrata.parser.ast.predicates.BoundsCheck;
 import zkstrata.parser.ast.predicates.Predicate;
+import zkstrata.parser.ast.types.Constant;
 import zkstrata.parser.ast.types.Identifier;
 import zkstrata.parser.ast.types.IntegerLiteral;
+import zkstrata.parser.ast.types.Value;
 import zkstrata.utils.ArgumentsBuilder;
 import zkstrata.utils.Constants;
 import zkstrata.utils.StatementBuilder;
@@ -69,6 +71,17 @@ public class ASTVisitorTest {
     }
 
     @Test
+    void Missing_Constant_Implementation_Should_Throw() {
+        Constant constant = Mockito.mock(Constant.class);
+        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, constant, getAbsPosition());
+        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
+
+        InternalCompilerException exception = assertThrows(InternalCompilerException.class, () -> visitor.visit(ast));
+        System.out.println(exception.getMessage());
+        assertTrue(exception.getMessage().toLowerCase().contains("unimplemented constant"));
+    }
+
+    @Test
     void Number_Negative_Should_Throw() {
         BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_NEG, INT_13, getAbsPosition());
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
@@ -77,7 +90,6 @@ public class ASTVisitorTest {
 
         assertTrue(exception.getMessage().toLowerCase().contains("negative number"));
     }
-
 
     @Test
     void Number_Too_Large_Should_Throw() {
@@ -109,6 +121,28 @@ public class ASTVisitorTest {
         @Override
         public void addTo(StatementBuilder statementBuilder) {
 
+        }
+    }
+
+    @Test
+    void Unimplemented_Type_Should_Throw() {
+        UnimplementedType unimplementedType = new UnimplementedType(getAbsPosition());
+        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, unimplementedType, getAbsPosition());
+        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
+
+        InternalCompilerException exception = assertThrows(InternalCompilerException.class, () -> visitor.visit(ast));
+
+        assertTrue(exception.getMessage().toLowerCase().contains("unimplemented type"));
+    }
+
+    public class UnimplementedType extends Value {
+        public UnimplementedType(Position position) {
+            super(position);
+        }
+
+        @Override
+        public Object getValue() {
+            return null;
         }
     }
 }

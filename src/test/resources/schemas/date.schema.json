@@ -1,0 +1,27 @@
+{
+  "title": "date",
+  "type": "object",
+  "properties": {
+    "unixDate": {
+      "type": "number"
+    },
+    "dateSchema": {
+      "type": "object",
+      "properties": {
+        "day": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 31
+        },
+        "month": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 12
+        },
+        "year": {
+          "type": "number"
+        }
+      }
+    }
+  }
+}

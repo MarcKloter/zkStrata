@@ -15,7 +15,6 @@ import zkstrata.parser.ast.connectives.Connective;
 import zkstrata.parser.ast.predicates.Predicate;
 import zkstrata.parser.ast.types.*;
 import zkstrata.utils.BinaryTree;
-import zkstrata.utils.ReflectionHelper;
 import zkstrata.utils.SchemaHelper;
 import zkstrata.domain.data.types.wrapper.Null;
 import zkstrata.domain.data.schemas.wrapper.Instance;
@@ -29,7 +28,10 @@ import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.Subject;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.*;
+
+import static zkstrata.utils.ReflectionHelper.*;
 
 public class ASTVisitor {
     private static final Logger LOGGER = LogManager.getRootLogger();
@@ -144,7 +146,7 @@ public class ASTVisitor {
     }
 
     private Class<? extends Conjunction> getConjunctionType(Connective connective) {
-        Set<Class<? extends Conjunction>> conjunctions = ReflectionHelper.getAllConjunctions();
+        Set<Class<? extends Conjunction>> conjunctions = getAllConjunctions();
 
         for (Class<? extends Conjunction> conjunction : conjunctions) {
             AstElement from = conjunction.getAnnotation(AstElement.class);
@@ -161,7 +163,7 @@ public class ASTVisitor {
     }
 
     private Proposition visitPredicate(Predicate predicate) {
-        Set<Class<? extends Gadget>> gadgets = ReflectionHelper.getAllGadgets();
+        Set<Class<? extends Gadget>> gadgets = getAllGadgets();
 
         for (Class<? extends Gadget> gadget : gadgets) {
             AstElement from = gadget.getAnnotation(AstElement.class);
@@ -172,7 +174,7 @@ public class ASTVisitor {
             if (from.value() == predicate.getClass()) {
                 Map<String, Object> sourceValues = getSourceValues(predicate);
 
-                Gadget instance = ReflectionHelper.createInstance(gadget);
+                Gadget instance = createInstance(gadget);
                 instance.initFrom(sourceValues);
                 return instance;
             }
@@ -186,7 +188,7 @@ public class ASTVisitor {
 
         Field[] fields = predicate.getClass().getDeclaredFields();
         for (Field field : fields) {
-            Object value = ReflectionHelper.invokeGetter(predicate, field);
+            Object value = invokeGetter(predicate, field);
             values.put(field.getName(), visitPredicateElement(value));
         }
 
@@ -216,14 +218,17 @@ public class ASTVisitor {
         if (type.getClass().equals(Identifier.class))
             return visitIdentifier((Identifier) type);
 
-        throw new InternalCompilerException("Unimplemented type %s in AST.", type.getClass());
+        if (type.getClass().equals(Constant.class))
+            return visitConstant((Constant) type);
+
+        throw new InternalCompilerException("Unimplemented type %s in AST.", type.getClass().getSimpleName());
     }
 
     /**
      * Returns an {@link InstanceVariable} of the visited literal.
      * As literals can only be public data (otherwise the witness would be leaked), return an {@link InstanceVariable}.
      */
-    private Variable visitLiteral(Literal literal) {
+    private InstanceVariable visitLiteral(Literal literal) {
         return new InstanceVariable(from(literal), null, pinPosition(literal));
     }
 
@@ -241,9 +246,8 @@ public class ASTVisitor {
             Object element = visitPredicateElement(object);
             if (!result.add(element) && element instanceof Traceable) {
                 Traceable traceable = (Traceable) element;
-
                 throw new CompileTimeException("Duplicate element.",
-                        Set.of(pinPosition(getEqualTraceable(traceable, result)), pinPosition((Traceable) element)));
+                        Set.of(pinPosition(getEqualTraceable(traceable, result)), pinPosition(traceable)));
             }
         }
 
@@ -260,7 +264,7 @@ public class ASTVisitor {
 
     private Collection<Object> createCollection(Class<? extends Collection> clazz) {
         @SuppressWarnings("unchecked")
-        Collection<Object> instance = ReflectionHelper.createInstance(clazz);
+        Collection<Object> instance = createInstance(clazz);
         return instance;
     }
 
@@ -292,6 +296,21 @@ public class ASTVisitor {
                 throw new InternalCompilerException("Expected BinaryTree.Node of class Value, found %s.",
                         node.getValue().getClass().getSimpleName());
         }
+    }
+
+    private InstanceVariable visitConstant(Constant constant) {
+        Set<Method> constants = getMethodsAnnotatedWith(zkstrata.domain.data.types.Constant.class);
+
+        for (Method method : constants) {
+            String constantIdentifier = method.getAnnotation(zkstrata.domain.data.types.Constant.class).value();
+
+            if (constantIdentifier.equals(constant.getValue())) {
+                return new InstanceVariable((zkstrata.domain.data.types.Literal) invokeStaticMethod(method),
+                        null, pinPosition(constant));
+            }
+        }
+
+        throw new InternalCompilerException("Unimplemented constant %s in AST.", constant.getValue());
     }
 
     private void checkUnusedSubjects() {

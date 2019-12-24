@@ -293,7 +293,7 @@ public class IntegrationTest {
     }
 
     @Test
-    void Multiple_Subjects_Preserve_Validation_Rules_Should_Suceed() {
+    void Multiple_Subjects_Preserve_Validation_Rules_Should_Succeed() {
         assertDoesNotThrow(() -> {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
                     .withStatement("default_multiple_subjects")
@@ -328,5 +328,16 @@ public class IntegrationTest {
             new Compiler(args).compile();
         });
         assertTrue(exception.getMessage().toLowerCase().contains("type mismatch"));
+    }
+
+    @Test
+    void Date_Constants_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("date_constants")
+                    .withSchema("date", "date")
+                    .build();
+            new Compiler(args).compile();
+        });
     }
 }
