@@ -42,7 +42,8 @@ public class ImplicationHelper {
     public static Set<Inference> drawInferences(List<Gadget> targets, Set<Inference> existing) {
         Set<Inference> inferences = drawSelfInferences(targets);
 
-        return drawAllInferences(inferences, Stream.concat(inferences.stream(), existing.stream()).collect(Collectors.toSet()));
+        return drawAllInferences(inferences, Stream.concat(inferences.stream(), existing.stream())
+                .collect(Collectors.toCollection(LinkedHashSet::new)));
     }
 
     /**
@@ -58,13 +59,13 @@ public class ImplicationHelper {
      * @return set of {@link Inference} returned by the executed implication rules
      */
     private static Set<Inference> drawAllInferences(Set<Inference> targets, Set<Inference> context) {
-        Set<Inference> allInferences = new HashSet<>(context);
+        Set<Inference> allInferences = new LinkedHashSet<>(context);
         Map<WitnessVariable, Set<Inference>> targetMapping = createWitnessToInferenceMap(targets);
         Map<WitnessVariable, Set<Inference>> contextMapping = createWitnessToInferenceMap(allInferences);
         while (!targetMapping.isEmpty()) {
             Set<Inference> newInferences = simplify(drawDirectInferences(targetMapping, contextMapping), allInferences);
             targetMapping = createWitnessToInferenceMap(newInferences);
-            targetMapping.forEach((var, inf) -> contextMapping.computeIfAbsent(var, s -> new HashSet<>()).addAll(inf));
+            targetMapping.forEach((var, inf) -> contextMapping.computeIfAbsent(var, s -> new LinkedHashSet<>()).addAll(inf));
             allInferences.addAll(newInferences);
         }
         return allInferences;
@@ -83,7 +84,7 @@ public class ImplicationHelper {
             Map<WitnessVariable, Set<Inference>> targetMapping,
             Map<WitnessVariable, Set<Inference>> contextMapping
     ) {
-        Set<Inference> inferences = new HashSet<>();
+        Set<Inference> inferences = new LinkedHashSet<>();
 
         for (Map.Entry<WitnessVariable, Set<Inference>> commonInferences : targetMapping.entrySet()) {
             Set<Inference> targets = commonInferences.getValue();
@@ -104,7 +105,7 @@ public class ImplicationHelper {
      * @return set of inferences returned by the executed implication rules
      */
     private static Set<Inference> runAllImplicationRules(Set<Inference> targets, Set<Inference> context) {
-        Set<Inference> inferences = new HashSet<>();
+        Set<Inference> inferences = new LinkedHashSet<>();
         for (Inference target : targets) {
             inferences.addAll(runImplicationRules(target, context));
         }
@@ -121,7 +122,7 @@ public class ImplicationHelper {
     private static Set<Inference> drawSelfInferences(List<Gadget> gadgets) {
         return gadgets.stream()
                 .map(g -> new Inference(Set.of(g), g, Collections.emptySet()))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
@@ -134,9 +135,9 @@ public class ImplicationHelper {
     private static Map<WitnessVariable, Set<Inference>> createWitnessToInferenceMap(Set<Inference> inferences) {
         Map<WitnessVariable, Set<Inference>> inferenceMapping = new HashMap<>();
         for (Inference inference : inferences)
-            for (Variable var : inference.getConclusion().getVariables())
+            for (Variable var : inference.getConclusion().getVariables().values())
                 if (var instanceof WitnessVariable)
-                    inferenceMapping.computeIfAbsent((WitnessVariable) var, s -> new HashSet<>()).add(inference);
+                    inferenceMapping.computeIfAbsent((WitnessVariable) var, s -> new LinkedHashSet<>()).add(inference);
 
         return inferenceMapping;
     }
@@ -154,7 +155,7 @@ public class ImplicationHelper {
         return newInferences.stream()
                 .filter(curr -> Stream.concat(newInferences.stream().filter(i -> !curr.equals(i)), existingInferences.stream())
                         .noneMatch(curr::canBeImpliedFrom))
-                .collect(Collectors.toSet());
+                .collect(Collectors.toCollection(LinkedHashSet::new));
     }
 
     /**
@@ -172,7 +173,7 @@ public class ImplicationHelper {
         for (Inference inference : context)
             inferenceMapping.computeIfAbsent(inference.getConclusion(), s -> new ArrayList<>()).add(inference);
 
-        Set<Inference> newInferences = new HashSet<>();
+        Set<Inference> newInferences = new LinkedHashSet<>();
         for (Method method : IMPLICATION_RULES) {
             Set<List<Gadget>> setOfArguments = prepareArguments(method, target.getConclusion(), inferenceMapping.keySet());
             for (List<Gadget> arguments : setOfArguments) {
@@ -234,7 +235,7 @@ public class ImplicationHelper {
                 .collect(Collectors.toList());
         // create cartesian product of all possible inferences the gadgets could originate from
         return CombinatoricsUtils.computeCartesianProduct(impliedUsing).stream()
-                .map(list -> Inference.from(new HashSet<>(list), impliedGadget))
+                .map(list -> Inference.from(new LinkedHashSet<>(list), impliedGadget))
                 .collect(Collectors.toList());
     }
 
