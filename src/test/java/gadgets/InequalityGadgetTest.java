@@ -33,7 +33,19 @@ public class InequalityGadgetTest {
     }
 
     @Test
-    void Instance_Unequals_Instance_No_Contradiction() {
+    void Instance_Unequals_Instance_No_Contradiction_1() {
+        InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        assertDoesNotThrow(() -> InequalityGadget.checkSelfContradiction(inequalityGadget));
+    }
+
+    @Test
+    void Instance_Unequals_Instance_No_Contradiction_2() {
+        InequalityGadget inequalityGadget = new InequalityGadget(INSTANCE_VAR_41, WITNESS_VAR_1);
+        assertDoesNotThrow(() -> InequalityGadget.checkSelfContradiction(inequalityGadget));
+    }
+
+    @Test
+    void Instance_Unequals_Instance_No_Contradiction_3() {
         InequalityGadget inequalityGadget = new InequalityGadget(INSTANCE_VAR_41, INSTANCE_VAR_17);
         assertDoesNotThrow(() -> InequalityGadget.checkSelfContradiction(inequalityGadget));
     }
@@ -59,9 +71,16 @@ public class InequalityGadgetTest {
     }
 
     @Test
-    void Equality_No_Contradiction() {
+    void Equality_No_Contradiction_1() {
         InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_2, INSTANCE_VAR_41);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        assertDoesNotThrow(() -> InequalityGadget.checkEqualityContradiction(equalityGadget, inequalityGadget));
+    }
+
+    @Test
+    void Equality_No_Contradiction_2() {
+        InequalityGadget inequalityGadget = new InequalityGadget(INSTANCE_VAR_41, WITNESS_VAR_2);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_41);
         assertDoesNotThrow(() -> InequalityGadget.checkEqualityContradiction(equalityGadget, inequalityGadget));
     }
 
@@ -73,7 +92,7 @@ public class InequalityGadgetTest {
 
     @Test
     void Instance_Equals_Instance_No_Substitution_1() {
-        InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        InequalityGadget inequalityGadget = new InequalityGadget(INSTANCE_VAR_41, INSTANCE_VAR_41);
         assertEquals(Optional.empty(), InequalityGadget.removeInstanceUnequalsInstance(inequalityGadget));
     }
 
