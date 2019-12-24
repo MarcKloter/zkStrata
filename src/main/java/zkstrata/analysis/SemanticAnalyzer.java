@@ -6,12 +6,10 @@ import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.exceptions.CompileTimeException;
-import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.utils.CombinatoricsUtils;
 import zkstrata.utils.ImplicationHelper;
 import zkstrata.utils.ReflectionHelper;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -67,32 +65,7 @@ public class SemanticAnalyzer {
             );
 
             for (List<Gadget> contextCombination : contextCombinations)
-                invokeContradictionCheck(contradictionCheck, contextCombination.toArray());
-        }
-    }
-
-    /**
-     * Invokes the given {@link Method} using the provided {@code args}.
-     * The method is expected to be a {@link Contradiction} annotated method that takes {@code args} and throws an
-     * exception in case the check is positive.
-     *
-     * @param contradictionCheck {@link Method} to invoke
-     * @param args               arguments to pass to the method
-     */
-    private static void invokeContradictionCheck(Method contradictionCheck, Object[] args) {
-        try {
-            contradictionCheck.invoke(null, args);
-        } catch (InvocationTargetException e) {
-            Throwable cause = e.getCause();
-            if (cause instanceof CompileTimeException)
-                throw (CompileTimeException) cause;
-            else
-                throw new InternalCompilerException(cause, "Invalid exception %s thrown by %s in %s.",
-                        cause.getClass().getSimpleName(), contradictionCheck.getName(), contradictionCheck.getDeclaringClass());
-        } catch (IllegalAccessException | IllegalArgumentException e) {
-            throw new InternalCompilerException(e, "Invalid implementation of @Contradiction annotated method %s in %s: "
-                    + "Ensure the method is static and its parameters are matching the annotation.",
-                    contradictionCheck.getName(), contradictionCheck.getDeclaringClass());
+                ReflectionHelper.invokeStaticMethod(contradictionCheck, contextCombination.toArray());
         }
     }
 }

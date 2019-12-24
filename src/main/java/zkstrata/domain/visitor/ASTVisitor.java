@@ -1,6 +1,5 @@
 package zkstrata.domain.visitor;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zkstrata.compiler.Arguments;
@@ -29,8 +28,6 @@ import zkstrata.domain.data.schemas.Schema;
 import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.Subject;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.*;
 
@@ -140,7 +137,7 @@ public class ASTVisitor {
         try {
             return conjunctionType.getConstructor(List.class).newInstance(parts);
         } catch (NoSuchMethodException e) {
-            throw new InternalCompilerException("Conjunction %s is missing a parameterized with List.class.", conjunctionType);
+            throw new InternalCompilerException("Conjunction %s is missing a parameterized constructor with List.class.", conjunctionType);
         } catch (ReflectiveOperationException e) {
             throw new InternalCompilerException("Invalid implementation of conjunction %s.", conjunctionType);
         }
@@ -174,15 +171,10 @@ public class ASTVisitor {
 
             if (from.value() == predicate.getClass()) {
                 Map<String, Object> sourceValues = getSourceValues(predicate);
-                try {
-                    Gadget instance = gadget.getConstructor().newInstance();
-                    instance.initFrom(sourceValues);
-                    return instance;
-                } catch (NoSuchMethodException e) {
-                    throw new InternalCompilerException("Gadget %s is missing a default constructor.", gadget);
-                } catch (ReflectiveOperationException e) {
-                    throw new InternalCompilerException("Invalid implementation of gadget %s.", gadget);
-                }
+
+                Gadget instance = ReflectionHelper.createInstance(gadget);
+                instance.initFrom(sourceValues);
+                return instance;
             }
         }
 
@@ -194,19 +186,8 @@ public class ASTVisitor {
 
         Field[] fields = predicate.getClass().getDeclaredFields();
         for (Field field : fields) {
-            try {
-                String fieldName = field.getName();
-                Object value = new PropertyDescriptor(fieldName, predicate.getClass(), "get" +
-                        StringUtils.capitalize(fieldName), null).getReadMethod().invoke(predicate);
-                values.put(fieldName, visitPredicateElement(value));
-            } catch (IntrospectionException e) {
-                throw new InternalCompilerException("Unable to call getter method for field %s in predicate %s. "
-                        + "Ensure the predicate class defines public getter methods for all its fields.",
-                        field.getName(), predicate.getClass().getSimpleName());
-            } catch (ReflectiveOperationException e) {
-                throw new InternalCompilerException("Invalid getter method for field %s in predicate %s.",
-                        field.getName(), predicate.getClass().getSimpleName());
-            }
+            Object value = ReflectionHelper.invokeGetter(predicate, field);
+            values.put(field.getName(), visitPredicateElement(value));
         }
 
         return values;
@@ -255,7 +236,7 @@ public class ASTVisitor {
     }
 
     private Collection<Object> visitCollection(Collection collection) {
-        Collection<Object> result = createNewInstanceOf(collection.getClass());
+        Collection<Object> result = createCollection(collection.getClass());
         for (Object object : collection) {
             Object element = visitPredicateElement(object);
             if (!result.add(element) && element instanceof Traceable) {
@@ -277,15 +258,10 @@ public class ASTVisitor {
         throw new InternalCompilerException("The provided collection does not contain the requested element.");
     }
 
-    private Collection<Object> createNewInstanceOf(Class<? extends Collection> clazz) {
-        try {
-            @SuppressWarnings("unchecked")
-            Collection<Object> instance = clazz.getConstructor().newInstance();
-            return instance;
-        } catch (ReflectiveOperationException e) {
-            throw new InternalCompilerException("Unable to create a new instance of collection %s using the default "
-                    + "constructor.", clazz);
-        }
+    private Collection<Object> createCollection(Class<? extends Collection> clazz) {
+        @SuppressWarnings("unchecked")
+        Collection<Object> instance = ReflectionHelper.createInstance(clazz);
+        return instance;
     }
 
     /**

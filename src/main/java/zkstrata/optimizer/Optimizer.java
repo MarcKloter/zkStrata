@@ -339,21 +339,14 @@ public class Optimizer {
      * @return {@link Optional} of {@link Proposition} returned by the invoked method
      */
     private Optional<Proposition> invokeSubstitutionRule(Method substitutionRule, Substitute.Arguments arguments) {
-        if (!ReflectionHelper.checkReturnType(substitutionRule, Optional.class, Proposition.class))
-            throw new InternalCompilerException("Invalid implementation of @Substitution annotated method %s in %s. "
-                    + "Return type must be Optional<Proposition>.", substitutionRule.getName(), substitutionRule.getDeclaringClass());
+        ReflectionHelper.assertParameterizedReturnType(substitutionRule, Optional.class, Proposition.class);
 
-        try {
-            Object[] args = ArrayUtils.addAll(arguments.getTargets().toArray(), arguments.getContext().toArray());
-            @SuppressWarnings("unchecked")
-            Optional<Proposition> substitution = (Optional<Proposition>) substitutionRule.invoke(null, args);
+        Object[] args = ArrayUtils.addAll(arguments.getTargets().toArray(), arguments.getContext().toArray());
 
-            return substitution;
-        } catch (ReflectiveOperationException | IllegalArgumentException | ClassCastException e) {
-            throw new InternalCompilerException(e, "Invalid implementation of @Substitution annotated method %s in %s: "
-                    + "Ensure the method is static and its parameters are matching the annotation.",
-                    substitutionRule.getName(), substitutionRule.getDeclaringClass());
-        }
+        @SuppressWarnings("unchecked")
+        Optional<Proposition> substitution = (Optional<Proposition>) ReflectionHelper.invokeStaticMethod(substitutionRule, args);
+
+        return substitution;
     }
 
     /**

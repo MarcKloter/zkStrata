@@ -141,13 +141,7 @@ public class ParseTreeVisitor {
             ParserRuleContext gadget = (ParserRuleContext) child;
             String name = this.parserRules[gadget.getRuleIndex()];
 
-            Method parser = getParser(name);
-            try {
-                return (Predicate) parser.invoke(null, gadget);
-            } catch (ReflectiveOperationException e) {
-                throw new InternalCompilerException("Error during invocation of method %s in %s.",
-                        parser.getName(), parser.getDeclaringClass().getSimpleName());
-            }
+            return (Predicate) ReflectionHelper.invokeStaticMethod(getParser(name), gadget);
         }
     }
 
@@ -176,9 +170,6 @@ public class ParseTreeVisitor {
 
         @Override
         public Value visitReference(zkStrata.ReferenceContext ctx) {
-            if (ctx.getChildCount() == 0)
-                throw new InternalCompilerException("Expected a reference, found nothing.");
-
             String subject = ctx.alias().getText();
             List<String> accessors = ctx.property().stream()
                     .map(RuleContext::getText)
@@ -189,9 +180,6 @@ public class ParseTreeVisitor {
 
         @Override
         public Value visitLiteral(zkStrata.LiteralContext ctx) {
-            if (ctx.getChildCount() != 1)
-                throw new InternalCompilerException("Expected 1 literal value, found %d.", ctx.getChildCount());
-
             TerminalNode node = (TerminalNode) ctx.getChild(0);
             Constructor constructor = getConstructor(node.getSymbol().getType());
 

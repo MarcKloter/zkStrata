@@ -7,15 +7,18 @@ import zkstrata.compiler.Arguments;
 import zkstrata.domain.visitor.ASTVisitor;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
+import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.Node;
 import zkstrata.parser.ast.Subject;
+import zkstrata.parser.ast.connectives.Connective;
 import zkstrata.parser.ast.predicates.BoundsCheck;
 import zkstrata.parser.ast.predicates.Predicate;
 import zkstrata.parser.ast.types.Identifier;
 import zkstrata.parser.ast.types.IntegerLiteral;
 import zkstrata.utils.ArgumentsBuilder;
 import zkstrata.utils.Constants;
+import zkstrata.utils.StatementBuilder;
 
 import java.util.Collections;
 import java.util.List;
@@ -84,5 +87,28 @@ public class ASTVisitorTest {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
 
         assertTrue(exception.getMessage().toLowerCase().contains("number too large"));
+    }
+
+    @Test
+    void Missing_Conjunction_Implementation_Should_Throw() {
+        BoundsCheck left = new BoundsCheck(IDENTIFIER, INT_13, INT_LARGE, getAbsPosition());
+        BoundsCheck right = new BoundsCheck(IDENTIFIER, INT_13, INT_LARGE, getAbsPosition());
+        MissingConjunctionImplementation connective = new MissingConjunctionImplementation(left, right, getAbsPosition());
+        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), connective);
+
+        InternalCompilerException exception = assertThrows(InternalCompilerException.class, () -> visitor.visit(ast));
+
+        assertTrue(exception.getMessage().toLowerCase().contains("missing conjunction implementation"));
+    }
+
+    public class MissingConjunctionImplementation extends Connective {
+        public MissingConjunctionImplementation(Node left, Node right, Position position) {
+            super(left, right, position);
+        }
+
+        @Override
+        public void addTo(StatementBuilder statementBuilder) {
+
+        }
     }
 }

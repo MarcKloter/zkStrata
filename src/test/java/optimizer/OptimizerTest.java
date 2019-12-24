@@ -1,6 +1,8 @@
 package optimizer;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
 import zkstrata.domain.conjunctions.AndConjunction;
@@ -8,10 +10,9 @@ import zkstrata.domain.conjunctions.OrConjunction;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
-import zkstrata.domain.gadgets.impl.BoundsCheckGadget;
-import zkstrata.domain.gadgets.impl.EqualityGadget;
-import zkstrata.domain.gadgets.impl.InequalityGadget;
-import zkstrata.domain.gadgets.impl.LessThanGadget;
+import zkstrata.domain.gadgets.Gadget;
+import zkstrata.domain.gadgets.impl.*;
+import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.optimizer.Optimizer;
 
 import java.math.BigInteger;
@@ -175,5 +176,28 @@ public class OptimizerTest {
         Proposition claim = new AndConjunction(List.of(EQUALITY_GADGET_1, EQUALITY_GADGET_2));
         Proposition result = new Optimizer(new Statement(claim, premise, trueProposition())).process();
         assertEquals(trueProposition(), result);
+    }
+
+    /**
+     * Check the behaviour of the optimizer, when passed {@link zkstrata.optimizer.TrueProposition}
+     */
+    @Test
+    void Optimization_Test_9() {
+        Proposition result = new Optimizer(new Statement(trueProposition(), trueProposition(), trueProposition())).process();
+        assertEquals(trueProposition(), result);
+    }
+
+    /**
+     * Check the behaviour of the optimizer, when passed {@link zkstrata.optimizer.TrueProposition}
+     */
+    @Test
+    void Unknown_Proposition_Should_Throw() {
+        Proposition unknownProposition = Mockito.mock(Proposition.class);
+
+        InternalCompilerException exception = assertThrows(InternalCompilerException.class, () ->
+            new Optimizer(new Statement(unknownProposition, trueProposition(), trueProposition())).process()
+        );
+
+        assertTrue(exception.getMessage().toLowerCase().contains("unknown proposition"));
     }
 }

@@ -1,6 +1,7 @@
 package zkstrata.domain.data.schemas;
 
 import zkstrata.domain.data.Selector;
+import zkstrata.utils.ReflectionHelper;
 
 import java.lang.reflect.Field;
 import java.util.Iterator;
@@ -24,12 +25,8 @@ public abstract class AbstractSchema implements Schema {
             if (!iterator.hasNext()) {
                 return type;
             } else {
-                if (Schema.class.isAssignableFrom(type)) {
-                    schema = type.asSubclass(Schema.class);
-                } else {
-                    String msg = String.format("Cannot access %s of type %s because it is not a schema.", accessor, type);
-                    throw new IllegalArgumentException(msg);
-                }
+                ReflectionHelper.assertIsAssignableFrom(Schema.class, type);
+                schema = type.asSubclass(Schema.class);
             }
         }
 
@@ -40,8 +37,7 @@ public abstract class AbstractSchema implements Schema {
         try {
             return schema.getDeclaredField(selector);
         } catch (NoSuchFieldException e) {
-            String msg = String.format("Field %s does not exist in schema %s.", selector, schema);
-            throw new IllegalArgumentException(msg);
+            throw new IllegalArgumentException(String.format("Field %s does not exist in schema %s.", selector, schema));
         }
     }
 

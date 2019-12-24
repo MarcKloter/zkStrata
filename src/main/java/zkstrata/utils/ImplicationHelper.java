@@ -5,7 +5,6 @@ import zkstrata.analysis.Inference;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.Gadget;
-import zkstrata.exceptions.InternalCompilerException;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -36,7 +35,7 @@ public class ImplicationHelper {
      * Executes all methods annotated as {@link Implication} on the given list of {@link Gadget} objects {@code gadgets}
      * and the inferences that can be drawn from it, until there is no new implication to be drawn.
      *
-     * @param targets list of {@link Gadget} objects to draw inferences for
+     * @param targets  list of {@link Gadget} objects to draw inferences for
      * @param existing set of {@link Inference} that have been drawn previously
      * @return set of {@link Inference} returned by the executed implication rules
      */
@@ -249,19 +248,11 @@ public class ImplicationHelper {
      * @return {@link Optional} {@link Gadget} returned by the invoked method
      */
     private static Optional<Gadget> invokeImplicationRule(Method implicationRule, Object[] args) {
-        if (!ReflectionHelper.checkReturnType(implicationRule, Optional.class, Gadget.class))
-            throw new InternalCompilerException("Invalid implementation of @Implication annotated method %s in %s. "
-                    + "Return type must be Optional<Gadget>.", implicationRule.getName(), implicationRule.getDeclaringClass());
+        ReflectionHelper.assertParameterizedReturnType(implicationRule, Optional.class, Gadget.class);
 
-        try {
-            @SuppressWarnings("unchecked")
-            Optional<Gadget> impliedGadget = (Optional<Gadget>) implicationRule.invoke(null, args);
+        @SuppressWarnings("unchecked")
+        Optional<Gadget> impliedGadget = (Optional<Gadget>) ReflectionHelper.invokeStaticMethod(implicationRule, args);
 
-            return impliedGadget;
-        } catch (ReflectiveOperationException | IllegalArgumentException | ClassCastException e) {
-            throw new InternalCompilerException(e, "Invalid implementation of @Implication annotated method %s in %s: "
-                    + "Ensure the method is static and its parameters are matching the annotation.",
-                    implicationRule.getName(), implicationRule.getDeclaringClass());
-        }
+        return impliedGadget;
     }
 }

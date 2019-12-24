@@ -1,6 +1,5 @@
 package zkstrata.domain.gadgets;
 
-import org.apache.commons.lang3.StringUtils;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Null;
@@ -8,9 +7,8 @@ import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.optimizer.Substitution;
+import zkstrata.utils.ReflectionHelper;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -46,9 +44,8 @@ public abstract class AbstractGadget implements Gadget {
     private void checkType(Field field, Object value) {
         if (value instanceof Variable)
             checkTypeAnnotation(field, (Variable) value);
-        else if (!field.getType().isAssignableFrom(value.getClass()))
-            throw new InternalCompilerException("Type mismatch for field %s in gadget %s and its AST predicate.",
-                    field.getName(), field.getDeclaringClass().getSimpleName());
+        else
+            ReflectionHelper.assertIsAssignableFrom(field.getType(), value.getClass());
     }
 
     /**
@@ -83,19 +80,8 @@ public abstract class AbstractGadget implements Gadget {
         List<Variable> variables = new ArrayList<>();
 
         for (Field field : getTypeAnnotatedFields()) {
-            try {
-                String fieldName = field.getName();
-                Object value = new PropertyDescriptor(fieldName, this.getClass(), "get" +
-                        StringUtils.capitalize(fieldName), null).getReadMethod().invoke(this);
-                processValue(value, variables);
-            } catch (IntrospectionException e) {
-                throw new InternalCompilerException("Unable to call getter method for field %s in gadget %s. "
-                        + "Ensure the gadget class defines public getter methods for all its fields.",
-                        field.getName(), this.getClass());
-            } catch (ReflectiveOperationException | ClassCastException e) {
-                throw new InternalCompilerException("Invalid getter method for field %s in gadget %s.",
-                        field.getName(), this.getClass().getSimpleName());
-            }
+            Object value = ReflectionHelper.invokeGetter(this, field);
+            processValue(value, variables);
         }
 
         return variables;
