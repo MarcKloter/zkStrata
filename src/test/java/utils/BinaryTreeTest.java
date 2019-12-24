@@ -15,14 +15,14 @@ public class BinaryTreeTest {
     @Test
     void Not_Equals_Null() {
         BinaryTree<String> tree = new BinaryTree<>(new Node<>(new Node<>(LEAF_1, LEAF_4), new Node<>(LEAF_3, LEAF_2)));
-        assertNotEquals(null, tree);
+        assertFalse(tree.equals(null));
     }
 
     @Test
     void Not_Equals_Other_Object() {
         BinaryTree<String> tree = new BinaryTree<>(new Node<>(new Node<>(LEAF_1, LEAF_4), new Node<>(LEAF_3, LEAF_2)));
-        assertNotEquals("String", tree);
-        assertNotEquals(1234, tree);
+        assertFalse(tree.equals("String"));
+        assertFalse(tree.equals(1234));
     }
 
     @Test

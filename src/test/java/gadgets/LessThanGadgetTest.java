@@ -28,7 +28,7 @@ public class LessThanGadgetTest {
     private static final WitnessVariable WITNESS_VAR_4 = createWitnessVariable(BigInteger.class, 4);
 
     @Test
-    void Is_Equal_To() {
+    void Is_Equal_To_1() {
         LessThanGadget lessThanGadget1 = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         LessThanGadget lessThanGadget2 = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         assertEquals(lessThanGadget1, lessThanGadget2);
@@ -44,7 +44,7 @@ public class LessThanGadgetTest {
     @Test
     void Is_Not_Equal_To_2() {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
-        assertNotEquals(null, lessThanGadget);
+        assertFalse(lessThanGadget.equals(null));
     }
 
     @Test

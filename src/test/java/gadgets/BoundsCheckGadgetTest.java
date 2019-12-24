@@ -56,7 +56,7 @@ public class BoundsCheckGadgetTest {
     @Test
     void Is_Not_Equal_To_4() {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
-        assertNotEquals(null, boundsCheckGadget);
+        assertFalse(boundsCheckGadget.equals(null));
     }
 
     @Test
@@ -204,6 +204,26 @@ public class BoundsCheckGadgetTest {
     void Two_Gadget_No_Contradiction_2() {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_41);
+
+        assertDoesNotThrow(() ->
+                BoundsCheckGadget.checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget)
+        );
+    }
+
+    @Test
+    void Two_Gadget_No_Contradiction_3() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_41);
+
+        assertDoesNotThrow(() ->
+                BoundsCheckGadget.checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget)
+        );
+    }
+
+    @Test
+    void Two_Gadget_No_Contradiction_4() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
 
         assertDoesNotThrow(() ->
                 BoundsCheckGadget.checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget)

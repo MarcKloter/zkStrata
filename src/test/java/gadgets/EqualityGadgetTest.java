@@ -122,7 +122,7 @@ public class EqualityGadgetTest {
     @Test
     void Is_Not_Equal_To_2() {
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
-        assertNotEquals(null, equalityGadget);
+        assertFalse(equalityGadget.equals(null));
     }
 
     @Test

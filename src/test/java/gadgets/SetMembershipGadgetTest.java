@@ -62,7 +62,7 @@ public class SetMembershipGadgetTest {
     @Test
     void Is_Not_Equal_To_3() {
         SetMembershipGadget setMembershipGadget = new SetMembershipGadget(INSTANCE_VAR_17, SET_2);
-        assertNotEquals(null, setMembershipGadget);
+        assertFalse(setMembershipGadget.equals(null));
     }
 
     @Test
@@ -85,9 +85,16 @@ public class SetMembershipGadgetTest {
     }
 
     @Test
-    void Equality_Contained_No_Substitution() {
+    void Equality_Contained_No_Substitution_1() {
         SetMembershipGadget setMembershipGadget = new SetMembershipGadget(WITNESS_VAR_1, SET_3);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_53);
+        assertEquals(Optional.empty(), SetMembershipGadget.removeEqualityContained(setMembershipGadget, equalityGadget));
+    }
+
+    @Test
+    void Equality_Contained_No_Substitution_2() {
+        SetMembershipGadget setMembershipGadget = new SetMembershipGadget(WITNESS_VAR_1, SET_3);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_53);
         assertEquals(Optional.empty(), SetMembershipGadget.removeEqualityContained(setMembershipGadget, equalityGadget));
     }
 

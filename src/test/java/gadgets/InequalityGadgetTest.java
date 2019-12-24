@@ -132,7 +132,14 @@ public class InequalityGadgetTest {
     @Test
     void Is_Not_Equal_To_2() {
         InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
-        assertNotEquals(null, inequalityGadget);
+        assertFalse(inequalityGadget.equals(null));
+    }
+
+    @Test
+    void Is_Not_Equal_To_3() {
+        InequalityGadget inequalityGadget1 = new InequalityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        InequalityGadget inequalityGadget2 = new InequalityGadget(WITNESS_VAR_1, WITNESS_VAR_1);
+        assertNotEquals(inequalityGadget1, inequalityGadget2);
     }
 
     @Test

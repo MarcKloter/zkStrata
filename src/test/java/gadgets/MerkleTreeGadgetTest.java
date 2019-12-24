@@ -82,6 +82,6 @@ public class MerkleTreeGadgetTest {
     @Test
     void Is_Not_Equal_To_3() {
         MerkleTreeGadget merkleTreeGadget = new MerkleTreeGadget(INSTANCE_VAR_ROOT_2, TREE_1);
-        assertNotEquals(null, merkleTreeGadget);
+        assertFalse(merkleTreeGadget.equals(null));
     }
 }

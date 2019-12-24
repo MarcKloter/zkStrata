@@ -92,7 +92,7 @@ public class BoundsCheckGadget extends AbstractGadget {
     public static void checkEqualityBoundsContradiction(EqualityGadget eq, BoundsCheckGadget bc) {
         Optional<Variable> equal = EqualityGadget.getEqual(eq, bc.getValue());
 
-        if (equal.isPresent() && isInstanceVariable(equal.get()) && isBigInteger(equal.get())) {
+        if (equal.isPresent() && isInstanceVariable(equal.get())) {
             BigInteger value = (BigInteger) ((Literal) equal.get().getValue()).getValue();
             if (value.compareTo(bc.getMinValue()) < 0)
                 throw new CompileTimeException("Contradiction.", List.of(eq.getRight(), bc.getMin()));
