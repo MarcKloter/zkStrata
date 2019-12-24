@@ -7,6 +7,7 @@ import zkstrata.domain.Statement;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.utils.CombinatoricsUtils;
+import zkstrata.utils.InferencesTableBuilder;
 import zkstrata.utils.ImplicationHelper;
 import zkstrata.utils.ReflectionHelper;
 
@@ -30,18 +31,17 @@ public class SemanticAnalyzer {
 
         Proposition allPropositions = statement.getClaim().combine(statement.getPremises()).combine(statement.getValidationRules());
 
-        // get all possible evaluation paths to prove the combined statement
         List<List<Gadget>> evaluationPaths = allPropositions.getEvaluationPaths();
 
         LOGGER.debug("Found {} logically distinct paths to evaluate the given statement", evaluationPaths.size());
 
-        // under the assumption that all claims are correct, check any contradictions that would make this impossible
         for (int i = 0; i < evaluationPaths.size(); i++) {
             Set<Inference> inferences = ImplicationHelper.drawInferences(evaluationPaths.get(i));
 
-            LOGGER.debug("Drew {} inferences for evaluation path {}", inferences.size(), i);
+            if (LOGGER.isDebugEnabled())
+                LOGGER.debug("Drew {} inferences for evaluation path {}:{}{}", inferences.size(), i,
+                        System.lineSeparator(), new InferencesTableBuilder().buildTable(inferences));
 
-            // check for semantic errors by executing methods annotated with @Contradiction
             checkContradictions(inferences);
         }
 

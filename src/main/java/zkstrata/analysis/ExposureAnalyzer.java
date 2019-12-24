@@ -44,7 +44,7 @@ public class ExposureAnalyzer {
         List<Gadget> gadgets = statement.getClaim().combine(statement.getPremises()).listAllGadgets();
 
         for (Gadget gadget : gadgets)
-            for (Variable variable : gadget.getVariables())
+            for (Variable variable : gadget.getVariables().values())
                 markVariable(variable, susceptibleData, checkList);
     }
 

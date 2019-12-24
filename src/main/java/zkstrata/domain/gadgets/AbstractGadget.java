@@ -1,5 +1,7 @@
 package zkstrata.domain.gadgets;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.text.TextStringBuilder;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Null;
@@ -7,6 +9,7 @@ import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.optimizer.Substitution;
+import zkstrata.utils.GadgetUtils;
 import zkstrata.utils.ReflectionHelper;
 
 import java.lang.reflect.Field;
@@ -14,6 +17,16 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public abstract class AbstractGadget implements Gadget {
+    @Substitution(target = {Gadget.class, Gadget.class})
+    public static Optional<Proposition> removeDuplicateGadget(Gadget first, Gadget second) {
+        return first.equals(second) ? Optional.of(first) : Optional.empty();
+    }
+
+    @Substitution(target = {Gadget.class}, context = {Gadget.class})
+    public static Optional<Proposition> removeConclusion(Gadget target, Gadget context) {
+        return target.equals(context) ? Optional.of(Proposition.trueProposition()) : Optional.empty();
+    }
+
     @Override
     public void initFrom(Map<String, Object> sourceFields) {
         for (Map.Entry<String, Object> source : sourceFields.entrySet()) {
@@ -74,27 +87,28 @@ public abstract class AbstractGadget implements Gadget {
     }
 
     @Override
-    public List<Variable> getVariables() {
-        List<Variable> variables = new ArrayList<>();
+    public Map<String, Variable> getVariables() {
+        Map<String, Variable> variables = new LinkedHashMap<>();
 
         for (Field field : getTypeAnnotatedFields()) {
             Object value = ReflectionHelper.invokeGetter(this, field);
-            processValue(value, variables);
+            processValue(field.getName(), value, variables);
         }
 
         return variables;
     }
 
-    private void processValue(Object value, List<Variable> variables) {
-        if (Collection.class.isAssignableFrom(value.getClass()))
+    private void processValue(String key, Object value, Map<String, Variable> variables) {
+        if (Collection.class.isAssignableFrom(value.getClass())) {
+            int index = 1;
             for (Object element : ((Collection) value))
-                processValue(element, variables);
-        else
-            variables.add((Variable) value);
+                processValue(String.format("%s[%d]", key, index++), element, variables);
+        } else
+            variables.put(key, (Variable) value);
     }
 
     private Set<Field> getTypeAnnotatedFields() {
-        Set<Field> fields = new HashSet<>();
+            Set<Field> fields = new LinkedHashSet<>();
         for (Field field : this.getClass().getDeclaredFields()) {
             Type annotation = field.getAnnotation(Type.class);
 
@@ -111,19 +125,23 @@ public abstract class AbstractGadget implements Gadget {
     public void performChecks() {
     }
 
-    @Substitution(target = {Gadget.class, Gadget.class})
-    public static Optional<Proposition> removeDuplicateGadget(Gadget first, Gadget second) {
-        return first.equals(second) ? Optional.of(first) : Optional.empty();
-    }
-
-    @Substitution(target = {Gadget.class}, context = {Gadget.class})
-    public static Optional<Proposition> removeConclusion(Gadget target, Gadget context) {
-        return target.equals(context) ? Optional.of(Proposition.trueProposition()) : Optional.empty();
-    }
-
     @Override
     public String toString() {
         return getClass().getSimpleName();
+    }
+
+    @Override
+    public String toDebugString() {
+        TextStringBuilder builder = new TextStringBuilder();
+        builder.appendln(getClass().getSimpleName());
+        getVariables().forEach((key, value) -> {
+            if (GadgetUtils.isWitnessVariable(value))
+                builder.appendln("  <%s: Witness<%s> = %s>", key, value.getType().getSimpleName(), value.toString());
+            else
+                builder.appendln("  <%s: Instance<%s> = %s>", key, value.getType().getSimpleName(),
+                        StringUtils.abbreviate(value.getValue().toString(), 12));
+        });
+        return builder.build();
     }
 
     @Override

@@ -490,6 +490,7 @@ public class Optimizer {
                     getTargets().stream().map(Proposition::listAllGadgets).flatMap(Collection::stream)
             )
                     .map(Gadget::getVariables)
+                    .map(Map::values)
                     .flatMap(Collection::stream)
                     .map(Variable::getReference)
                     .filter(Objects::nonNull)
@@ -508,6 +509,7 @@ public class Optimizer {
         private int hashCodeOf(Stream<Gadget> stream) {
             return stream
                     .map(Gadget::getVariables)
+                    .map(Map::values)
                     .flatMap(Collection::stream)
                     .map(Variable::getPosition)
                     .filter(Objects::nonNull)
