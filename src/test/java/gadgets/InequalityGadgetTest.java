@@ -79,8 +79,8 @@ public class InequalityGadgetTest {
 
     @Test
     void Equality_No_Contradiction_2() {
-        InequalityGadget inequalityGadget = new InequalityGadget(INSTANCE_VAR_41, WITNESS_VAR_2);
-        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_41);
+        InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_1, INSTANCE_VAR_41);
+        EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_41, WITNESS_VAR_2);
         assertDoesNotThrow(() -> InequalityGadget.checkEqualityContradiction(equalityGadget, inequalityGadget));
     }
 
@@ -123,10 +123,16 @@ public class InequalityGadgetTest {
     }
 
     @Test
-    void Is_Not_Equal_To() {
+    void Is_Not_Equal_To_1() {
         InequalityGadget inequalityGadget1 = new InequalityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         InequalityGadget inequalityGadget2 = new InequalityGadget(WITNESS_VAR_2, WITNESS_VAR_2);
         assertNotEquals(inequalityGadget1, inequalityGadget2);
+    }
+
+    @Test
+    void Is_Not_Equal_To_2() {
+        InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        assertNotEquals(null, inequalityGadget);
     }
 
     @Test

@@ -113,10 +113,16 @@ public class EqualityGadgetTest {
     }
 
     @Test
-    void Is_Not_Equal_To() {
+    void Is_Not_Equal_To_1() {
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, WITNESS_VAR_2);
         assertNotEquals(equalityGadget1, equalityGadget2);
+    }
+
+    @Test
+    void Is_Not_Equal_To_2() {
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        assertNotEquals(null, equalityGadget);
     }
 
     @Test

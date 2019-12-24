@@ -52,7 +52,7 @@ public class LessThanGadget extends AbstractGadget {
     @Contradiction(propositions = {EqualityGadget.class, LessThanGadget.class})
     public static void checkEqualityContradiction(EqualityGadget eq, LessThanGadget lt) {
         if (eq.getLeft().equals(lt.getLeft()) && eq.getRight().equals(lt.getRight())
-                || eq.getRight().equals(lt.getRight()) && eq.getRight().equals(lt.getLeft()))
+                || eq.getLeft().equals(lt.getRight()) && eq.getRight().equals(lt.getLeft()))
             throw new CompileTimeException("Contradiction.",
                     List.of(eq.getLeft(), eq.getRight(), lt.getLeft(), lt.getRight()));
     }
@@ -67,7 +67,7 @@ public class LessThanGadget extends AbstractGadget {
                 .orElse(EqualityGadget.getEqual(eq2, lt.getRight())
                         .orElse(null));
 
-        if (isInstanceVariable(left) && isBigInteger(left) && isInstanceVariable(right) && isBigInteger(right)) {
+        if (isInstanceVariable(left) && isInstanceVariable(right)) {
             BigInteger leftValue = (BigInteger) ((InstanceVariable) left).getValue().getValue();
             BigInteger rightValue = (BigInteger) ((InstanceVariable) right).getValue().getValue();
 

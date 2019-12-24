@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class LessThanGadgetTest {
     private static final InstanceVariable INSTANCE_VAR_17 = createInstanceVariable(new Literal(BigInteger.valueOf(17)));
     private static final InstanceVariable INSTANCE_VAR_29 = createInstanceVariable(new Literal(BigInteger.valueOf(29)));
+    private static final InstanceVariable INSTANCE_VAR_STRING = createInstanceVariable(new Literal("string"));
 
     private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class, 1);
     private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class, 2);
@@ -34,10 +35,16 @@ public class LessThanGadgetTest {
     }
 
     @Test
-    void Is_Not_Equal_To() {
+    void Is_Not_Equal_To_1() {
         LessThanGadget lessThanGadget1 = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         LessThanGadget lessThanGadget2 = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_3);
         assertNotEquals(lessThanGadget1, lessThanGadget2);
+    }
+
+    @Test
+    void Is_Not_Equal_To_2() {
+        LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        assertNotEquals(null, lessThanGadget);
     }
 
     @Test
@@ -57,8 +64,19 @@ public class LessThanGadgetTest {
     }
 
     @Test
-    void Equality_Contradiction() {
+    void Equality_Contradiction_1() {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+                LessThanGadget.checkEqualityContradiction(equalityGadget, lessThanGadget)
+        );
+
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
+    }
+
+    @Test
+    void Equality_Contradiction_2() {
+        LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_2, WITNESS_VAR_1);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
                 LessThanGadget.checkEqualityContradiction(equalityGadget, lessThanGadget)
@@ -91,10 +109,28 @@ public class LessThanGadgetTest {
     }
 
     @Test
-    void Exposure_No_Substitution() {
+    void Exposure_No_Substitution_1() {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        assertEquals(Optional.empty(),
+                LessThanGadget.removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
+    }
+
+    @Test
+    void Exposure_No_Substitution_2() {
+        LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        assertEquals(Optional.empty(),
+                LessThanGadget.removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
+    }
+
+    @Test
+    void Exposure_No_Substitution_3() {
+        LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_29);
+        EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_17);
         assertEquals(Optional.empty(),
                 LessThanGadget.removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
     }
@@ -124,9 +160,18 @@ public class LessThanGadgetTest {
     }
 
     @Test
-    void Imply_No_Transitivity() {
+    void Imply_No_Transitivity_1() {
         LessThanGadget lessThanGadget1 = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         LessThanGadget lessThanGadget2 = new LessThanGadget(WITNESS_VAR_3, WITNESS_VAR_2);
+
+        Optional<Gadget> result = LessThanGadget.implyTransitivity(lessThanGadget1, lessThanGadget2);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void Imply_No_Transitivity_2() {
+        LessThanGadget lessThanGadget1 = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        LessThanGadget lessThanGadget2 = new LessThanGadget(WITNESS_VAR_2, WITNESS_VAR_1);
 
         Optional<Gadget> result = LessThanGadget.implyTransitivity(lessThanGadget1, lessThanGadget2);
         assertTrue(result.isEmpty());
@@ -157,9 +202,27 @@ public class LessThanGadgetTest {
     }
 
     @Test
-    void Imply_Equality_None() {
+    void Imply_Equality_None_1() {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_3, WITNESS_VAR_4);
+
+        Optional<Gadget> result = LessThanGadget.implyEquality(lessThanGadget, equalityGadget);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void Imply_Equality_None_2() {
+        LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+
+        Optional<Gadget> result = LessThanGadget.implyEquality(lessThanGadget, equalityGadget);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void Imply_Equality_None_3() {
+        LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
+        EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_17, WITNESS_VAR_2);
 
         Optional<Gadget> result = LessThanGadget.implyEquality(lessThanGadget, equalityGadget);
         assertTrue(result.isEmpty());

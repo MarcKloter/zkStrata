@@ -54,6 +54,12 @@ public class BoundsCheckGadgetTest {
     }
 
     @Test
+    void Is_Not_Equal_To_4() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        assertNotEquals(null, boundsCheckGadget);
+    }
+
+    @Test
     void Imply_Bounds_Left() {
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);

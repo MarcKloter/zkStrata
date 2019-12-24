@@ -60,6 +60,12 @@ public class SetMembershipGadgetTest {
     }
 
     @Test
+    void Is_Not_Equal_To_3() {
+        SetMembershipGadget setMembershipGadget = new SetMembershipGadget(INSTANCE_VAR_17, SET_2);
+        assertNotEquals(null, setMembershipGadget);
+    }
+
+    @Test
     void Self_Contained_Substitution() {
         SetMembershipGadget setMembershipGadget = new SetMembershipGadget(INSTANCE_VAR_29, SET_2);
         assertEquals(Optional.of(Proposition.trueProposition()), SetMembershipGadget.removeSelfContained(setMembershipGadget));

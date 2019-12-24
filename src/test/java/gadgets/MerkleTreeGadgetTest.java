@@ -78,4 +78,10 @@ public class MerkleTreeGadgetTest {
         MerkleTreeGadget merkleTreeGadget2 = new MerkleTreeGadget(INSTANCE_VAR_ROOT_2, TREE_2);
         assertNotEquals(merkleTreeGadget1, merkleTreeGadget2);
     }
+
+    @Test
+    void Is_Not_Equal_To_3() {
+        MerkleTreeGadget merkleTreeGadget = new MerkleTreeGadget(INSTANCE_VAR_ROOT_2, TREE_1);
+        assertNotEquals(null, merkleTreeGadget);
+    }
 }

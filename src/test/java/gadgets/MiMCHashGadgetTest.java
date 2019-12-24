@@ -65,6 +65,12 @@ public class MiMCHashGadgetTest {
     }
 
     @Test
+    void Is_Not_Equal_To_3() {
+        MiMCHashGadget miMCHashGadget = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_2);
+        assertNotEquals(null, miMCHashGadget);
+    }
+
+    @Test
     void Same_Preimage_Different_Image_Contradiction() {
         MiMCHashGadget miMCHashGadget1 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_1);
         MiMCHashGadget miMCHashGadget2 = new MiMCHashGadget(WITNESS_VAR_1, INSTANCE_VAR_2);
