@@ -71,13 +71,13 @@ public class ASTVisitorTest {
     }
 
     @Test
-    void Missing_Constant_Implementation_Should_Throw() {
-        Constant constant = Mockito.mock(Constant.class);
+        void Missing_Constant_Implementation_Should_Throw() {
+        Constant constant = new Constant("_UNIMPLEMENTED_CONSTANT", getAbsPosition());
         BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, constant, getAbsPosition());
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
 
         InternalCompilerException exception = assertThrows(InternalCompilerException.class, () -> visitor.visit(ast));
-        System.out.println(exception.getMessage());
+
         assertTrue(exception.getMessage().toLowerCase().contains("unimplemented constant"));
     }
 
