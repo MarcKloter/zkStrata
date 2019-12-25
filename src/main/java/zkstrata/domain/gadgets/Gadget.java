@@ -26,7 +26,7 @@ public interface Gadget extends Proposition {
     /**
      * Hook method that will be called after @Type annotated fields were wired.
      */
-    void performChecks();
+    void initialize();
 
     default String getVerboseInformation() {
         TextStringBuilder builder = new TextStringBuilder();

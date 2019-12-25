@@ -40,7 +40,7 @@ public abstract class AbstractGadget implements Gadget {
             }
         }
 
-        this.performChecks();
+        this.initialize();
     }
 
     /**
@@ -119,7 +119,7 @@ public abstract class AbstractGadget implements Gadget {
      * Empty default implementation to override by gadgets on demand.
      */
     @Override
-    public void performChecks() {
+    public void initialize() {
     }
 
     @Override

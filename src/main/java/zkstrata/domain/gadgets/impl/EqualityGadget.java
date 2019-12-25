@@ -38,7 +38,7 @@ public class EqualityGadget extends AbstractGadget {
         this.left = left;
         this.right = right;
 
-        this.performChecks();
+        this.initialize();
     }
 
     @Implication(assumption = {EqualityGadget.class, EqualityGadget.class})
@@ -97,7 +97,7 @@ public class EqualityGadget extends AbstractGadget {
     }
 
     @Override
-    public void performChecks() {
+    public void initialize() {
         if (left.getType() != right.getType())
             throw new CompileTimeException("Type mismatch.", List.of(this.left, this.right));
     }

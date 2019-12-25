@@ -32,11 +32,11 @@ public class MerkleTreeGadget extends AbstractGadget {
         this.root = root;
         this.tree = tree;
 
-        this.performChecks();
+        this.initialize();
     }
 
     @Override
-    public void performChecks() {
+    public void initialize() {
         BigInteger image = (BigInteger) ((this.root.getValue()).getValue());
         if (image.compareTo(Constants.ED25519_MAX_VALUE) > 0
                 || image.compareTo(BigInteger.ZERO) < 0)

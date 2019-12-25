@@ -7,7 +7,6 @@ import zkstrata.domain.data.types.custom.HexLiteral;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
-import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.visitor.AstElement;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
@@ -36,7 +35,7 @@ public class MiMCHashGadget extends AbstractGadget {
         this.preimage = preimage;
         this.image = image;
 
-        this.performChecks();
+        this.initialize();
     }
 
     /**
@@ -56,7 +55,7 @@ public class MiMCHashGadget extends AbstractGadget {
     }
 
     @Override
-    public void performChecks() {
+    public void initialize() {
         if (isInstanceVariable(this.image)) {
             BigInteger imageValue = (BigInteger) (((HexLiteral) this.image.getValue()).getValue());
             if (imageValue.compareTo(Constants.ED25519_MAX_VALUE) > 0

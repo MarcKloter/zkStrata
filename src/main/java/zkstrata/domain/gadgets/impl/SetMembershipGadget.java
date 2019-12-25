@@ -40,7 +40,7 @@ public class SetMembershipGadget extends AbstractGadget {
         this.member = member;
         this.set = set;
 
-        this.performChecks();
+        this.initialize();
     }
 
     /**

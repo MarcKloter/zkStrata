@@ -40,7 +40,7 @@ public class LessThanGadget extends AbstractGadget {
         this.left = left;
         this.right = right;
 
-        this.performChecks();
+        this.initialize();
     }
 
     @Contradiction(propositions = {LessThanGadget.class})

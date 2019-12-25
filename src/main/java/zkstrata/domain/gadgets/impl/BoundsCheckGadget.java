@@ -180,7 +180,7 @@ public class BoundsCheckGadget extends AbstractGadget {
     }
 
     @Override
-    public void performChecks() {
+    public void initialize() {
         if (this.min == null)
             this.min = InstanceVariable.of(MIN_VALUE);
 
