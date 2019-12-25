@@ -2,7 +2,7 @@
   "title": "date",
   "type": "object",
   "properties": {
-    "unixDate": {
+    "iso8601BasicDate": {
       "type": "number"
     },
     "dateSchema": {

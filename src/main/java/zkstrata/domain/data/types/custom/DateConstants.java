@@ -13,24 +13,46 @@ public class DateConstants {
         throw new IllegalStateException("Utility class");
     }
 
-    @Constant ("CURRENT_DATE")
+    @Constant("CURRENT_DATE")
     public static Literal getCurrentUnixTimestamp() {
-        long timestamp = now().atStartOfDay(systemDefault()).toInstant().getEpochSecond();
-        return new Literal(BigInteger.valueOf(timestamp ));
+        return new Literal(new BigInteger(getISO8601BasicDate()));
     }
 
-    @Constant ("CURRENT_DAY_OF_MONTH")
+    /**
+     * Returns the current date as basic format of ISO 8601 without ambiguity.
+     * <p>
+     * Example: February 6, 2020 is encoded as 20200206
+     *
+     * @return current date as basic format of ISO 8601 as String
+     */
+    private static String getISO8601BasicDate() {
+        return String.format("%d%02d%02d", getYear(), getMonth(), getDayOfMonth());
+    }
+
+    @Constant("CURRENT_DAY_OF_MONTH")
     public static Literal getCurrentDay() {
-        return new Literal(BigInteger.valueOf(now(systemDefault()).getDayOfMonth()));
+        return new Literal(BigInteger.valueOf(getDayOfMonth()));
     }
 
-    @Constant ("CURRENT_MONTH")
+    private static int getDayOfMonth() {
+        return now(systemDefault()).getDayOfMonth();
+    }
+
+    @Constant("CURRENT_MONTH")
     public static Literal getCurrentMonth() {
-        return new Literal(BigInteger.valueOf(now(systemDefault()).getMonthValue()));
+        return new Literal(BigInteger.valueOf(getMonth()));
     }
 
-    @Constant ("CURRENT_YEAR")
+    private static int getMonth() {
+        return now(systemDefault()).getMonthValue();
+    }
+
+    @Constant("CURRENT_YEAR")
     public static Literal getCurrentYear() {
-        return new Literal(BigInteger.valueOf(now(systemDefault()).getYear()));
+        return new Literal(BigInteger.valueOf(getYear()));
+    }
+
+    private static int getYear() {
+        return now(systemDefault()).getYear();
     }
 }

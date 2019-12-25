@@ -1,7 +1,7 @@
 PROOF FOR
     date AS date
 THAT
-    date.unixDate IS LESS THAN _CURRENT_DATE
+    date.iso8601BasicDate IS LESS THAN _CURRENT_DATE
 AND
     date.dateSchema.day IS EQUAL TO _CURRENT_DAY_OF_MONTH
 AND
