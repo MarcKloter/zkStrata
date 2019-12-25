@@ -71,14 +71,14 @@ public class ASTVisitorTest {
     }
 
     @Test
-        void Missing_Constant_Implementation_Should_Throw() {
-        Constant constant = new Constant("_UNIMPLEMENTED_CONSTANT", getAbsPosition());
+    void Invalid_Constant_Should_Throw() {
+        Constant constant = new Constant("_INVALID_CONSTANT", getAbsPosition());
         BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, constant, getAbsPosition());
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
 
-        InternalCompilerException exception = assertThrows(InternalCompilerException.class, () -> visitor.visit(ast));
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
 
-        assertTrue(exception.getMessage().toLowerCase().contains("unimplemented constant"));
+        assertTrue(exception.getMessage().toLowerCase().contains("invalid constant"));
     }
 
     @Test
@@ -113,17 +113,6 @@ public class ASTVisitorTest {
         assertTrue(exception.getMessage().toLowerCase().contains("missing conjunction implementation"));
     }
 
-    public class MissingConjunctionImplementation extends Connective {
-        public MissingConjunctionImplementation(Node left, Node right, Position position) {
-            super(left, right, position);
-        }
-
-        @Override
-        public void addTo(StatementBuilder statementBuilder) {
-
-        }
-    }
-
     @Test
     void Unimplemented_Type_Should_Throw() {
         UnimplementedType unimplementedType = new UnimplementedType(getAbsPosition());
@@ -133,6 +122,17 @@ public class ASTVisitorTest {
         InternalCompilerException exception = assertThrows(InternalCompilerException.class, () -> visitor.visit(ast));
 
         assertTrue(exception.getMessage().toLowerCase().contains("unimplemented type"));
+    }
+
+    public class MissingConjunctionImplementation extends Connective {
+        public MissingConjunctionImplementation(Node left, Node right, Position position) {
+            super(left, right, position);
+        }
+
+        @Override
+        public void addTo(StatementBuilder statementBuilder) {
+
+        }
     }
 
     public class UnimplementedType extends Value {

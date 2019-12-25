@@ -310,7 +310,7 @@ public class ASTVisitor {
             }
         }
 
-        throw new InternalCompilerException("Unimplemented constant %s in AST.", constant.getValue());
+        throw new CompileTimeException("Invalid constant.", pinPosition(constant));
     }
 
     private void checkUnusedSubjects() {
