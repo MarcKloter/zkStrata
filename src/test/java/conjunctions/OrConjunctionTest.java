@@ -18,7 +18,8 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static zkstrata.utils.TestHelper.*;
 
 public class OrConjunctionTest {
@@ -33,6 +34,27 @@ public class OrConjunctionTest {
     private static final LessThanGadget LESS_THAN_GADGET = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
     private static final InequalityGadget INEQUALITY_GADGET = new InequalityGadget(WITNESS_VAR_2, INSTANCE_VAR_41);
     private static final BoundsCheckGadget BOUNDS_CHECK_GADGET = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+
+    @Test
+    void Is_Equal_To() {
+        OrConjunction orConjunction1 = new OrConjunction(List.of(EQUALITY_GADGET, INEQUALITY_GADGET));
+        OrConjunction orConjunction2 = new OrConjunction(List.of(INEQUALITY_GADGET, EQUALITY_GADGET));
+        assertEquals(orConjunction1, orConjunction2);
+    }
+
+    @Test
+    void Is_Not_Equal_To_1() {
+        OrConjunction orConjunction = new OrConjunction(List.of(EQUALITY_GADGET, INEQUALITY_GADGET));
+        assertFalse(orConjunction.equals(null));
+    }
+
+    @Test
+    void Is_Not_Equal_To_2() {
+        OrConjunction orConjunction1 = new OrConjunction(List.of(EQUALITY_GADGET, INEQUALITY_GADGET));
+        OrConjunction orConjunction2 = new OrConjunction(List.of(EQUALITY_GADGET));
+        assertNotEquals(orConjunction1, orConjunction2);
+        assertNotEquals(orConjunction2, orConjunction1);
+    }
 
     @Test
     void Remove_Tautology_Substitution() {

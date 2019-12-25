@@ -15,7 +15,7 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static zkstrata.utils.TestHelper.*;
 
 public class AndConjunctionTest {
@@ -27,6 +27,27 @@ public class AndConjunctionTest {
     private static final TrueProposition TRUE_PROPOSITION = new TrueProposition();
     private static final EqualityGadget EQUALITY_GADGET = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
     private static final InequalityGadget INEQUALITY_GADGET = new InequalityGadget(WITNESS_VAR_2, INSTANCE_VAR_41);
+
+    @Test
+    void Is_Equal_To() {
+        AndConjunction andConjunction1 = new AndConjunction(List.of(EQUALITY_GADGET, INEQUALITY_GADGET));
+        AndConjunction andConjunction2 = new AndConjunction(List.of(INEQUALITY_GADGET, EQUALITY_GADGET));
+        assertEquals(andConjunction1, andConjunction2);
+    }
+
+    @Test
+    void Is_Not_Equal_To_1() {
+        AndConjunction andConjunction = new AndConjunction(List.of(EQUALITY_GADGET, INEQUALITY_GADGET));
+        assertFalse(andConjunction.equals(null));
+    }
+
+    @Test
+    void Is_Not_Equal_To_2() {
+        AndConjunction andConjunction1 = new AndConjunction(List.of(EQUALITY_GADGET, INEQUALITY_GADGET));
+        AndConjunction andConjunction2 = new AndConjunction(List.of(EQUALITY_GADGET));
+        assertNotEquals(andConjunction1, andConjunction2);
+        assertNotEquals(andConjunction2, andConjunction1);
+    }
 
     @Test
     void Remove_Tautology_Substitution_1() {
