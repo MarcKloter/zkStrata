@@ -13,23 +13,23 @@ public class DateConstants {
         throw new IllegalStateException("Utility class");
     }
 
-    @Constant ("UNIX_DATE_TODAY")
+    @Constant ("CURRENT_DATE")
     public static Literal getCurrentUnixTimestamp() {
         long timestamp = now().atStartOfDay(systemDefault()).toInstant().getEpochSecond();
         return new Literal(BigInteger.valueOf(timestamp ));
     }
 
-    @Constant ("TODAY_DAY_OF_MONTH")
+    @Constant ("CURRENT_DAY_OF_MONTH")
     public static Literal getCurrentDay() {
         return new Literal(BigInteger.valueOf(now(systemDefault()).getDayOfMonth()));
     }
 
-    @Constant ("TODAY_MONTH")
+    @Constant ("CURRENT_MONTH")
     public static Literal getCurrentMonth() {
         return new Literal(BigInteger.valueOf(now(systemDefault()).getMonthValue()));
     }
 
-    @Constant ("TODAY_YEAR")
+    @Constant ("CURRENT_YEAR")
     public static Literal getCurrentYear() {
         return new Literal(BigInteger.valueOf(now(systemDefault()).getYear()));
     }
