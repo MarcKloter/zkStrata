@@ -2,6 +2,7 @@ package conjunctions;
 
 import org.junit.jupiter.api.Test;
 import zkstrata.domain.Proposition;
+import zkstrata.domain.conjunctions.AbstractConjunction;
 import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
@@ -58,5 +59,13 @@ public class AndConjunctionTest {
                 INEQUALITY_GADGET
         ));
         assertEquals(Optional.empty(), AndConjunction.liftUpSinglePart(andConjunction));
+    }
+
+    @Test
+    void Remove_Duplicate_Contradiction() {
+        AndConjunction andConjunction1 = new AndConjunction(List.of(EQUALITY_GADGET, INEQUALITY_GADGET));
+        AndConjunction andConjunction2 = new AndConjunction(List.of(INEQUALITY_GADGET, EQUALITY_GADGET));
+        Optional<Proposition> actual = AbstractConjunction.removeDuplicateConjunction(andConjunction1, andConjunction2);
+        assertEquals(Optional.of(andConjunction1), actual);
     }
 }

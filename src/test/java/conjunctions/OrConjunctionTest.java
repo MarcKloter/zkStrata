@@ -2,6 +2,7 @@ package conjunctions;
 
 import org.junit.jupiter.api.Test;
 import zkstrata.domain.Proposition;
+import zkstrata.domain.conjunctions.AbstractConjunction;
 import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.conjunctions.OrConjunction;
 import zkstrata.domain.data.types.Literal;
@@ -88,5 +89,13 @@ public class OrConjunctionTest {
                 new AndConjunction(List.of(BOUNDS_CHECK_GADGET, LESS_THAN_GADGET))
         ));
         assertEquals(Optional.empty(), OrConjunction.liftUpCommonPropositions(orConjunction));
+    }
+
+    @Test
+    void Remove_Duplicate_Contradiction() {
+        OrConjunction orConjunction1 = new OrConjunction(List.of(EQUALITY_GADGET, INEQUALITY_GADGET));
+        OrConjunction orConjunction2 = new OrConjunction(List.of(INEQUALITY_GADGET, EQUALITY_GADGET));
+        Optional<Proposition> actual = AbstractConjunction.removeDuplicateConjunction(orConjunction1, orConjunction2);
+        assertEquals(Optional.of(orConjunction1), actual);
     }
 }
