@@ -1,7 +1,7 @@
 PROOF FOR
     date AS date
 THAT
-    date.unixDate IS LESS THAN _UNIX_TIME_NOW
+    date.unixDate IS LESS THAN _UNIX_DATE_TODAY
 AND
     date.dateSchema.day IS EQUAL TO _TODAY_DAY_OF_MONTH
 AND

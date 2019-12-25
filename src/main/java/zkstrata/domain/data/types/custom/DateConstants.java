@@ -4,35 +4,33 @@ import zkstrata.domain.data.types.Constant;
 import zkstrata.domain.data.types.Literal;
 
 import java.math.BigInteger;
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.ZoneId;
+
+import static java.time.LocalDate.now;
+import static java.time.ZoneId.systemDefault;
 
 public class DateConstants {
     private DateConstants() {
         throw new IllegalStateException("Utility class");
     }
 
-    @Constant ("UNIX_TIME_NOW")
+    @Constant ("UNIX_DATE_TODAY")
     public static Literal getCurrentUnixTimestamp() {
-        return new Literal(BigInteger.valueOf(Instant.now().getEpochSecond()));
+        long timestamp = now().atStartOfDay(systemDefault()).toInstant().getEpochSecond();
+        return new Literal(BigInteger.valueOf(timestamp ));
     }
 
     @Constant ("TODAY_DAY_OF_MONTH")
     public static Literal getCurrentDay() {
-        LocalDate localDate = Instant.now().atZone(ZoneId.systemDefault()).toLocalDate();
-        return new Literal(BigInteger.valueOf(localDate.getDayOfMonth()));
+        return new Literal(BigInteger.valueOf(now(systemDefault()).getDayOfMonth()));
     }
 
     @Constant ("TODAY_MONTH")
     public static Literal getCurrentMonth() {
-        LocalDate localDate = Instant.now().atZone(ZoneId.systemDefault()).toLocalDate();
-        return new Literal(BigInteger.valueOf(localDate.getMonthValue()));
+        return new Literal(BigInteger.valueOf(now(systemDefault()).getMonthValue()));
     }
 
     @Constant ("TODAY_YEAR")
     public static Literal getCurrentYear() {
-        LocalDate localDate = Instant.now().atZone(ZoneId.systemDefault()).toLocalDate();
-        return new Literal(BigInteger.valueOf(localDate.getYear()));
+        return new Literal(BigInteger.valueOf(now(systemDefault()).getYear()));
     }
 }
