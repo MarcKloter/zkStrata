@@ -208,7 +208,7 @@ public class ASTVisitor {
         if (element instanceof BinaryTree)
             return visitBinaryTree((BinaryTree) element);
 
-        throw new InternalCompilerException("Unimplemented element %s in AST.", element.getClass());
+        return element;
     }
 
     private Variable visitType(Value type) {

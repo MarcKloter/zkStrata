@@ -340,4 +340,17 @@ public class IntegrationTest {
             new Compiler(args).compile();
         });
     }
+
+    @Test
+    void Date_Validation_Rule_Contradiction_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("date_constants")
+                    .withSchema("date", "date_validation_rule")
+                    .build();
+            new Compiler(args).compile();
+        });
+
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
+    }
 }

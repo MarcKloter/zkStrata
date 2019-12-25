@@ -19,6 +19,7 @@ import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.BoundsCheck;
 import zkstrata.utils.Constants;
+import zkstrata.utils.GadgetUtils;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -40,15 +41,22 @@ public class BoundsCheckGadget extends AbstractGadget {
     @Type({Null.class, BigInteger.class})
     private InstanceVariable max;
 
+    private Boolean strictComparison;
+
     public BoundsCheckGadget() {
     }
 
-    public BoundsCheckGadget(WitnessVariable value, InstanceVariable min, InstanceVariable max) {
+    public BoundsCheckGadget(WitnessVariable value, InstanceVariable min, InstanceVariable max, boolean strictComparison) {
         this.value = value;
         this.min = min;
         this.max = max;
+        this.strictComparison = strictComparison;
 
-        this.performChecks();
+        this.initialize();
+    }
+
+    public BoundsCheckGadget(WitnessVariable value, InstanceVariable min, InstanceVariable max) {
+        this(value, min, max, false);
     }
 
     @Implication(assumption = {EqualityGadget.class, BoundsCheckGadget.class})
@@ -181,6 +189,11 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Override
     public void initialize() {
+        if (Boolean.TRUE.equals(this.strictComparison)) {
+            this.min = GadgetUtils.addOne(this.min);
+            this.max = GadgetUtils.subtractOne(this.max);
+        }
+
         if (this.min == null)
             this.min = InstanceVariable.of(MIN_VALUE);
 

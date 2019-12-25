@@ -95,16 +95,28 @@ public class StatementBuilder {
     }
 
     public StatementBuilder boundsCheck(String value, String min, String max) {
+        return boundsCheck(value, min, max, false);
+    }
+
+    public StatementBuilder boundsCheck(String value, String min, String max, boolean strict) {
         if (min == null && max == null)
             return this;
         else if (min == null)
-            predicates.add(String.format("%s IS LESS THAN OR EQUAL TO %s", value, max));
+            predicates.add(String.format("%s %s %s", value, lessThan(strict), max));
         else if (max == null)
-            predicates.add(String.format("%s IS GREATER THAN OR EQUAL TO %s", value, min));
+            predicates.add(String.format("%s %s %s", value, greaterThan(strict), min));
         else
-            predicates.add(String.format("%s IS LESS THAN OR EQUAL TO %s AND GREATER THAN OR EQUAL TO %s", value, max, min));
+            predicates.add(String.format("%s %s %s AND %s %s", value, lessThan(strict), max, greaterThan(strict), min));
 
         return this;
+    }
+
+    private String lessThan(boolean strict) {
+        return strict ? "<" : "<=";
+    }
+
+    private String greaterThan(boolean strict) {
+        return strict ? ">" : ">=";
     }
 
     public StatementBuilder mimcHash(String preimage, String image) {
@@ -170,6 +182,10 @@ public class StatementBuilder {
         return builder.build();
     }
 
+    public int getNumberOfPredicates() {
+        return predicates.size();
+    }
+
     public enum Conjunction {
         AND(" AND "),
         OR(" OR ");
@@ -183,9 +199,5 @@ public class StatementBuilder {
         public String getEncoding() {
             return encoding;
         }
-    }
-
-    public int getNumberOfPredicates() {
-        return predicates.size();
     }
 }

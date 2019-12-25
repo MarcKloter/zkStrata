@@ -92,7 +92,7 @@ public class Compiler {
         AbstractSyntaxTree ast = parseTreeVisitor.visit(validationRule);
 
         if (LOGGER.isDebugEnabled())
-            LOGGER.debug("Parsed the validation rule `{}` into the following AST:{}{}",
+            LOGGER.debug("Parsed the validation rule of `{}` into the following AST:{}{}",
                     source, System.lineSeparator(), ast.getRoot().toDebugString());
 
         ASTVisitor astVisitor = new ASTVisitor(arguments.getSubjectData(), parentAlias);
