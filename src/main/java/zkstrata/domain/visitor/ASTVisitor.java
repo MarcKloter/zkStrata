@@ -136,13 +136,7 @@ public class ASTVisitor {
         else
             parts.add(right);
 
-        try {
-            return conjunctionType.getConstructor(List.class).newInstance(parts);
-        } catch (NoSuchMethodException e) {
-            throw new InternalCompilerException("Conjunction %s is missing a parameterized constructor with List.class.", conjunctionType);
-        } catch (ReflectiveOperationException e) {
-            throw new InternalCompilerException("Invalid implementation of conjunction %s.", conjunctionType);
-        }
+        return Conjunction.createInstanceOf(conjunctionType, parts);
     }
 
     private Class<? extends Conjunction> getConjunctionType(Connective connective) {
