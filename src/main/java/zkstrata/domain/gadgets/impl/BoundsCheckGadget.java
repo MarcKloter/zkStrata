@@ -24,12 +24,13 @@ import zkstrata.utils.GadgetUtils;
 import java.math.BigInteger;
 import java.util.*;
 
+import static java.math.BigInteger.ZERO;
 import static zkstrata.utils.GadgetUtils.*;
 
 @AstElement(BoundsCheck.class)
 public class BoundsCheckGadget extends AbstractGadget {
     private static final Logger LOGGER = LogManager.getRootLogger();
-    private static final BigInteger MIN_VALUE = BigInteger.ZERO;
+    private static final BigInteger MIN_VALUE = ZERO;
     private static final BigInteger MAX_VALUE = Constants.UNSIGNED_64BIT_MAX;
 
     @Type({BigInteger.class})
@@ -61,10 +62,10 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Implication(assumption = {EqualityGadget.class, BoundsCheckGadget.class})
     public static Optional<Gadget> implyBounds(EqualityGadget eq, BoundsCheckGadget bc) {
-        if (eq.getLeft().equals(bc.getValue()) && eq.getRight() instanceof WitnessVariable)
+        if (eq.getLeft().equals(bc.getValue()) && isWitnessVariable(eq.getRight()))
             return Optional.of(new BoundsCheckGadget((WitnessVariable) eq.getRight(), bc.getMin(), bc.getMax()));
 
-        if (eq.getRight().equals(bc.getValue()) && eq.getLeft() instanceof WitnessVariable)
+        if (eq.getRight().equals(bc.getValue()) && isWitnessVariable(eq.getLeft()))
             return Optional.of(new BoundsCheckGadget((WitnessVariable) eq.getLeft(), bc.getMin(), bc.getMax()));
 
         return Optional.empty();
@@ -72,7 +73,7 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Implication(assumption = {BoundsCheckGadget.class})
     public static Optional<Gadget> implyEquality(BoundsCheckGadget bc) {
-        if (bc.getMaxValue().subtract(bc.getMinValue()).equals(BigInteger.valueOf(0))) {
+        if (bc.getMaxValue().subtract(bc.getMinValue()).equals(ZERO)) {
             return Optional.of(new EqualityGadget(bc.getValue(), bc.getMin()));
         }
 
@@ -80,13 +81,13 @@ public class BoundsCheckGadget extends AbstractGadget {
     }
 
     @Contradiction(propositions = {BoundsCheckGadget.class, BoundsCheckGadget.class})
-    public static void checkTwoBoundsChecksContradiction(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
-        if (bc1.getValue().equals(bc2.getValue())) {
-            if (bc1.getMinValue().compareTo(bc2.getMaxValue()) > 0)
-                throw new CompileTimeException("Contradiction.", List.of(bc1.getMin(), bc2.getMax()));
+    public static void checkTwoBoundsChecksContradiction(BoundsCheckGadget first, BoundsCheckGadget second) {
+        if (first.getValue().equals(second.getValue())) {
+            if (first.getMinValue().compareTo(second.getMaxValue()) > 0)
+                throw new CompileTimeException("Contradiction.", List.of(first.getMin(), second.getMax()));
 
-            if (bc1.getMaxValue().compareTo(bc2.getMinValue()) < 0)
-                throw new CompileTimeException("Contradiction.", List.of(bc1.getMax(), bc2.getMin()));
+            if (first.getMaxValue().compareTo(second.getMinValue()) < 0)
+                throw new CompileTimeException("Contradiction.", List.of(first.getMax(), second.getMin()));
         }
     }
 
@@ -111,7 +112,7 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Substitution(target = {BoundsCheckGadget.class})
     public static Optional<Proposition> replaceEquality1(BoundsCheckGadget bc) {
-        if (bc.getMaxValue().subtract(bc.getMinValue()).equals(BigInteger.valueOf(0))) {
+        if (bc.getMaxValue().subtract(bc.getMinValue()).equals(ZERO)) {
             LOGGER.info("Replaced bounds predicate with max = min by equality predicate.");
             return Optional.of(new EqualityGadget(bc.getValue(), bc.getMin()));
         }
@@ -120,16 +121,16 @@ public class BoundsCheckGadget extends AbstractGadget {
     }
 
     @Substitution(target = {BoundsCheckGadget.class, BoundsCheckGadget.class})
-    public static Optional<Proposition> replaceEquality2(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
-        if (bc1.getValue().equals(bc2.getValue())) {
-            if (bc1.getMaxValue().subtract(bc2.getMinValue()).equals(BigInteger.valueOf(0))) {
+    public static Optional<Proposition> replaceEquality2(BoundsCheckGadget first, BoundsCheckGadget second) {
+        if (first.getValue().equals(second.getValue())) {
+            if (first.getMaxValue().subtract(second.getMinValue()).equals(ZERO)) {
                 LOGGER.info("Removed equality predicate of two instance variables.");
-                return Optional.of(new EqualityGadget(bc1.getValue(), bc2.getMin()));
+                return Optional.of(new EqualityGadget(first.getValue(), second.getMin()));
             }
 
-            if (bc2.getMaxValue().subtract(bc1.getMinValue()).equals(BigInteger.valueOf(0))) {
+            if (second.getMaxValue().subtract(first.getMinValue()).equals(ZERO)) {
                 LOGGER.info("Removed equality predicate of two instance variables.");
-                return Optional.of(new EqualityGadget(bc1.getValue(), bc1.getMin()));
+                return Optional.of(new EqualityGadget(first.getValue(), first.getMin()));
             }
         }
 
@@ -149,17 +150,25 @@ public class BoundsCheckGadget extends AbstractGadget {
     }
 
     @Substitution(target = {BoundsCheckGadget.class, BoundsCheckGadget.class})
-    public static Optional<Proposition> mergeBounds(BoundsCheckGadget bc1, BoundsCheckGadget bc2) {
-        if (bc1.getValue().equals(bc2.getValue())) {
-            InstanceVariable upperBound = bc1.getMaxValue().compareTo(bc2.getMaxValue()) <= 0 ? bc1.getMax() : bc2.getMax();
-            InstanceVariable lowerBound = bc1.getMinValue().compareTo(bc2.getMinValue()) >= 0 ? bc1.getMin() : bc2.getMin();
+    public static Optional<Proposition> mergeBounds(BoundsCheckGadget first, BoundsCheckGadget second) {
+        if (first.getValue().equals(second.getValue())) {
+            InstanceVariable upperBound = getUpperBound(first, second);
+            InstanceVariable lowerBound = getLowerBound(first, second);
 
             LOGGER.info("Merge two bounds predicates of the same witness variable.");
 
-            return Optional.of(new BoundsCheckGadget(bc1.getValue(), lowerBound, upperBound));
+            return Optional.of(new BoundsCheckGadget(first.getValue(), lowerBound, upperBound));
         }
 
         return Optional.empty();
+    }
+
+    private static InstanceVariable getUpperBound(BoundsCheckGadget first, BoundsCheckGadget second) {
+        return first.getMaxValue().compareTo(second.getMaxValue()) <= 0 ? first.getMax() : second.getMax();
+    }
+
+    private static InstanceVariable getLowerBound(BoundsCheckGadget first, BoundsCheckGadget second) {
+        return first.getMinValue().compareTo(second.getMinValue()) >= 0 ? first.getMin() : second.getMin();
     }
 
     public BigInteger getMinValue() {
