@@ -1,7 +1,6 @@
 package gadgets;
 
 import org.junit.jupiter.api.Test;
-import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
@@ -14,6 +13,9 @@ import zkstrata.exceptions.CompileTimeException;
 import java.math.BigInteger;
 import java.util.*;
 
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
+import static zkstrata.domain.Proposition.trueProposition;
 import static zkstrata.domain.gadgets.impl.LessThanGadget.*;
 import static zkstrata.utils.TestHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -104,8 +106,7 @@ public class LessThanGadgetTest {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_29);
-        assertEquals(Optional.of(Proposition.trueProposition()),
-                removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
+        assertEquals(of(trueProposition()), removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
     }
 
     @Test
@@ -113,8 +114,7 @@ public class LessThanGadgetTest {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
-        assertEquals(Optional.empty(),
-                removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
+        assertEquals(empty(), removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
     }
 
     @Test
@@ -122,8 +122,7 @@ public class LessThanGadgetTest {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
-        assertEquals(Optional.empty(),
-                removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
+        assertEquals(empty(), removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
     }
 
     @Test
@@ -131,8 +130,7 @@ public class LessThanGadgetTest {
         LessThanGadget lessThanGadget = new LessThanGadget(WITNESS_VAR_1, WITNESS_VAR_2);
         EqualityGadget equalityGadget1 = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_29);
         EqualityGadget equalityGadget2 = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_17);
-        assertEquals(Optional.empty(),
-                removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
+        assertEquals(empty(), removeExposedComparison(lessThanGadget, equalityGadget1, equalityGadget2));
     }
 
     @Test
