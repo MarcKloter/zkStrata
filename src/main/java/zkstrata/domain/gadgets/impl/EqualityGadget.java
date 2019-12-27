@@ -1,7 +1,5 @@
 package zkstrata.domain.gadgets.impl;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
@@ -23,8 +21,6 @@ import static zkstrata.utils.GadgetUtils.*;
 
 @AstElement(Equality.class)
 public class EqualityGadget extends AbstractGadget {
-    private static final Logger LOGGER = LogManager.getRootLogger();
-
     @Type({Any.class})
     private Variable left;
 
@@ -59,10 +55,8 @@ public class EqualityGadget extends AbstractGadget {
 
     @Substitution(target = {EqualityGadget.class})
     public static Optional<Proposition> removeWitnessEqualsSelf(EqualityGadget eq) {
-        if (isWitnessVariable(eq.getLeft()) && isWitnessVariable(eq.getRight()) && eq.getLeft().equals(eq.getRight())) {
-            LOGGER.info("Removed equality predicate of single witness variable.");
+        if (isWitnessVariable(eq.getLeft()) && isWitnessVariable(eq.getRight()) && eq.getLeft().equals(eq.getRight()))
             return Optional.of(Proposition.trueProposition());
-        }
 
         return Optional.empty();
     }
@@ -70,27 +64,17 @@ public class EqualityGadget extends AbstractGadget {
     @Substitution(target = {EqualityGadget.class})
     public static Optional<Proposition> removeInstanceEqualsInstance(EqualityGadget eq) {
         if (isInstanceVariable(eq.getLeft()) && isInstanceVariable(eq.getRight())
-                && eq.getLeft().getValue().equals(eq.getRight().getValue())) {
-            LOGGER.info("Removed equality predicate of two instance variables.");
+                && eq.getLeft().getValue().equals(eq.getRight().getValue()))
             return Optional.of(Proposition.trueProposition());
-        }
 
         return Optional.empty();
     }
 
-    /**
-     * Checks whether the given {@link WitnessVariable} is part of the provided {@link EqualityGadget},
-     * If so, returns the {@link Variable} that the {@code var} is equal to, empty {@link Optional} otherwise.
-     *
-     * @param eq  {@link EqualityGadget} to analyze
-     * @param var {@link WitnessVariable} to check for
-     * @return {@link Optional} containing a {@link Variable} the given {@link WitnessVariable} is equal to
-     */
-    public static Optional<Variable> getEqual(EqualityGadget eq, WitnessVariable var) {
-        if (isWitnessVariable(eq.getLeft()) && eq.getLeft().equals(var))
+    public static Optional<Variable> getEqualityToWitness(EqualityGadget eq, WitnessVariable var) {
+        if (var.equals(eq.getLeft()))
             return Optional.of(eq.getRight());
 
-        if (isWitnessVariable(eq.getRight()) && eq.getRight().equals(var))
+        if (var.equals(eq.getRight()))
             return Optional.of(eq.getLeft());
 
         return Optional.empty();

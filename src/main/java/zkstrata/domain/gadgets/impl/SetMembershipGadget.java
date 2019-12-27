@@ -1,7 +1,5 @@
 package zkstrata.domain.gadgets.impl;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.Proposition;
@@ -20,12 +18,11 @@ import zkstrata.utils.GadgetUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static zkstrata.domain.gadgets.impl.EqualityGadget.getEqualityToWitness;
 import static zkstrata.utils.GadgetUtils.isWitnessVariable;
 
 @AstElement(SetMembership.class)
 public class SetMembershipGadget extends AbstractGadget {
-    private static final Logger LOGGER = LogManager.getRootLogger();
-
     @Type({Any.class})
     private Variable member;
 
@@ -53,7 +50,7 @@ public class SetMembershipGadget extends AbstractGadget {
     public static void checkInstanceEqualityContradiction(SetMembershipGadget sm, EqualityGadget eq) {
         if (GadgetUtils.isWitnessVariable(sm.getMember())
                 && sm.getSet().stream().allMatch((GadgetUtils::isInstanceVariable))) {
-            Optional<Variable> equal = EqualityGadget.getEqual(eq, (WitnessVariable) sm.getMember());
+            Optional<Variable> equal = getEqualityToWitness(eq, (WitnessVariable) sm.getMember());
             if (equal.isPresent()
                     && GadgetUtils.isInstanceVariable(equal.get())
                     && !sm.getSet().contains(equal.get())) {
@@ -66,10 +63,8 @@ public class SetMembershipGadget extends AbstractGadget {
 
     @Substitution(target = {SetMembershipGadget.class})
     public static Optional<Proposition> removeSelfContained(SetMembershipGadget sm) {
-        if (sm.getSet().contains(sm.getMember())) {
-            LOGGER.info("Removed set membership predicate where the member is part of the set declaration (tautology).");
+        if (sm.getSet().contains(sm.getMember()))
             return Optional.of(Proposition.trueProposition());
-        }
 
         return Optional.empty();
     }
@@ -77,11 +72,10 @@ public class SetMembershipGadget extends AbstractGadget {
     @Substitution(target = {SetMembershipGadget.class}, context = {EqualityGadget.class})
     public static Optional<Proposition> removeEqualityContained(SetMembershipGadget sm, EqualityGadget eq) {
         if (isWitnessVariable(sm.getMember())) {
-            Optional<Variable> equal = EqualityGadget.getEqual(eq, (WitnessVariable) sm.getMember());
-            if (equal.isPresent() && sm.getSet().contains(equal.get())) {
-                LOGGER.info("Removed set membership predicate where the member is part of the set declaration (tautology).");
+            Optional<Variable> equal = getEqualityToWitness(eq, (WitnessVariable) sm.getMember());
+
+            if (equal.isPresent() && sm.getSet().contains(equal.get()))
                 return Optional.of(Proposition.trueProposition());
-            }
         }
 
         return Optional.empty();

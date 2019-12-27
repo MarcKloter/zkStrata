@@ -1,12 +1,11 @@
 package zkstrata.domain.gadgets.impl;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Variable;
+import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
 import zkstrata.domain.visitor.AstElement;
 import zkstrata.domain.gadgets.Type;
@@ -17,12 +16,11 @@ import zkstrata.utils.Constants;
 
 import java.util.*;
 
+import static zkstrata.domain.gadgets.impl.BoundsCheckGadget.isContainedInBounds;
 import static zkstrata.utils.GadgetUtils.*;
 
 @AstElement(Inequality.class)
 public class InequalityGadget extends AbstractGadget {
-    private static final Logger LOGGER = LogManager.getRootLogger();
-
     @Type({Any.class})
     private Variable left;
 
@@ -57,9 +55,28 @@ public class InequalityGadget extends AbstractGadget {
     public static Optional<Proposition> removeInstanceUnequalsInstance(InequalityGadget iq) {
         if (isInstanceVariable(iq.getLeft()) && isInstanceVariable(iq.getRight())
                 && !iq.getLeft().getValue().equals(iq.getRight().getValue())) {
-            LOGGER.info("Removed inequality predicate of two instance variables.");
             return Optional.of(Proposition.trueProposition());
         }
+
+        return Optional.empty();
+    }
+
+    @Substitution(target = {InequalityGadget.class}, context = {BoundsCheckGadget.class})
+    public static Optional<Proposition> removeInequalityOutsideOfBounds(InequalityGadget iq, BoundsCheckGadget bc) {
+        Optional<Variable> disparity = getDisparityToWitness(iq, bc.getValue());
+
+        if (disparity.isPresent() && !isContainedInBounds(disparity.get(), bc))
+            return Optional.of(Proposition.trueProposition());
+
+        return Optional.empty();
+    }
+
+    public static Optional<Variable> getDisparityToWitness(InequalityGadget iq, WitnessVariable var) {
+        if (var.equals(iq.getLeft()))
+            return Optional.of(iq.getRight());
+
+        if (var.equals(iq.getRight()))
+            return Optional.of(iq.getLeft());
 
         return Optional.empty();
     }

@@ -208,8 +208,8 @@ public class Optimizer {
             improvement = pickSubstitute(List.of(state), context, false);
             if (improvement.isPresent()) {
                 Substitute substitute = improvement.get();
-                LOGGER.debug("Applying substitution `{}` (cost reduction: {}): Replace {} by {} [context: {}].",
-                        substitute.getSource(), substitute.getCostReduction(), substitute.getTargets(),
+                LOGGER.debug("Applying substitution `{}`: Replace {} by {} (based on context: {}).",
+                        substitute.getSource(), substitute.getTargets(),
                         substitute.getReplacement(), substitute.getContext());
                 state = substitute.getReplacement();
             }
@@ -234,8 +234,8 @@ public class Optimizer {
             improvement = pickSubstitute(state, contextAssumptions, true);
             if (improvement.isPresent()) {
                 Substitute substitute = improvement.get();
-                LOGGER.debug("Applying substitution `{}` (cost reduction: {}): Replace {} by {} [context: {}].",
-                        substitute.getSource(), substitute.getCostReduction(), substitute.getTargets(),
+                LOGGER.debug("Applying substitution `{}`: Replace {} by {} (based on context: {}).",
+                        substitute.getSource(), substitute.getTargets(),
                         substitute.getReplacement(), substitute.getContext());
                 state.removeAll(substitute.getTargets());
                 state.add(substitute.getReplacement());

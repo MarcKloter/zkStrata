@@ -1,0 +1,33 @@
+{
+  "title": "basic",
+  "type": "object",
+  "properties": {
+    "string": {
+      "type": "string"
+    },
+    "string2": {
+      "type": "string"
+    },
+    "string3": {
+      "type": "string"
+    },
+    "number": {
+      "type": "number"
+    },
+    "number2": {
+      "type": "number"
+    },
+    "number3": {
+      "type": "number"
+    },
+    "boolean": {
+      "type": "boolean"
+    },
+    "boolean2": {
+      "type": "boolean"
+    },
+    "boolean3": {
+      "type": "boolean"
+    }
+  }
+}

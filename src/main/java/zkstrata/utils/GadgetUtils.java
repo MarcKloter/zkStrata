@@ -21,8 +21,12 @@ public class GadgetUtils {
         return variable instanceof WitnessVariable;
     }
 
+    public static boolean isOfTypeBigInteger(Variable variable) {
+        return variable.getType() == BigInteger.class;
+    }
+
     public static void assertIsBigInteger(Variable variable) {
-        if (variable.getType() != BigInteger.class)
+        if (!isOfTypeBigInteger(variable))
             throw new InternalCompilerException("Type mismatch. Found: %s, expected: BigInteger", variable.getType().getSimpleName());
     }
 

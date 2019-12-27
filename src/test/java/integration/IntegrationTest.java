@@ -353,4 +353,16 @@ public class IntegrationTest {
 
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
+
+    @Test
+    void Complex_Optimization_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("complex_optimization")
+                    .withSchema("schema", "basic")
+                    .build();
+            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            assertEquals(1, statement.getGadgets().size());
+        });
+    }
 }

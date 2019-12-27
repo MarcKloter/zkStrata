@@ -1,0 +1,32 @@
+PROOF FOR
+  WITNESS myWitness COMPLIANT TO schema
+THAT
+  (
+          myWitness.number < 44
+      AND
+          myWitness.number < 45
+      AND
+          myWitness.number > 30
+  OR
+          myWitness.number = 43
+      AND
+          myWitness.number < 47
+  OR
+          myWitness.number != 45
+      AND
+          (
+                  myWitness.number != 44
+              AND
+                  myWitness.number <= 44
+              AND
+                  myWitness.number >= 37
+          OR
+              myWitness.number <= 43
+          OR
+                  myWitness.number != 44
+              AND
+                  myWitness.number < 46
+          )
+  )
+AND
+  myWitness.number > 42

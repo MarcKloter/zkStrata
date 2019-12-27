@@ -1,12 +1,9 @@
 package zkstrata.domain.gadgets.impl;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
 import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.Proposition;
-import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Null;
 import zkstrata.domain.data.types.wrapper.Variable;
@@ -24,13 +21,11 @@ import zkstrata.utils.GadgetUtils;
 import java.math.BigInteger;
 import java.util.*;
 
-import static java.math.BigInteger.ZERO;
 import static zkstrata.utils.GadgetUtils.*;
 
 @AstElement(BoundsCheck.class)
 public class BoundsCheckGadget extends AbstractGadget {
-    private static final Logger LOGGER = LogManager.getRootLogger();
-    private static final BigInteger MIN_VALUE = ZERO;
+    private static final BigInteger MIN_VALUE = BigInteger.ZERO;
     private static final BigInteger MAX_VALUE = Constants.UNSIGNED_64BIT_MAX;
 
     @Type({BigInteger.class})
@@ -62,18 +57,17 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Implication(assumption = {EqualityGadget.class, BoundsCheckGadget.class})
     public static Optional<Gadget> implyBounds(EqualityGadget eq, BoundsCheckGadget bc) {
-        if (eq.getLeft().equals(bc.getValue()) && isWitnessVariable(eq.getRight()))
-            return Optional.of(new BoundsCheckGadget((WitnessVariable) eq.getRight(), bc.getMin(), bc.getMax()));
+        Optional<Variable> equal = EqualityGadget.getEqualityToWitness(eq, bc.getValue());
 
-        if (eq.getRight().equals(bc.getValue()) && isWitnessVariable(eq.getLeft()))
-            return Optional.of(new BoundsCheckGadget((WitnessVariable) eq.getLeft(), bc.getMin(), bc.getMax()));
+        if (equal.isPresent() && isWitnessVariable(equal.get()))
+            return Optional.of(new BoundsCheckGadget((WitnessVariable) equal.get(), bc.getMin(), bc.getMax()));
 
         return Optional.empty();
     }
 
     @Implication(assumption = {BoundsCheckGadget.class})
     public static Optional<Gadget> implyEquality(BoundsCheckGadget bc) {
-        if (bc.getMaxValue().subtract(bc.getMinValue()).equals(ZERO)) {
+        if (bc.getMaxValue().equals(bc.getMinValue())) {
             return Optional.of(new EqualityGadget(bc.getValue(), bc.getMin()));
         }
 
@@ -99,10 +93,10 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Contradiction(propositions = {EqualityGadget.class, BoundsCheckGadget.class})
     public static void checkEqualityBoundsContradiction(EqualityGadget eq, BoundsCheckGadget bc) {
-        Optional<Variable> equal = EqualityGadget.getEqual(eq, bc.getValue());
+        Optional<Variable> equal = EqualityGadget.getEqualityToWitness(eq, bc.getValue());
 
         if (equal.isPresent() && isInstanceVariable(equal.get())) {
-            BigInteger value = (BigInteger) ((Literal) equal.get().getValue()).getValue();
+            BigInteger value = (BigInteger) (((InstanceVariable) equal.get()).getValue()).getValue();
             if (value.compareTo(bc.getMinValue()) < 0)
                 throw new CompileTimeException("Contradiction.", List.of(eq.getRight(), bc.getMin()));
             if (value.compareTo(bc.getMaxValue()) > 0)
@@ -110,28 +104,45 @@ public class BoundsCheckGadget extends AbstractGadget {
         }
     }
 
-    @Substitution(target = {BoundsCheckGadget.class})
-    public static Optional<Proposition> replaceEquality1(BoundsCheckGadget bc) {
-        if (bc.getMaxValue().subtract(bc.getMinValue()).equals(ZERO)) {
-            LOGGER.info("Replaced bounds predicate with max = min by equality predicate.");
-            return Optional.of(new EqualityGadget(bc.getValue(), bc.getMin()));
-        }
+    @Substitution(target = {BoundsCheckGadget.class}, context = {InequalityGadget.class})
+    public static Optional<Proposition> replaceUnequalBounds(BoundsCheckGadget bc, InequalityGadget iq) {
+        Optional<Variable> disparity = InequalityGadget.getDisparityToWitness(iq, bc.getValue());
+
+        if (disparity.isPresent() && isVariableEqualToBigInteger(disparity.get(), bc.getMaxValue()))
+            return Optional.of(new BoundsCheckGadget(bc.getValue(), bc.getMin(), subtractOne(bc.getMax())));
+
+        if (disparity.isPresent() && isVariableEqualToBigInteger(disparity.get(), bc.getMinValue()))
+            return Optional.of(new BoundsCheckGadget(bc.getValue(), addOne(bc.getMin()), bc.getMax()));
 
         return Optional.empty();
     }
 
-    @Substitution(target = {BoundsCheckGadget.class, BoundsCheckGadget.class})
-    public static Optional<Proposition> replaceEquality2(BoundsCheckGadget first, BoundsCheckGadget second) {
-        if (haveSameValue(first, second)) {
-            if (first.getMaxValue().subtract(second.getMinValue()).equals(ZERO)) {
-                LOGGER.info("Removed equality predicate of two instance variables.");
-                return Optional.of(new EqualityGadget(first.getValue(), second.getMin()));
-            }
+    @Substitution(target = {BoundsCheckGadget.class}, context = {EqualityGadget.class})
+    public static Optional<Proposition> removeValueEquality(BoundsCheckGadget bc, EqualityGadget eq) {
+        Optional<Variable> equal = EqualityGadget.getEqualityToWitness(eq, bc.getValue());
 
-            if (second.getMaxValue().subtract(first.getMinValue()).equals(ZERO)) {
-                LOGGER.info("Removed equality predicate of two instance variables.");
+        if (equal.isPresent() && isContainedInBounds(equal.get(), bc))
+            return Optional.of(Proposition.trueProposition());
+
+        return Optional.empty();
+    }
+
+    @Substitution(target = {BoundsCheckGadget.class})
+    public static Optional<Proposition> replaceMinEqualsMax(BoundsCheckGadget bc) {
+        if (bc.getMaxValue().equals(bc.getMinValue()))
+            return Optional.of(new EqualityGadget(bc.getValue(), bc.getMin()));
+
+        return Optional.empty();
+    }
+
+    @Substitution(target = {BoundsCheckGadget.class}, context = {BoundsCheckGadget.class})
+    public static Optional<Proposition> replaceMinEqualsMaxTwoGadgets(BoundsCheckGadget first, BoundsCheckGadget second) {
+        if (haveSameValue(first, second)) {
+            if (first.getMaxValue().equals(second.getMinValue()))
+                return Optional.of(new EqualityGadget(first.getValue(), second.getMin()));
+
+            if (second.getMaxValue().equals(first.getMinValue()))
                 return Optional.of(new EqualityGadget(first.getValue(), first.getMin()));
-            }
         }
 
         return Optional.empty();
@@ -141,10 +152,8 @@ public class BoundsCheckGadget extends AbstractGadget {
     public static Optional<Proposition> removeLooseBounds(BoundsCheckGadget target, BoundsCheckGadget context) {
         if (haveSameValue(target, context)
                 && target.getMinValue().compareTo(context.getMinValue()) <= 0
-                && target.getMaxValue().compareTo(context.getMaxValue()) >= 0) {
-            LOGGER.info("Remove bounds predicate that is more loose than its context.");
+                && target.getMaxValue().compareTo(context.getMaxValue()) >= 0)
             return Optional.of(Proposition.trueProposition());
-        }
 
         return Optional.empty();
     }
@@ -155,12 +164,24 @@ public class BoundsCheckGadget extends AbstractGadget {
             InstanceVariable upperBound = getUpperBound(first, second);
             InstanceVariable lowerBound = getLowerBound(first, second);
 
-            LOGGER.info("Merge two bounds predicates of the same witness variable.");
-
             return Optional.of(new BoundsCheckGadget(first.getValue(), lowerBound, upperBound));
         }
 
         return Optional.empty();
+    }
+
+    public static boolean isContainedInBounds(Variable variable, BoundsCheckGadget bc) {
+        if (isInstanceVariable(variable) && isOfTypeBigInteger(variable)) {
+            BigInteger value = (BigInteger) ((InstanceVariable) variable).getValue().getValue();
+
+            return bc.getMinValue().compareTo(value) <= 0 && bc.getMaxValue().compareTo(value) >= 0;
+        }
+
+        return false;
+    }
+
+    private static boolean isVariableEqualToBigInteger(Variable variable, BigInteger value) {
+        return isInstanceVariable(variable) && value.equals((((InstanceVariable) variable).getValue()).getValue());
     }
 
     private static boolean haveSameValue(BoundsCheckGadget first, BoundsCheckGadget second) {
