@@ -82,7 +82,7 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Contradiction(propositions = {BoundsCheckGadget.class, BoundsCheckGadget.class})
     public static void checkTwoBoundsChecksContradiction(BoundsCheckGadget first, BoundsCheckGadget second) {
-        if (first.getValue().equals(second.getValue())) {
+        if (haveSameValue(first, second)) {
             if (first.getMinValue().compareTo(second.getMaxValue()) > 0)
                 throw new CompileTimeException("Contradiction.", List.of(first.getMin(), second.getMax()));
 
@@ -122,7 +122,7 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Substitution(target = {BoundsCheckGadget.class, BoundsCheckGadget.class})
     public static Optional<Proposition> replaceEquality2(BoundsCheckGadget first, BoundsCheckGadget second) {
-        if (first.getValue().equals(second.getValue())) {
+        if (haveSameValue(first, second)) {
             if (first.getMaxValue().subtract(second.getMinValue()).equals(ZERO)) {
                 LOGGER.info("Removed equality predicate of two instance variables.");
                 return Optional.of(new EqualityGadget(first.getValue(), second.getMin()));
@@ -139,7 +139,7 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Substitution(target = {BoundsCheckGadget.class}, context = {BoundsCheckGadget.class})
     public static Optional<Proposition> removeLooseBounds(BoundsCheckGadget target, BoundsCheckGadget context) {
-        if (target.getValue().equals(context.getValue())
+        if (haveSameValue(target, context)
                 && target.getMinValue().compareTo(context.getMinValue()) <= 0
                 && target.getMaxValue().compareTo(context.getMaxValue()) >= 0) {
             LOGGER.info("Remove bounds predicate that is more loose than its context.");
@@ -151,7 +151,7 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Substitution(target = {BoundsCheckGadget.class, BoundsCheckGadget.class})
     public static Optional<Proposition> mergeBounds(BoundsCheckGadget first, BoundsCheckGadget second) {
-        if (first.getValue().equals(second.getValue())) {
+        if (haveSameValue(first, second)) {
             InstanceVariable upperBound = getUpperBound(first, second);
             InstanceVariable lowerBound = getLowerBound(first, second);
 
@@ -161,6 +161,10 @@ public class BoundsCheckGadget extends AbstractGadget {
         }
 
         return Optional.empty();
+    }
+
+    private static boolean haveSameValue(BoundsCheckGadget first, BoundsCheckGadget second) {
+        return first.getValue().equals(second.getValue());
     }
 
     private static InstanceVariable getUpperBound(BoundsCheckGadget first, BoundsCheckGadget second) {
