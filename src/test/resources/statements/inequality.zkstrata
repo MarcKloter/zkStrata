@@ -10,3 +10,13 @@ AND
     pass.dateOfBirth.month IS UNEQUAL TO 7
 AND
     pass.dateOfBirth.year IS UNEQUAL TO 1981
+AND
+    pass.firstName != 'Jane'
+AND
+    pass.lastName != 'Smith'
+AND
+    pass.dateOfBirth.day != 13
+AND
+    pass.dateOfBirth.month != 7
+AND
+    pass.dateOfBirth.year != 1981
