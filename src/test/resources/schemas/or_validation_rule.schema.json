@@ -1,0 +1,13 @@
+{
+  "title": "or_validation_rule",
+  "type": "object",
+  "properties": {
+    "firstName": {
+      "type": "string"
+    },
+    "number": {
+      "type": "number"
+    }
+  },
+  "validationRule": "PROOF FOR THIS THAT private.firstName = 'John' OR private.number < 72"
+}

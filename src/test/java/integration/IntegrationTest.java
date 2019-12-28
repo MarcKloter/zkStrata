@@ -95,6 +95,17 @@ public class IntegrationTest {
     }
 
     @Test
+    void Or_Conjunction_Validation_Rule_Default_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("default")
+                    .withSchema("passport_ch", "or_validation_rule")
+                    .build();
+            new Compiler(args).compile();
+        });
+    }
+
+    @Test
     void Validation_Rule_Missing_Instance_Should_Throw() {
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
