@@ -31,6 +31,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 
+import static java.lang.String.format;
 import static zkstrata.utils.ReflectionHelper.*;
 
 public class ASTVisitor {
@@ -65,7 +66,7 @@ public class ASTVisitor {
         for (Subject subject : ast.getSubjects()) {
             String alias = subject.getAlias().getName();
             if (subjects.containsKey(alias))
-                throw new CompileTimeException(String.format("Alias `%s` is already defined.", alias),
+                throw new CompileTimeException(format("Alias `%s` is already defined.", alias),
                         pinPosition(subject.getAlias()));
 
             this.subjects.put(alias, visitSubject(subject));
@@ -85,7 +86,7 @@ public class ASTVisitor {
 
         if (reservedAliases.contains(alias)) {
             if (parentAlias == null)
-                throw new CompileTimeException(String.format("Reserved keyword `%s` used as alias.", alias),
+                throw new CompileTimeException(format("Reserved keyword `%s` used as alias.", alias),
                         pinPosition(subject.getAlias()));
 
             alias = parentAlias;
@@ -95,12 +96,12 @@ public class ASTVisitor {
         Schema schema = schemas.getOrDefault(schemaName, SchemaHelper.resolve(schemaName));
 
         if (schema == null)
-            throw new CompileTimeException(String.format("Undefined schema %s.", schemaName),
+            throw new CompileTimeException(format("Undefined schema %s.", schemaName),
                     pinPosition(subject.getSchema()));
 
         if (subject.isWitness()) {
             if (!witnessData.isEmpty() && !witnessData.containsKey(alias))
-                throw new CompileTimeException(String.format("Missing witness data for subject %s.", alias),
+                throw new CompileTimeException(format("Missing witness data for subject %s.", alias),
                         pinPosition(subject.getAlias()));
 
             ValueAccessor accessor = witnessData.getOrDefault(alias, new SchemaAccessor(alias, schema));
@@ -271,8 +272,7 @@ public class ASTVisitor {
             StructuredData data = subjects.get(subject);
             return data.getVariable(new Selector(identifier.getSelectors()), pinPosition(identifier));
         } else {
-            throw new CompileTimeException(String.format("Undeclared alias `%s` found.",
-                    subject), pinPosition(identifier));
+            throw new CompileTimeException(format("Undeclared alias `%s` found.", subject), pinPosition(identifier));
         }
     }
 

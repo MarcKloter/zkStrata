@@ -12,11 +12,11 @@ import zkstrata.domain.visitor.AstElement;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
 import zkstrata.parser.ast.predicates.Equality;
-import zkstrata.utils.CombinatoricsUtils;
 import zkstrata.utils.Constants;
 
 import java.util.*;
 
+import static zkstrata.utils.CombinatoricsUtils.getParity;
 import static zkstrata.utils.GadgetUtils.*;
 
 @AstElement(Equality.class)
@@ -39,7 +39,7 @@ public class EqualityGadget extends AbstractGadget {
 
     @Implication(assumption = {EqualityGadget.class, EqualityGadget.class})
     public static Optional<Gadget> implyEquality(EqualityGadget eq1, EqualityGadget eq2) {
-        List<Variable> parity = CombinatoricsUtils.getParity(eq1.getLeft(), eq1.getRight(), eq2.getLeft(), eq2.getRight());
+        List<Variable> parity = getParity(eq1.getLeft(), eq1.getRight(), eq2.getLeft(), eq2.getRight());
         if (new HashSet<>(parity).size() == 2)
             return Optional.of(new EqualityGadget(parity.get(0), parity.get(1)));
 

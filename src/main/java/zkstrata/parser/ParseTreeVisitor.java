@@ -10,7 +10,6 @@ import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.Node;
 import zkstrata.parser.ast.connectives.And;
 import zkstrata.parser.ast.connectives.Or;
-import zkstrata.utils.ParserUtils;
 import zkstrata.utils.ReflectionHelper;
 import zkstrata.zkStrataLexer;
 import zkstrata.parser.ast.types.Identifier;
@@ -29,6 +28,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static zkstrata.parser.ast.Subject.*;
+import static zkstrata.utils.ParserUtils.getPosition;
 
 /**
  * Transforms a zkStrata statement ({@link String}) into a visit tree ({@link ParseTree}) using ANTLR.
@@ -92,7 +92,7 @@ public class ParseTreeVisitor {
             ClauseVisitor clauseVisitor = new ClauseVisitor(parserRules);
             Node left = ctx.clause(0).accept(clauseVisitor);
             Node right = ctx.clause(1).accept(clauseVisitor);
-            return new And(left, right, ParserUtils.getPosition(ctx.K_AND().getSymbol()));
+            return new And(left, right, getPosition(ctx.K_AND().getSymbol()));
         }
 
         @Override
@@ -100,7 +100,7 @@ public class ParseTreeVisitor {
             ClauseVisitor clauseVisitor = new ClauseVisitor(parserRules);
             Node left = ctx.clause(0).accept(clauseVisitor);
             Node right = ctx.clause(1).accept(clauseVisitor);
-            return new Or(left, right, ParserUtils.getPosition(ctx.K_OR().getSymbol()));
+            return new Or(left, right, getPosition(ctx.K_OR().getSymbol()));
         }
 
         @Override
@@ -184,7 +184,7 @@ public class ParseTreeVisitor {
             Constructor constructor = getConstructor(node.getSymbol().getType());
 
             try {
-                return (Value) constructor.newInstance(node.getText(), ParserUtils.getPosition(ctx.getStart()));
+                return (Value) constructor.newInstance(node.getText(), getPosition(ctx.getStart()));
             } catch (ReflectiveOperationException e) {
                 throw new InternalCompilerException("Error during invocation of constructor of %s. "
                         + "Ensure that the constructor takes two arguments (String value, Position.Absolute position)",
@@ -217,19 +217,19 @@ public class ParseTreeVisitor {
 
             // check whether the instance keyword is present
             boolean isWitness = ctx.K_INSTANCE() == null;
-            Schema schema = new Schema(ctx.schema().getText(), ParserUtils.getPosition(ctx.schema().getStart()));
-            Alias alias = new Alias(ctx.alias().getText(), ParserUtils.getPosition(ctx.alias().getStart()));
+            Schema schema = new Schema(ctx.schema().getText(), getPosition(ctx.schema().getStart()));
+            Alias alias = new Alias(ctx.alias().getText(), getPosition(ctx.alias().getStart()));
 
             return List.of(new Subject(schema, alias, isWitness));
         }
 
         private List<Subject> handleThis(zkStrata.SubjectContext ctx) {
-            Schema schema = new Schema(parentSchema, ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+            Schema schema = new Schema(parentSchema, getPosition(ctx.K_THIS().getSymbol()));
 
-            Alias privateAlias = new Alias("private", ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+            Alias privateAlias = new Alias("private", getPosition(ctx.K_THIS().getSymbol()));
             Subject witness = new Subject(schema, privateAlias, true);
 
-            Alias publicAlias = new Alias("public", ParserUtils.getPosition(ctx.K_THIS().getSymbol()));
+            Alias publicAlias = new Alias("public", getPosition(ctx.K_THIS().getSymbol()));
             Subject instance = new Subject(schema, publicAlias, false);
 
             return List.of(witness, instance);
