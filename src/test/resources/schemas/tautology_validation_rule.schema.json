@@ -6,7 +6,7 @@
       "type": "string"
     },
     "lastName": {
-      "type": "string",
+      "type": "string"
     }
   },
   "validationRule": "PROOF FOR THIS THAT private.lastName IS MEMBER OF (private.firstName, private.lastName)"
