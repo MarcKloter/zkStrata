@@ -7,8 +7,8 @@ public abstract class Position implements Serializable {
     private int line;
     private int charPositionInLine;
 
-    public Position(String target, int line, int charPositionInLine) {
-        this.statement = target;
+    public Position(String statement, int line, int charPositionInLine) {
+        this.statement = statement;
         this.line = line;
         this.charPositionInLine = charPositionInLine;
     }
@@ -33,20 +33,14 @@ public abstract class Position implements Serializable {
 
     public static class Absolute extends Position {
         private String source;
-        private String statement;
 
         public Absolute(String source, String statement, Position position) {
-            super(position.getStatement(), position.getLine(), position.getPosition());
+            super(statement, position.getLine(), position.getPosition());
             this.source = source;
-            this.statement = statement;
         }
 
         public String getSource() {
             return source;
-        }
-
-        public String getStatement() {
-            return statement;
         }
 
         @Override
