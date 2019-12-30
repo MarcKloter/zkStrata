@@ -30,6 +30,7 @@ import zkstrata.parser.ast.Subject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static zkstrata.utils.ReflectionHelper.*;
@@ -78,7 +79,7 @@ public class ASTVisitor {
 
         LOGGER.debug("Finishing visit of AST for {}", ast.getSource());
 
-        return new Statement(subjects.getUsedMap(), predicate);
+        return new Statement(new ArrayList<>(subjects.getUsedMap().values()), predicate);
     }
 
     private StructuredData visitSubject(Subject subject) {

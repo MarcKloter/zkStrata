@@ -60,13 +60,13 @@ public class Compiler {
      * Checks the schemas declared within the given {@code subjects} for validation rules that apply to the usage of
      * such. Returns a {@link Proposition} representing all validation rules found.
      *
-     * @param subjects map of alias to {@link StructuredData} to check
+     * @param subjects list of {@link StructuredData} to check
      * @return {@link Proposition} containing all validation rules connected using logical AND
      */
-    private Proposition parseAllValidationRules(Map<String, StructuredData> subjects) {
+    private Proposition parseAllValidationRules(List<StructuredData> subjects) {
         Proposition validationRules = Proposition.trueProposition();
 
-        for (Map.Entry<String, StructuredData> subject : subjects.entrySet()) {
+        for (StructuredData subject : subjects) {
             if (isWitnessAndHasValidationRule(subject)) {
                 validationRules = validationRules.combine(parseValidationRule(subject));
             }
@@ -75,15 +75,15 @@ public class Compiler {
         return validationRules;
     }
 
-    private boolean isWitnessAndHasValidationRule(Map.Entry<String, StructuredData> subject) {
-        return subject.getValue().isWitness() && subject.getValue().getSchema().hasValidationRule();
+    private boolean isWitnessAndHasValidationRule(StructuredData subject) {
+        return subject.isWitness() && subject.getSchema().hasValidationRule();
     }
 
-    private Proposition parseValidationRule(Map.Entry<String, StructuredData> subject) {
-        String parentAlias = subject.getKey();
-        String source = subject.getValue().getSchema().getSource();
-        String parentSchema = subject.getValue().getSchema().getIdentifier();
-        String validationRule = subject.getValue().getSchema().getValidationRule();
+    private Proposition parseValidationRule(StructuredData subject) {
+        String parentAlias = subject.getAlias();
+        String source = subject.getSchema().getSource();
+        String parentSchema = subject.getSchema().getIdentifier();
+        String validationRule = subject.getSchema().getValidationRule();
 
         LOGGER.debug("Processing validation rule of alias {} (schema: {}, source: {})",
                 parentAlias, parentSchema, source);

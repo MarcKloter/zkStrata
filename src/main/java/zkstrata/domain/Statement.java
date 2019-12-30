@@ -2,13 +2,13 @@ package zkstrata.domain;
 
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
 
-import java.util.Map;
+import java.util.List;
 
 /**
  * Compiler internal representation of a zkStrata statement.
  */
 public class Statement {
-    private Map<String, StructuredData> subjects;
+    private List<StructuredData> subjects;
     private Proposition claim;
     private Proposition premise;
     private Proposition validationRules;
@@ -19,14 +19,14 @@ public class Statement {
         this.validationRules = validationRules;
     }
 
-    public Statement(Map<String, StructuredData> subjects, Proposition claim) {
+    public Statement(List<StructuredData> subjects, Proposition claim) {
         this.subjects = subjects;
         this.claim = claim;
         this.premise = null;
         this.validationRules = null;
     }
 
-    public Map<String, StructuredData> getSubjects() {
+    public List<StructuredData> getSubjects() {
         return subjects;
     }
 
