@@ -7,7 +7,7 @@ import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
 import zkstrata.domain.conjunctions.Conjunction;
 import zkstrata.domain.data.Selector;
-import zkstrata.domain.data.accessors.SchemaAccessor;
+import zkstrata.domain.data.accessors.ReferenceAccessor;
 import zkstrata.domain.data.accessors.ValueAccessor;
 import zkstrata.exceptions.*;
 import zkstrata.parser.ast.Node;
@@ -30,7 +30,6 @@ import zkstrata.parser.ast.Subject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static zkstrata.utils.ReflectionHelper.*;
@@ -105,7 +104,7 @@ public class ASTVisitor {
                 throw new CompileTimeException(format("Missing witness data for subject %s.", alias),
                         pinPosition(subject.getAlias()));
 
-            ValueAccessor accessor = witnessData.getOrDefault(alias, new SchemaAccessor(alias, schema));
+            ValueAccessor accessor = witnessData.getOrDefault(alias, new ReferenceAccessor(alias, schema));
             return new Witness(alias, schema, accessor);
         } else
             return new Instance(alias, schema, instanceData.get(alias));
