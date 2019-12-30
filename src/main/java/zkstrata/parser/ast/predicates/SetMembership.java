@@ -1,10 +1,8 @@
 package zkstrata.parser.ast.predicates;
 
 import org.antlr.v4.runtime.ParserRuleContext;
-import zkstrata.exceptions.Position;
 import zkstrata.parser.ParserRule;
 import zkstrata.parser.ast.types.Value;
-import zkstrata.utils.ParserUtils;
 import zkstrata.utils.StatementBuilder;
 import zkstrata.zkStrata;
 
@@ -13,12 +11,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static zkstrata.utils.ParserUtils.getValues;
+
 public class SetMembership extends Predicate {
     private Value member;
     private Set<Value> set;
 
-    public SetMembership(Value member, Set<Value> set, Position position) {
-        super(position);
+    public SetMembership(Value member, Set<Value> set) {
         this.member = member;
         this.set = set;
     }
@@ -26,10 +25,10 @@ public class SetMembership extends Predicate {
     @ParserRule(name = "set_membership")
     public static SetMembership parse(ParserRuleContext ctx) {
         zkStrata.Set_membershipContext setMembershipContext = (zkStrata.Set_membershipContext) ctx;
-        List<Value> member = ParserUtils.getValues(setMembershipContext);
-        List<Value> set = ParserUtils.getValues(setMembershipContext.set());
+        List<Value> member = getValues(setMembershipContext);
+        List<Value> set = getValues(setMembershipContext.set());
 
-        return new SetMembership(member.get(0), new HashSet<>(set), ParserUtils.getPosition(ctx.getStart()));
+        return new SetMembership(member.get(0), new HashSet<>(set));
     }
 
     public Value getMember() {

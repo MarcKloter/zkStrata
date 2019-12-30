@@ -2,12 +2,10 @@ package zkstrata.parser.ast.predicates;
 
 import org.antlr.v4.runtime.tree.ParseTree;
 import zkstrata.exceptions.InternalCompilerException;
-import zkstrata.exceptions.Position;
 import zkstrata.parser.ParseTreeVisitor;
 import zkstrata.parser.ParserRule;
 import zkstrata.parser.ast.types.Value;
 import zkstrata.utils.BinaryTree;
-import zkstrata.utils.ParserUtils;
 import zkstrata.utils.StatementBuilder;
 import zkstrata.zkStrata;
 
@@ -19,8 +17,7 @@ public class MerkleTree extends Predicate {
     private Value root;
     private BinaryTree<Value> tree;
 
-    public MerkleTree(Value root, BinaryTree<Value> tree, Position position) {
-        super(position);
+    public MerkleTree(Value root, BinaryTree<Value> tree) {
         this.root = root;
         this.tree = tree;
     }
@@ -53,7 +50,7 @@ public class MerkleTree extends Predicate {
 
         BinaryTree<Value> tree = new BinaryTree<>(visitSubtree(ctx.subtree()));
 
-        return new MerkleTree(root, tree, ParserUtils.getPosition(ctx.getStart()));
+        return new MerkleTree(root, tree);
     }
 
     public Value getRoot() {

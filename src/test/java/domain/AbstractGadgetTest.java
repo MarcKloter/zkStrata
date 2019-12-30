@@ -51,7 +51,7 @@ public class AbstractGadgetTest {
 
     @Test
     void Unexpected_Type_Should_Throw_1() {
-        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER_1, INT_LIT_13, STRING_LIT, getAbsPosition());
+        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER_1, INT_LIT_13, STRING_LIT);
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
@@ -61,7 +61,7 @@ public class AbstractGadgetTest {
 
     @Test
     void Unexpected_Type_Should_Throw_2() {
-        MiMCHash miMCHash = new MiMCHash(IDENTIFIER_1, STRING_LIT, getAbsPosition());
+        MiMCHash miMCHash = new MiMCHash(IDENTIFIER_1, STRING_LIT);
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), miMCHash);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
@@ -71,7 +71,7 @@ public class AbstractGadgetTest {
 
     @Test
     void Invalid_Confidentiality_Level_Should_Throw() {
-        LessThan lessThan = new LessThan(IDENTIFIER_2, INT_LIT_13, getAbsPosition());
+        LessThan lessThan = new LessThan(IDENTIFIER_2, INT_LIT_13);
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), lessThan);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));

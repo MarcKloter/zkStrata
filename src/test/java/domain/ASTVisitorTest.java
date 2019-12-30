@@ -73,7 +73,7 @@ public class ASTVisitorTest {
     @Test
     void Invalid_Constant_Should_Throw() {
         Constant constant = new Constant("_INVALID_CONSTANT", getAbsPosition());
-        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, constant, getAbsPosition());
+        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, constant);
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
@@ -83,7 +83,7 @@ public class ASTVisitorTest {
 
     @Test
     void Number_Negative_Should_Throw() {
-        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_NEG, INT_13, getAbsPosition());
+        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_NEG, INT_13);
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
@@ -93,7 +93,7 @@ public class ASTVisitorTest {
 
     @Test
     void Number_Too_Large_Should_Throw() {
-        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, INT_LARGE, getAbsPosition());
+        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, INT_LARGE);
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
@@ -103,8 +103,8 @@ public class ASTVisitorTest {
 
     @Test
     void Missing_Conjunction_Implementation_Should_Throw() {
-        BoundsCheck left = new BoundsCheck(IDENTIFIER, INT_13, INT_LARGE, getAbsPosition());
-        BoundsCheck right = new BoundsCheck(IDENTIFIER, INT_13, INT_LARGE, getAbsPosition());
+        BoundsCheck left = new BoundsCheck(IDENTIFIER, INT_13, INT_LARGE);
+        BoundsCheck right = new BoundsCheck(IDENTIFIER, INT_13, INT_LARGE);
         MissingConjunctionImplementation connective = new MissingConjunctionImplementation(left, right, getAbsPosition());
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), connective);
 
@@ -116,7 +116,7 @@ public class ASTVisitorTest {
     @Test
     void Unimplemented_Type_Should_Throw() {
         UnimplementedType unimplementedType = new UnimplementedType(getAbsPosition());
-        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, unimplementedType, getAbsPosition());
+        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, unimplementedType);
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
 
         InternalCompilerException exception = assertThrows(InternalCompilerException.class, () -> visitor.visit(ast));

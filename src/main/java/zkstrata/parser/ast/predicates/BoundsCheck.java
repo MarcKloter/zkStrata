@@ -2,10 +2,8 @@ package zkstrata.parser.ast.predicates;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import zkstrata.exceptions.InternalCompilerException;
-import zkstrata.exceptions.Position;
 import zkstrata.parser.ParserRule;
 import zkstrata.parser.ast.types.Value;
-import zkstrata.utils.ParserUtils;
 import zkstrata.utils.StatementBuilder;
 import zkstrata.zkStrata;
 
@@ -19,16 +17,15 @@ public class BoundsCheck extends Predicate {
     private Value max;
     private Boolean strictComparison;
 
-    public BoundsCheck(Value value, Value min, Value max, Boolean strictComparison, Position tokenInfo) {
-        super(tokenInfo);
+    public BoundsCheck(Value value, Value min, Value max, Boolean strictComparison) {
         this.value = value;
         this.min = min;
         this.max = max;
         this.strictComparison = strictComparison;
     }
 
-    public BoundsCheck(Value value, Value min, Value max, Position tokenInfo) {
-        this(value, min, max, false, tokenInfo);
+    public BoundsCheck(Value value, Value min, Value max) {
+        this(value, min, max, false);
     }
 
     @ParserRule(name = "bounds_check")
@@ -37,22 +34,22 @@ public class BoundsCheck extends Predicate {
 
         if (boundsCheckContext.min_max() != null) {
             List<Value> values = getValues(boundsCheckContext.min_max());
-            return new BoundsCheck(values.get(0), values.get(1), values.get(2), ParserUtils.getPosition(ctx.getStart()));
+            return new BoundsCheck(values.get(0), values.get(1), values.get(2));
         }
 
         if (boundsCheckContext.max_min() != null) {
             List<Value> values = getValues(boundsCheckContext.max_min());
-            return new BoundsCheck(values.get(0), values.get(2), values.get(1), ParserUtils.getPosition(ctx.getStart()));
+            return new BoundsCheck(values.get(0), values.get(2), values.get(1));
         }
 
         if (boundsCheckContext.min() != null) {
             List<Value> values = getValues(boundsCheckContext.min());
-            return new BoundsCheck(values.get(0), values.get(1), null, ParserUtils.getPosition(ctx.getStart()));
+            return new BoundsCheck(values.get(0), values.get(1), null);
         }
 
         if (boundsCheckContext.max() != null) {
             List<Value> values = getValues(boundsCheckContext.max());
-            return new BoundsCheck(values.get(0), null, values.get(1), ParserUtils.getPosition(ctx.getStart()));
+            return new BoundsCheck(values.get(0), null, values.get(1));
         }
 
         throw new InternalCompilerException("Unknown bounds_check rule.");
