@@ -105,7 +105,7 @@ public class ErrorUtils {
         for (Position position : positions) {
             int offsetLength = position.getPosition() - pointer;
             for (int i = 0; i < offsetLength; i++) builder.append(' ');
-            int targetLength = position.getTarget().length();
+            int targetLength = position.getStatement().length();
             for (int i = 0; i < targetLength; i++) builder.append('^');
             pointer += offsetLength + targetLength;
         }

@@ -3,18 +3,18 @@ package zkstrata.exceptions;
 import java.io.Serializable;
 
 public abstract class Position implements Serializable {
-    private String target;
+    private String statement;
     private int line;
     private int charPositionInLine;
 
     public Position(String target, int line, int charPositionInLine) {
-        this.target = target;
+        this.statement = target;
         this.line = line;
         this.charPositionInLine = charPositionInLine;
     }
 
-    public String getTarget() {
-        return target;
+    public String getStatement() {
+        return statement;
     }
 
     public int getLine() {
@@ -36,7 +36,7 @@ public abstract class Position implements Serializable {
         private String statement;
 
         public Absolute(String source, String statement, Position position) {
-            super(position.getTarget(), position.getLine(), position.getPosition());
+            super(position.getStatement(), position.getLine(), position.getPosition());
             this.source = source;
             this.statement = statement;
         }
