@@ -35,7 +35,7 @@ public class Optimizer {
 
     public Optimizer(Statement statement) {
         this.claim = statement.getClaim();
-        this.premises = statement.getPremises();
+        this.premises = statement.getPremise();
         this.validationRules = statement.getValidationRules();
         this.gadgetTypes = ReflectionHelper.getAllGadgets();
         this.conjunctionTypes = ReflectionHelper.getAllConjunctions();
@@ -44,7 +44,7 @@ public class Optimizer {
 
     /**
      * Applies methods annotated as {@link Substitution} on the given {@code statement} using the known
-     * {@link Statement#getPremises()} as assumptions to remove implications with.
+     * {@link Statement#getPremise()} as assumptions to remove implications with.
      *
      * @return a semantically equal {@link Proposition} to the union of {@code statement} and {@link Optimizer#premises},
      * which has the same or less {@link Proposition#getCostEstimate()}.

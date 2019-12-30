@@ -10,19 +10,19 @@ import java.util.Map;
 public class Statement {
     private Map<String, StructuredData> subjects;
     private Proposition claim;
-    private Proposition premises;
+    private Proposition premise;
     private Proposition validationRules;
 
-    public Statement(Proposition claim, Proposition premises, Proposition validationRules) {
+    public Statement(Proposition claim, Proposition premise, Proposition validationRules) {
         this.claim = claim;
-        this.premises = premises;
+        this.premise = premise;
         this.validationRules = validationRules;
     }
 
     public Statement(Map<String, StructuredData> subjects, Proposition claim) {
         this.subjects = subjects;
         this.claim = claim;
-        this.premises = null;
+        this.premise = null;
         this.validationRules = null;
     }
 
@@ -38,8 +38,8 @@ public class Statement {
         this.claim = claim;
     }
 
-    public Proposition getPremises() {
-        return premises;
+    public Proposition getPremise() {
+        return premise;
     }
 
     public Proposition getValidationRules() {
@@ -50,7 +50,7 @@ public class Statement {
         this.validationRules = this.validationRules == null ? validationRules : this.validationRules.combine(validationRules);
     }
 
-    public void addPremises(Proposition premises) {
-        this.premises = this.premises == null ? premises : this.premises.combine(premises);
+    public void addPremise(Proposition premise) {
+        this.premise = this.premise == null ? premise : this.premise.combine(premise);
     }
 }

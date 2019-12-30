@@ -27,7 +27,7 @@ public class Compiler {
 
     public TargetRepresentation compile() {
         Statement statement = parseStatement();
-        statement.addPremises(parseAllPremises());
+        statement.addPremise(parseAllPremises());
         statement.setValidationRules(parseAllValidationRules(statement.getSubjects()));
 
         if (arguments.hasWitnessData())
