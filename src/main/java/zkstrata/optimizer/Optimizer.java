@@ -30,13 +30,13 @@ public class Optimizer {
     private final List<SubstitutionRule> substitutionRules;
 
     private Proposition claim;
-    private Proposition premises;
-    private Proposition validationRules;
+    private Proposition premise;
+    private Proposition validationRule;
 
     public Optimizer(Statement statement) {
         this.claim = statement.getClaim();
-        this.premises = statement.getPremise();
-        this.validationRules = statement.getValidationRules();
+        this.premise = statement.getPremise();
+        this.validationRule = statement.getValidationRule();
         this.gadgetTypes = ReflectionHelper.getAllGadgets();
         this.conjunctionTypes = ReflectionHelper.getAllConjunctions();
         this.substitutionRules = prepareSubstitutionRules();
@@ -46,7 +46,7 @@ public class Optimizer {
      * Applies methods annotated as {@link Substitution} on the given {@code statement} using the known
      * {@link Statement#getPremise()} as assumptions to remove implications with.
      *
-     * @return a semantically equal {@link Proposition} to the union of {@code statement} and {@link Optimizer#premises},
+     * @return a semantically equal {@link Proposition} to the union of {@code statement} and {@link Optimizer#premise},
      * which has the same or less {@link Proposition#getCostEstimate()}.
      */
     public Proposition process() {
@@ -70,7 +70,7 @@ public class Optimizer {
                     System.lineSeparator(), this.claim.toDebugString());
 
             LOGGER.debug("Validation rule structure before optimization:{}{}",
-                    System.lineSeparator(), this.validationRules.toDebugString());
+                    System.lineSeparator(), this.validationRule.toDebugString());
         }
     }
 
@@ -86,13 +86,13 @@ public class Optimizer {
         if (optimizedClaim.isTrueProposition()) {
             return optimizedClaim;
         } else {
-            Proposition statement = optimizedClaim.combine(this.validationRules);
+            Proposition statement = optimizedClaim.combine(this.validationRule);
             return dispatch(statement, Collections.emptySet(), Collections.emptySet());
         }
     }
 
     /**
-     * Determines all {@link Gadget} that are always true in the known {@link Optimizer#premises}.
+     * Determines all {@link Gadget} that are always true in the known {@link Optimizer#premise}.
      * <p>
      * This is done by taking the intersection of the {@link Proposition#getEvaluationPaths()} (all distinct gadget
      * combinations that can be shown to evaluate to true to prove a statement), which is the set of {@link Gadget}
@@ -102,7 +102,7 @@ public class Optimizer {
      * @return set of {@link Inference} that can be assumed as proven
      */
     private Set<Inference> determineBaseAssumptions() {
-        List<List<Gadget>> evaluationPaths = premises.getEvaluationPaths();
+        List<List<Gadget>> evaluationPaths = premise.getEvaluationPaths();
         Set<Gadget> commonGadgets = CombinatoricsUtils.computeIntersection(evaluationPaths);
 
         return ImplicationHelper.drawInferences(new ArrayList<>(commonGadgets));

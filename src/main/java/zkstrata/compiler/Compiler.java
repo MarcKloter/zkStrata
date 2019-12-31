@@ -28,7 +28,7 @@ public class Compiler {
     public TargetRepresentation compile() {
         Statement statement = parseStatement();
         statement.addPremise(parseAllPremises());
-        statement.setValidationRules(parseAllValidationRules(statement.getSubjects()));
+        statement.setValidationRule(parseAllValidationRules(statement.getSubjects()));
 
         if (arguments.hasWitnessData())
             new ExposureAnalyzer(arguments.getSubjectData()).process(statement);

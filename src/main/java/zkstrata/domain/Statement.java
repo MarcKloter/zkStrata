@@ -11,19 +11,19 @@ public class Statement {
     private List<StructuredData> subjects;
     private Proposition claim;
     private Proposition premise;
-    private Proposition validationRules;
+    private Proposition validationRule;
 
-    public Statement(Proposition claim, Proposition premise, Proposition validationRules) {
+    public Statement(Proposition claim, Proposition premise, Proposition validationRule) {
         this.claim = claim;
         this.premise = premise;
-        this.validationRules = validationRules;
+        this.validationRule = validationRule;
     }
 
     public Statement(List<StructuredData> subjects, Proposition claim) {
         this.subjects = subjects;
         this.claim = claim;
         this.premise = null;
-        this.validationRules = null;
+        this.validationRule = null;
     }
 
     public List<StructuredData> getSubjects() {
@@ -42,12 +42,12 @@ public class Statement {
         return premise;
     }
 
-    public Proposition getValidationRules() {
-        return validationRules;
+    public Proposition getValidationRule() {
+        return validationRule;
     }
 
-    public void setValidationRules(Proposition validationRules) {
-        this.validationRules = this.validationRules == null ? validationRules : this.validationRules.combine(validationRules);
+    public void setValidationRule(Proposition validationRule) {
+        this.validationRule = this.validationRule == null ? validationRule : this.validationRule.combine(validationRule);
     }
 
     public void addPremise(Proposition premise) {

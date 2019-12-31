@@ -29,7 +29,7 @@ public class SemanticAnalyzer {
     public static void process(Statement statement) {
         LOGGER.debug("Starting semantic analysis");
 
-        Proposition allPropositions = statement.getClaim().combine(statement.getPremise()).combine(statement.getValidationRules());
+        Proposition allPropositions = statement.getClaim().combine(statement.getPremise()).combine(statement.getValidationRule());
 
         List<List<Gadget>> evaluationPaths = allPropositions.getEvaluationPaths();
 
