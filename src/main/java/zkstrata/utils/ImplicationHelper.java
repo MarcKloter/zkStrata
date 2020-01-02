@@ -11,8 +11,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static zkstrata.utils.ReflectionHelper.*;
+
 public class ImplicationHelper {
-    private static final Set<Method> IMPLICATION_RULES = ReflectionHelper.getMethodsAnnotatedWith(Implication.class);
+    private static final Set<Method> IMPLICATION_RULES = getMethodsAnnotatedWith(Implication.class);
 
     private ImplicationHelper() {
         throw new IllegalStateException("Utility class");
@@ -199,7 +201,7 @@ public class ImplicationHelper {
      */
     private static Set<List<Gadget>> prepareArguments(Method method, Gadget gadget, Set<Gadget> context) {
         Class<? extends Gadget> type = gadget.getClass();
-        List<Class<? extends Gadget>> parameterTypes = new ArrayList<>(List.of(method.getAnnotation(Implication.class).assumption()));
+        List<Class<? extends Gadget>> parameterTypes = getGadgetParameterTypes(method);
         if (parameterTypes.contains(type)) {
             int index = parameterTypes.indexOf(type);
             parameterTypes.remove(index);
@@ -249,10 +251,10 @@ public class ImplicationHelper {
      * @return {@link Optional} {@link Gadget} returned by the invoked method
      */
     private static Optional<Gadget> invokeImplicationRule(Method implicationRule, Object[] args) {
-        ReflectionHelper.assertParameterizedReturnType(implicationRule, Optional.class, Gadget.class);
+        assertParameterizedReturnType(implicationRule, Optional.class, Gadget.class);
 
         @SuppressWarnings("unchecked")
-        Optional<Gadget> impliedGadget = (Optional<Gadget>) ReflectionHelper.invokeStaticMethod(implicationRule, args);
+        Optional<Gadget> impliedGadget = (Optional<Gadget>) invokeStaticMethod(implicationRule, args);
 
         return impliedGadget;
     }

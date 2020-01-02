@@ -6,14 +6,15 @@ import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.exceptions.CompileTimeException;
-import zkstrata.utils.CombinatoricsUtils;
 import zkstrata.utils.InferencesTableBuilder;
 import zkstrata.utils.ImplicationHelper;
-import zkstrata.utils.ReflectionHelper;
 
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static zkstrata.utils.CombinatoricsUtils.getCombinations;
+import static zkstrata.utils.ReflectionHelper.*;
 
 public class SemanticAnalyzer {
     private static final Logger LOGGER = LogManager.getRootLogger();
@@ -55,17 +56,15 @@ public class SemanticAnalyzer {
      * @param inferences set of {@link Inference} to check contradictions on
      */
     private static void checkContradictions(Set<Inference> inferences) {
-        Set<Method> contradictionChecks = ReflectionHelper.getMethodsAnnotatedWith(Contradiction.class);
+        Set<Method> contradictionChecks = getMethodsAnnotatedWith(Contradiction.class);
         for (Method contradictionCheck : contradictionChecks) {
-            Class<? extends Gadget>[] context = contradictionCheck.getAnnotation(Contradiction.class).propositions();
+            List<Class<? extends Gadget>> context = getGadgetParameterTypes(contradictionCheck);
 
-            Set<List<Gadget>> contextCombinations = CombinatoricsUtils.getCombinations(
-                    List.of(context),
-                    inferences.stream().map(Inference::getConclusion).collect(Collectors.toSet())
-            );
+            Set<List<Gadget>> contextCombinations = getCombinations(context,
+                    inferences.stream().map(Inference::getConclusion).collect(Collectors.toSet()));
 
             for (List<Gadget> contextCombination : contextCombinations)
-                ReflectionHelper.invokeStaticMethod(contradictionCheck, contextCombination.toArray());
+                invokeStaticMethod(contradictionCheck, contextCombination.toArray());
         }
     }
 }

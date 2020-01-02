@@ -46,7 +46,7 @@ public class SetMembershipGadget extends AbstractGadget {
      * @param sm {@link SetMembershipGadget} to check
      * @param eq {@link EqualityGadget} to check
      */
-    @Contradiction(propositions = {SetMembershipGadget.class, EqualityGadget.class})
+    @Contradiction
     public static void checkInstanceEqualityContradiction(SetMembershipGadget sm, EqualityGadget eq) {
         if (GadgetUtils.isWitnessVariable(sm.getMember())
                 && sm.getSet().stream().allMatch((GadgetUtils::isInstanceVariable))) {

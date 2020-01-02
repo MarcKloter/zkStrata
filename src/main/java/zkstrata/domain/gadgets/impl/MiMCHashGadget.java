@@ -47,7 +47,7 @@ public class MiMCHashGadget extends AbstractGadget {
      * @param hg1 first {@link MiMCHashGadget} to check
      * @param hg2 second {@link MiMCHashGadget} to check
      */
-    @Contradiction(propositions = {MiMCHashGadget.class, MiMCHashGadget.class})
+    @Contradiction
     public static void checkContradiction(MiMCHashGadget hg1, MiMCHashGadget hg2) {
         if (hg1.getPreimage().equals(hg2.getPreimage())
                 && isInstanceVariable(hg1.getImage()) && isInstanceVariable(hg2.getImage())

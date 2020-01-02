@@ -37,13 +37,13 @@ public class InequalityGadget extends AbstractGadget {
         this.initialize();
     }
 
-    @Contradiction(propositions = {InequalityGadget.class})
+    @Contradiction
     public static void checkSelfContradiction(InequalityGadget iq) {
         if (isInstanceVariable(iq.getLeft()) && isInstanceVariable(iq.getRight()) && iq.getLeft().equals(iq.getRight()))
             throw new CompileTimeException("Contradiction.", List.of(iq.getLeft(), iq.getRight()));
     }
 
-    @Contradiction(propositions = {EqualityGadget.class, InequalityGadget.class})
+    @Contradiction
     public static void checkEqualityContradiction(EqualityGadget eq, InequalityGadget iq) {
         if (eq.getLeft().equals(iq.getRight()) && eq.getRight().equals(iq.getLeft())
                 || eq.getLeft().equals(iq.getLeft()) && eq.getRight().equals(iq.getRight()))

@@ -55,7 +55,7 @@ public class BoundsCheckGadget extends AbstractGadget {
         this(value, min, max, false);
     }
 
-    @Implication(assumption = {EqualityGadget.class, BoundsCheckGadget.class})
+    @Implication
     public static Optional<Gadget> implyBounds(EqualityGadget eq, BoundsCheckGadget bc) {
         Optional<Variable> equal = EqualityGadget.getEqualityToWitness(eq, bc.getValue());
 
@@ -65,7 +65,7 @@ public class BoundsCheckGadget extends AbstractGadget {
         return Optional.empty();
     }
 
-    @Implication(assumption = {BoundsCheckGadget.class})
+    @Implication
     public static Optional<Gadget> implyEquality(BoundsCheckGadget bc) {
         if (bc.getMaxValue().equals(bc.getMinValue())) {
             return Optional.of(new EqualityGadget(bc.getValue(), bc.getMin()));
@@ -74,7 +74,7 @@ public class BoundsCheckGadget extends AbstractGadget {
         return Optional.empty();
     }
 
-    @Contradiction(propositions = {BoundsCheckGadget.class, BoundsCheckGadget.class})
+    @Contradiction
     public static void checkTwoBoundsChecksContradiction(BoundsCheckGadget first, BoundsCheckGadget second) {
         if (haveSameValue(first, second)) {
             if (first.getMinValue().compareTo(second.getMaxValue()) > 0)
@@ -85,13 +85,13 @@ public class BoundsCheckGadget extends AbstractGadget {
         }
     }
 
-    @Contradiction(propositions = {BoundsCheckGadget.class})
+    @Contradiction
     public static void checkSelfBoundsContradiction(BoundsCheckGadget bc) {
         if (bc.getMinValue().compareTo(bc.getMaxValue()) > 0)
             throw new CompileTimeException("Contradiction.", List.of(bc.getMin(), bc.getMax()));
     }
 
-    @Contradiction(propositions = {EqualityGadget.class, BoundsCheckGadget.class})
+    @Contradiction
     public static void checkEqualityBoundsContradiction(EqualityGadget eq, BoundsCheckGadget bc) {
         Optional<Variable> equal = EqualityGadget.getEqualityToWitness(eq, bc.getValue());
 

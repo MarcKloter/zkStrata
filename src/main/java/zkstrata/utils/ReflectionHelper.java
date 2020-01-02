@@ -14,6 +14,8 @@ import zkstrata.exceptions.TypeCheckException;
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -192,5 +194,24 @@ public class ReflectionHelper {
         } catch (NoSuchFieldException e) {
             throw new InternalCompilerException("Missing field %s in %s.", name, clazz);
         }
+    }
+
+    /**
+     * Ensures that the parameter types of the given {@link Method} are subclasses of {@link Gadget} and returns them as
+     * a list.
+     *
+     * @param method {@link Method} to get paramter types for
+     * @return list of class types extending {@link Gadget}
+     */
+    public static List<Class<? extends Gadget>> getGadgetParameterTypes(Method method) {
+        List<Class<? extends Gadget>> result = new ArrayList<>();
+        for (Class<?> type : method.getParameterTypes()) {
+            if (Gadget.class.isAssignableFrom(type))
+                result.add(type.asSubclass(Gadget.class));
+            else
+                throw new InternalCompilerException("Invalid argument type %s of method %s in %s.",
+                        type.getSimpleName(), method.getName(), method.getDeclaringClass());
+        }
+        return result;
     }
 }

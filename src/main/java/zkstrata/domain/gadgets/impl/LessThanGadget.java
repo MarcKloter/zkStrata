@@ -40,13 +40,13 @@ public class LessThanGadget extends AbstractGadget {
         this.initialize();
     }
 
-    @Contradiction(propositions = {LessThanGadget.class})
+    @Contradiction
     public static void checkSelfContradiction(LessThanGadget lt) {
         if (lt.getLeft().equals(lt.getRight()))
             throw new CompileTimeException("Contradiction.", List.of(lt.getLeft(), lt.getRight()));
     }
 
-    @Contradiction(propositions = {EqualityGadget.class, LessThanGadget.class})
+    @Contradiction
     public static void checkEqualityContradiction(EqualityGadget eq, LessThanGadget lt) {
         if (eq.getLeft().equals(lt.getLeft()) && eq.getRight().equals(lt.getRight())
                 || eq.getLeft().equals(lt.getRight()) && eq.getRight().equals(lt.getLeft()))
@@ -75,7 +75,7 @@ public class LessThanGadget extends AbstractGadget {
         return Optional.empty();
     }
 
-    @Implication(assumption = {LessThanGadget.class, LessThanGadget.class})
+    @Implication
     public static Optional<Gadget> implyTransitivity(LessThanGadget lt1, LessThanGadget lt2) {
         if (lt1.getRight().equals(lt2.getLeft()) && !lt1.getLeft().equals(lt2.getRight()))
             return Optional.of(new LessThanGadget(lt1.getLeft(), lt2.getRight()));
@@ -86,7 +86,7 @@ public class LessThanGadget extends AbstractGadget {
         return Optional.empty();
     }
 
-    @Implication(assumption = {LessThanGadget.class, EqualityGadget.class})
+    @Implication
     public static Optional<Gadget> implyEquality(LessThanGadget lt, EqualityGadget eq) {
         Optional<Variable> left = getEqualityToWitness(eq, lt.getLeft());
         if (left.isPresent() && isWitnessVariable(left.get()) && !left.get().equals(lt.getRight()))
@@ -99,7 +99,7 @@ public class LessThanGadget extends AbstractGadget {
         return Optional.empty();
     }
 
-    @Implication(assumption = {LessThanGadget.class, BoundsCheckGadget.class})
+    @Implication
     public static Optional<Gadget> implyBounds(LessThanGadget lt, BoundsCheckGadget bc) {
         if (bc.getValue().equals(lt.getLeft()))
             return Optional.of(new BoundsCheckGadget(lt.getRight(), bc.getMin(), null));

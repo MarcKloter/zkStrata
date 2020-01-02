@@ -37,7 +37,7 @@ public class EqualityGadget extends AbstractGadget {
         this.initialize();
     }
 
-    @Implication(assumption = {EqualityGadget.class, EqualityGadget.class})
+    @Implication
     public static Optional<Gadget> implyEquality(EqualityGadget eq1, EqualityGadget eq2) {
         List<Variable> parity = getParity(eq1.getLeft(), eq1.getRight(), eq2.getLeft(), eq2.getRight());
         if (new HashSet<>(parity).size() == 2)
@@ -46,7 +46,7 @@ public class EqualityGadget extends AbstractGadget {
         return Optional.empty();
     }
 
-    @Contradiction(propositions = {EqualityGadget.class})
+    @Contradiction
     public static void checkContradiction(EqualityGadget eq) {
         if (isInstanceVariable(eq.getLeft()) && isInstanceVariable(eq.getRight())
                 && !eq.getLeft().equals(eq.getRight()))
