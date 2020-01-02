@@ -75,7 +75,7 @@ public class AndConjunction extends AbstractConjunction {
      *  A    B      D  E  F</pre>
      * <p>
      * This statement can be proven by showing that at least one of the following gadget-combinations evaluates to true:
-     * [[A, C, E], [A, C, F], [A, C, G], [B, C, E], [B, C, F], [B, C, G]]
+     * [[A, C, D], [A, C, E], [A, C, F], [B, C, D], [B, C, E], [B, C, F]]
      * <p>
      * Which is the cartesian product of the evaluation paths returned by the parts ({@link Proposition#getEvaluationPaths()}).
      */
