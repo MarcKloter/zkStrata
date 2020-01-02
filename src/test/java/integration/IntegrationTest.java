@@ -389,4 +389,17 @@ public class IntegrationTest {
             assertEquals(1, statement.getGadgets().size());
         });
     }
+
+    @Test
+    void Complex_Statement_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("complex_statement")
+                    .withInstance("pass", "passport.metadata")
+                    .withInstance("date", "date")
+                    .build();
+            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            assertEquals(13, statement.getGadgets().size());
+        });
+    }
 }

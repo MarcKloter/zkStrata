@@ -1,0 +1,18 @@
+PROOF FOR
+    WITNESS pass COMPLIANT TO passport_ch
+AND
+    WITNESS license COMPLIANT TO drivers_license_ch
+AND
+    INSTANCE date COMPLIANT TO date
+THAT
+    date.day < _CURRENT_YEAR
+AND
+    (
+        license.dateOfExpiry.day = _CURRENT_MONTH
+    OR
+        date.month <= license.dateOfExpiry.month
+    OR
+        date.month >= pass.expiresOn.month
+    )
+AND
+    date.year <= _CURRENT_YEAR
