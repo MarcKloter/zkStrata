@@ -91,9 +91,18 @@ public class BoundsCheckGadgetTest {
     }
 
     @Test
-    void Imply_Bounds_None() {
+    void Imply_Bounds_None_1() {
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_17, WITNESS_VAR_2);
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+
+        Optional<Gadget> result = implyBounds(equalityGadget, boundsCheckGadget);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void Imply_Bounds_None_2() {
+        EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_17, WITNESS_VAR_2);
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(INSTANCE_VAR_29, INSTANCE_VAR_17, INSTANCE_VAR_41);
 
         Optional<Gadget> result = implyBounds(equalityGadget, boundsCheckGadget);
         assertTrue(result.isEmpty());
@@ -174,6 +183,31 @@ public class BoundsCheckGadgetTest {
     }
 
     @Test
+    void Instance_Contradiction() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(INSTANCE_VAR_17, INSTANCE_VAR_41, INSTANCE_VAR_53);
+
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+                checkInstanceContradiction(boundsCheckGadget)
+        );
+
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
+    }
+
+    @Test
+    void Instance_No_Contradiction_1() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_41, INSTANCE_VAR_53);
+
+        assertDoesNotThrow(() -> checkInstanceContradiction(boundsCheckGadget));
+    }
+
+    @Test
+    void Instance_No_Contradiction_2() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(INSTANCE_VAR_41, INSTANCE_VAR_29, INSTANCE_VAR_53);
+
+        assertDoesNotThrow(() -> checkInstanceContradiction(boundsCheckGadget));
+    }
+
+    @Test
     void Equality_Bounds_Contradiction_1() {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_41, INSTANCE_VAR_53);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
@@ -202,9 +236,7 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
 
-        assertDoesNotThrow(() ->
-                checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget)
-        );
+        assertDoesNotThrow(() -> checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget));
     }
 
     @Test
@@ -212,9 +244,7 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_41);
 
-        assertDoesNotThrow(() ->
-                checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget)
-        );
+        assertDoesNotThrow(() -> checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget));
     }
 
     @Test
@@ -222,9 +252,7 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_41);
 
-        assertDoesNotThrow(() ->
-                checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget)
-        );
+        assertDoesNotThrow(() -> checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget));
     }
 
     @Test
@@ -232,9 +260,7 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, WITNESS_VAR_2);
 
-        assertDoesNotThrow(() ->
-                checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget)
-        );
+        assertDoesNotThrow(() -> checkEqualityBoundsContradiction(equalityGadget, boundsCheckGadget));
     }
 
     @Test
@@ -275,6 +301,13 @@ public class BoundsCheckGadgetTest {
     }
 
     @Test
+    void Unequal_Bounds_No_Substitution_4() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(INSTANCE_VAR_29, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_2, INSTANCE_VAR_41);
+        assertEquals(empty(), replaceUnequalBounds(boundsCheckGadget, inequalityGadget));
+    }
+
+    @Test
     void Value_Equality_Substitution_1() {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
         EqualityGadget equalityGadget = new EqualityGadget(INSTANCE_VAR_41, WITNESS_VAR_1);
@@ -298,6 +331,13 @@ public class BoundsCheckGadgetTest {
     @Test
     void Value_Equality_No_Substitution_2() {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_53);
+        assertEquals(empty(), removeValueEquality(boundsCheckGadget, equalityGadget));
+    }
+
+    @Test
+    void Value_Equality_No_Substitution_3() {
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(INSTANCE_VAR_29, INSTANCE_VAR_17, INSTANCE_VAR_41);
         EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_2, INSTANCE_VAR_53);
         assertEquals(empty(), removeValueEquality(boundsCheckGadget, equalityGadget));
     }
@@ -336,6 +376,24 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget1 = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_29, INSTANCE_VAR_41);
         BoundsCheckGadget boundsCheckGadget2 = new BoundsCheckGadget(WITNESS_VAR_2, INSTANCE_VAR_17, INSTANCE_VAR_29);
         assertEquals(empty(), replaceMinEqualsMaxTwoGadgets(boundsCheckGadget1, boundsCheckGadget2));
+    }
+
+    @Test
+    void Instance_Bounds_Substitution() {
+        BoundsCheckGadget target = new BoundsCheckGadget(INSTANCE_VAR_29, INSTANCE_VAR_17, INSTANCE_VAR_53);
+        assertEquals(of(trueProposition()), removeInstanceComparison(target));
+    }
+
+    @Test
+    void Instance_Bounds_No_Substitution_1() {
+        BoundsCheckGadget target = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_53);
+        assertEquals(empty(), removeInstanceComparison(target));
+    }
+
+    @Test
+    void Instance_Bounds_No_Substitution_2() {
+        BoundsCheckGadget target = new BoundsCheckGadget(INSTANCE_VAR_17, INSTANCE_VAR_29, INSTANCE_VAR_53);
+        assertEquals(empty(), removeInstanceComparison(target));
     }
 
     @Test
