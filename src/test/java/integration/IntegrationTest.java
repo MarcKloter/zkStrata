@@ -304,10 +304,10 @@ public class IntegrationTest {
     }
 
     @Test
-    void Multiple_Subjects_Preserve_Validation_Rules_Should_Succeed() {
+    void Multiple_Witnesses_Preserve_Validation_Rules_Should_Succeed() {
         assertDoesNotThrow(() -> {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
-                    .withStatement("default_multiple_subjects")
+                    .withStatement("multiple_witnesses")
                     .withWitness("pass1", "passport")
                     .withWitness("pass2", "passport2")
                     .withInstance("pass1", "passport.metadata")
