@@ -83,6 +83,15 @@ public class ReflectionHelperTest {
     }
 
     @Test
+    void Invalid_Argument_Type_Should_Throw() {
+        InternalCompilerException exception = assertThrows(InternalCompilerException.class, () ->
+                getGadgetParameterTypes(ReflectionMock.class.getMethod("wrongArguments", Object.class))
+        );
+
+        assertTrue(exception.getMessage().toLowerCase().contains("invalid argument type"));
+    }
+
+    @Test
     void Missing_Field_Should_Throw() {
         InternalCompilerException exception = assertThrows(InternalCompilerException.class, () ->
                 getField(ReflectionMock.class, "missingField")
