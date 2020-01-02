@@ -8,12 +8,10 @@ import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
-import zkstrata.domain.visitor.AstElement;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
-import zkstrata.parser.ast.predicates.LessThan;
 import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
@@ -22,16 +20,12 @@ import java.util.*;
 import static zkstrata.domain.gadgets.impl.EqualityGadget.getEqualityToWitness;
 import static zkstrata.utils.GadgetUtils.*;
 
-@AstElement(LessThan.class)
 public class LessThanGadget extends AbstractGadget {
     @Type({BigInteger.class})
     private WitnessVariable left;
 
     @Type({BigInteger.class})
     private WitnessVariable right;
-
-    public LessThanGadget() {
-    }
 
     public LessThanGadget(WitnessVariable left, WitnessVariable right) {
         this.left = left;

@@ -14,9 +14,9 @@ import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.Subject;
-import zkstrata.parser.ast.predicates.BoundsCheck;
 import zkstrata.parser.ast.predicates.LessThan;
 import zkstrata.parser.ast.predicates.MiMCHash;
+import zkstrata.parser.ast.types.HexLiteral;
 import zkstrata.parser.ast.types.Identifier;
 import zkstrata.parser.ast.types.IntegerLiteral;
 import zkstrata.parser.ast.types.StringLiteral;
@@ -38,6 +38,7 @@ public class AbstractGadgetTest {
     private static final Subject SUBJECT = createSubject(true, "");
     private static final IntegerLiteral INT_LIT_13 = createIntegerLiteral(13);
     private static final StringLiteral STRING_LIT = createStringLiteral("string");
+    private static final HexLiteral HEX_LIT = createHexLiteral("0eaa9b3a69635f633f1f9a3249ccad8794945c97c92a711b6149e4f0e9176392");
 
     private ASTVisitor visitor;
 
@@ -51,8 +52,8 @@ public class AbstractGadgetTest {
 
     @Test
     void Unexpected_Type_Should_Throw_1() {
-        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER_1, INT_LIT_13, STRING_LIT);
-        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
+        LessThan lessThan = new LessThan(IDENTIFIER_1, STRING_LIT, false);
+        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), lessThan);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
 
@@ -71,8 +72,8 @@ public class AbstractGadgetTest {
 
     @Test
     void Invalid_Confidentiality_Level_Should_Throw() {
-        LessThan lessThan = new LessThan(IDENTIFIER_2, INT_LIT_13);
-        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), lessThan);
+        MiMCHash miMCHash = new MiMCHash(STRING_LIT, HEX_LIT);
+        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), miMCHash);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
 

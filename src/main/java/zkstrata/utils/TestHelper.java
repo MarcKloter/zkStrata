@@ -7,6 +7,7 @@ import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.Subject;
+import zkstrata.parser.ast.types.HexLiteral;
 import zkstrata.parser.ast.types.Identifier;
 import zkstrata.parser.ast.types.IntegerLiteral;
 import zkstrata.parser.ast.types.StringLiteral;
@@ -55,6 +56,10 @@ public class TestHelper {
 
     public static StringLiteral createStringLiteral(String value) {
         return new StringLiteral(value, ABS_POSITION);
+    }
+
+    public static HexLiteral createHexLiteral(String value) {
+        return new HexLiteral(value, ABS_POSITION);
     }
 
     public static Identifier createIdentifier(String aliasSuffix, String selectorSuffix) {

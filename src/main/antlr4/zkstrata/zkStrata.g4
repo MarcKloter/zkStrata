@@ -2,8 +2,7 @@ parser grammar zkStrata;
 
 options { tokenVocab = zkStrataLexer; }
 
-import BoundsCheck,
-       Equality,
+import Equality,
        Inequality,
        MerkleTree,
        MiMCHash,
@@ -40,8 +39,7 @@ clause              : LPAREN clause RPAREN          # ParenClause
 /**
  * Predicate Clauses
  */
-predicate_clause    : bounds_check
-                    | merkle_tree
+predicate_clause    : merkle_tree
                     | mimc_hash
                     | equality
                     | inequality

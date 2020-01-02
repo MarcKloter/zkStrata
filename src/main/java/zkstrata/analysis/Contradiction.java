@@ -1,7 +1,5 @@
 package zkstrata.analysis;
 
-import zkstrata.domain.gadgets.Gadget;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

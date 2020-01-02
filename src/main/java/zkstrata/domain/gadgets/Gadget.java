@@ -14,7 +14,7 @@ public interface Gadget extends Proposition {
      *
      * @param source {@link Map} containing the field name {@link String} and value {@link Object} pairs
      */
-    void initFrom(Map<String, Object> source);
+    Gadget initFrom(Map<String, Object> source);
 
     /**
      * Returns all values of fields annotated with {@link Type} as map of field names to values

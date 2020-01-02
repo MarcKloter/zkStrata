@@ -30,7 +30,7 @@ public class ReflectionHelper {
      * @return {@link Set} of classes implementing {@link Gadget}
      */
     public static Set<Class<? extends Gadget>> getAllGadgets() {
-        Reflections reflections = new Reflections("zkstrata.domain.gadgets.impl");
+        Reflections reflections = new Reflections("zkstrata.domain.gadgets");
 
         Set<Class<? extends Gadget>> gadgets = reflections.getSubTypesOf(Gadget.class);
 

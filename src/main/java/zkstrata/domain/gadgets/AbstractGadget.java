@@ -7,11 +7,12 @@ import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.optimizer.Substitution;
-import zkstrata.utils.ReflectionHelper;
 
 import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static zkstrata.utils.ReflectionHelper.*;
 
 public abstract class AbstractGadget implements Gadget {
     @Substitution(target = {Gadget.class, Gadget.class})
@@ -25,10 +26,10 @@ public abstract class AbstractGadget implements Gadget {
     }
 
     @Override
-    public void initFrom(Map<String, Object> sourceFields) {
+    public Gadget initFrom(Map<String, Object> sourceFields) {
         for (Map.Entry<String, Object> source : sourceFields.entrySet()) {
             try {
-                Field destination = ReflectionHelper.getField(this.getClass(), source.getKey());
+                Field destination = getField(this.getClass(), source.getKey());
                 Object destinationValue = source.getValue();
                 checkType(destination, destinationValue);
                 if (destinationValue.getClass() == Null.class)
@@ -41,6 +42,7 @@ public abstract class AbstractGadget implements Gadget {
         }
 
         this.initialize();
+        return this;
     }
 
     /**
@@ -49,11 +51,11 @@ public abstract class AbstractGadget implements Gadget {
      * @param field {@link Field} to check
      * @param value {@link Object} to type check against
      */
-    private void checkType(Field field, Object value) {
+    protected void checkType(Field field, Object value) {
         if (value instanceof Variable)
             checkTypeAnnotation(field, (Variable) value);
         else
-            ReflectionHelper.assertIsAssignableFrom(field.getType(), value.getClass());
+            assertIsAssignableFrom(field.getType(), value.getClass());
     }
 
     /**
@@ -88,7 +90,7 @@ public abstract class AbstractGadget implements Gadget {
         Map<String, Variable> variables = new LinkedHashMap<>();
 
         for (Field field : getTypeAnnotatedFields()) {
-            Object value = ReflectionHelper.invokeGetter(this, field);
+            Object value = invokeGetter(this, field);
             processValue(field.getName(), value, variables);
         }
 

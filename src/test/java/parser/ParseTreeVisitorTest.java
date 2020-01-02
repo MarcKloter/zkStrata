@@ -99,52 +99,37 @@ public class ParseTreeVisitorTest {
     }
 
     @Test
-    void BoundsCheck_Is_Parsed_Correctly_1() {
+    void LessThanEqual_Is_Parsed_Correctly() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
-                .boundsCheck(IDENTIFIER_1, integerLiteral(INT_LITERAL_1), integerLiteral(INT_LITERAL_2))
+                .lessThan(IDENTIFIER_1, integerLiteral(INT_LITERAL_2), false)
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor(SOURCE).visit(statement);
 
         Node rootNode = ast.getRoot();
-        assertEquals(BoundsCheck.class, rootNode.getClass());
+        assertEquals(LessThan.class, rootNode.getClass());
 
-        BoundsCheck boundsCheck = (BoundsCheck) rootNode;
-        assertEquals(IDENTIFIER_1, boundsCheck.getValue().getValue());
-        assertEquals(INT_LITERAL_1, boundsCheck.getMin().getValue());
-        assertEquals(INT_LITERAL_2, boundsCheck.getMax().getValue());
+        LessThan lessThan = (LessThan) rootNode;
+        assertEquals(IDENTIFIER_1, lessThan.getLeft().getValue());
+        assertEquals(INT_LITERAL_2, lessThan.getRight().getValue());
+        assertFalse(lessThan.getStrict());
     }
 
     @Test
-    void BoundsCheck_Is_Parsed_Correctly_2() {
+    void GreaterThanEqual_Is_Parsed_Correctly() {
         String statement = new StatementBuilder()
                 .subject(SCHEMA, ALIAS, true)
-                .boundsCheck(IDENTIFIER_1, integerLiteral(INT_LITERAL_1), null)
+                .greaterThan(IDENTIFIER_1, integerLiteral(INT_LITERAL_1), false)
                 .build();
         AbstractSyntaxTree ast = new ParseTreeVisitor(SOURCE).visit(statement);
 
         Node rootNode = ast.getRoot();
-        assertEquals(BoundsCheck.class, rootNode.getClass());
+        assertEquals(LessThan.class, rootNode.getClass());
 
-        BoundsCheck boundsCheck = (BoundsCheck) rootNode;
-        assertEquals(IDENTIFIER_1, boundsCheck.getValue().getValue());
-        assertEquals(INT_LITERAL_1, boundsCheck.getMin().getValue());
-    }
-
-    @Test
-    void BoundsCheck_Is_Parsed_Correctly_3() {
-        String statement = new StatementBuilder()
-                .subject(SCHEMA, ALIAS, true)
-                .boundsCheck(IDENTIFIER_1, null, integerLiteral(INT_LITERAL_2))
-                .build();
-        AbstractSyntaxTree ast = new ParseTreeVisitor(SOURCE).visit(statement);
-
-        Node rootNode = ast.getRoot();
-        assertEquals(BoundsCheck.class, rootNode.getClass());
-
-        BoundsCheck boundsCheck = (BoundsCheck) rootNode;
-        assertEquals(IDENTIFIER_1, boundsCheck.getValue().getValue());
-        assertEquals(INT_LITERAL_2, boundsCheck.getMax().getValue());
+        LessThan lessThan = (LessThan) rootNode;
+        assertEquals(IDENTIFIER_1, lessThan.getRight().getValue());
+        assertEquals(INT_LITERAL_1, lessThan.getLeft().getValue());
+        assertFalse(lessThan.getStrict());
     }
 
     @Test

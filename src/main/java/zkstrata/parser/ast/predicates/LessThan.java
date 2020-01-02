@@ -13,31 +13,49 @@ import static zkstrata.utils.ParserUtils.*;
 public class LessThan extends Predicate {
     private Value left;
     private Value right;
+    private Boolean strict;
 
-    public LessThan(Value left, Value right) {
+    public LessThan(Value left, Value right, Boolean strict) {
         this.left = left;
         this.right = right;
+        this.strict = strict;
     }
 
     @ParserRule(name = "comparison")
     public static Predicate parse(zkStrata.ComparisonContext ctx) {
-        if (ctx.less_than() != null) {
-            List<Value> values = getValues(ctx.less_than());
-            if (ctx.less_than().instance_var() != null)
-                return new BoundsCheck(values.get(0), null, values.get(1), true);
-            else
-                return new LessThan(values.get(0), values.get(1));
-        }
+        if (ctx.less_than() != null)
+            return parseLessThan(ctx.less_than());
 
-        if (ctx.greater_than() != null) {
-            List<Value> values = getValues(ctx.greater_than());
-            if (ctx.greater_than().instance_var() != null)
-                return new BoundsCheck(values.get(0), values.get(1), null, true);
-            else
-                return new LessThan(values.get(1), values.get(0));
-        }
+        if (ctx.less_than_eq() != null)
+            return parseLessThanEq(ctx.less_than_eq());
+
+        if (ctx.greater_than() != null)
+            return parseGreaterThan(ctx.greater_than());
+
+        if (ctx.greater_than_eq() != null)
+            return parseGreaterThanEq(ctx.greater_than_eq());
 
         throw new InternalCompilerException("Unknown comparison rule.");
+    }
+
+    private static Predicate parseLessThan(zkStrata.Less_thanContext ctx) {
+        List<Value> values = getValues(ctx);
+        return new LessThan(values.get(0), values.get(1), true);
+    }
+
+    private static Predicate parseLessThanEq(zkStrata.Less_than_eqContext ctx) {
+        List<Value> values = getValues(ctx);
+        return new LessThan(values.get(0), values.get(1), false);
+    }
+
+    private static Predicate parseGreaterThan(zkStrata.Greater_thanContext ctx) {
+        List<Value> values = getValues(ctx);
+        return new LessThan(values.get(1), values.get(0), true);
+    }
+
+    private static Predicate parseGreaterThanEq(zkStrata.Greater_than_eqContext ctx) {
+        List<Value> values = getValues(ctx);
+        return new LessThan(values.get(1), values.get(0), false);
     }
 
     public Value getLeft() {
@@ -46,6 +64,10 @@ public class LessThan extends Predicate {
 
     public Value getRight() {
         return right;
+    }
+
+    public Boolean getStrict() {
+        return strict;
     }
 
     @Override

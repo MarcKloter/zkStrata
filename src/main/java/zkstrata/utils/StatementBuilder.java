@@ -94,19 +94,22 @@ public class StatementBuilder {
         return this;
     }
 
-    public StatementBuilder boundsCheck(String value, String min, String max) {
-        return boundsCheck(value, min, max, false);
+    public StatementBuilder greaterThan(String left, String right) {
+        return greaterThan(left, right, true);
     }
 
-    public StatementBuilder boundsCheck(String value, String min, String max, boolean strict) {
-        if (min == null && max == null)
-            return this;
-        else if (min == null)
-            predicates.add(String.format("%s %s %s", value, lessThan(strict), max));
-        else if (max == null)
-            predicates.add(String.format("%s %s %s", value, greaterThan(strict), min));
-        else
-            predicates.add(String.format("%s %s %s AND %s %s", value, lessThan(strict), max, greaterThan(strict), min));
+    public StatementBuilder greaterThan(String left, String right, boolean strict) {
+        predicates.add(String.format("%s %s %s", left, greaterThan(strict), right));
+
+        return this;
+    }
+
+    public StatementBuilder lessThan(String left, String right) {
+        return lessThan(left, right, true);
+    }
+
+    public StatementBuilder lessThan(String left, String right, boolean strict) {
+        predicates.add(String.format("%s %s %s", left, lessThan(strict), right));
 
         return this;
     }
@@ -142,18 +145,6 @@ public class StatementBuilder {
             stringBuilder.append(')');
         } else
             stringBuilder.append(node.getValue());
-    }
-
-    public StatementBuilder lessThan(String left, String right) {
-        predicates.add(String.format("%s IS LESS THAN %s", left, right));
-
-        return this;
-    }
-
-    public StatementBuilder greaterThan(String left, String right) {
-        predicates.add(String.format("%s IS GREATER THAN %s", left, right));
-
-        return this;
     }
 
     public StatementBuilder setMembership(String member, Set<String> set) {

@@ -1,6 +1,30 @@
 PROOF FOR
-    passport_ch AS pass
+    WITNESS pass COMPLIANT TO passport_ch
+AND
+    INSTANCE pass2 COMPLIANT TO passport_ch
+AND
+    INSTANCE pass3 COMPLIANT TO passport_ch
 THAT
     pass.dateOfBirth.year IS LESS THAN pass.expiresOn.year
 AND
     pass.dateOfBirth.month IS GREATER THAN pass.expiresOn.month
+AND
+    pass.dateOfBirth.year < pass.expiresOn.year
+AND
+    pass.dateOfBirth.month > pass.expiresOn.month
+AND
+    pass2.dateOfBirth.year IS LESS THAN pass.expiresOn.year
+AND
+    pass2.dateOfBirth.month IS GREATER THAN pass.expiresOn.month
+AND
+    pass2.dateOfBirth.year < pass.expiresOn.year
+AND
+    pass2.dateOfBirth.month > pass.expiresOn.month
+AND
+    pass2.dateOfBirth.year IS LESS THAN pass3.expiresOn.year
+AND
+    pass2.dateOfBirth.month IS GREATER THAN pass3.expiresOn.month
+AND
+    pass2.dateOfBirth.year < pass3.expiresOn.year
+AND
+    pass2.dateOfBirth.month > pass3.expiresOn.month

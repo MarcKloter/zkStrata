@@ -31,7 +31,7 @@ public class JsonSchemaTest {
     @Test
     void Get_Type_Undefined_Property() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            this.schema1.getType(new Selector(List.of("missing")))
+                this.schema1.getType(new Selector(List.of("missing")))
         );
         assertTrue(exception.getMessage().toLowerCase().contains("missing a type definition"));
     }
@@ -39,7 +39,7 @@ public class JsonSchemaTest {
     @Test
     void Get_Type_Invalid_Type_Definition() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            this.schema1.getType(new Selector(List.of("invalid")))
+                this.schema1.getType(new Selector(List.of("invalid")))
         );
         assertTrue(exception.getMessage().toLowerCase().contains("invalid type"));
     }
@@ -47,7 +47,7 @@ public class JsonSchemaTest {
     @Test
     void Get_Type_Unknown_Type_Definition() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            this.schema1.getType(new Selector(List.of("unknown")))
+                this.schema1.getType(new Selector(List.of("unknown")))
         );
         assertTrue(exception.getMessage().toLowerCase().contains("unknown type"));
     }
@@ -70,7 +70,7 @@ public class JsonSchemaTest {
     @Test
     void Get_Validation_Rule_Invalid() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            this.schema1.getValidationRule()
+                this.schema1.getValidationRule()
         );
         assertTrue(exception.getMessage().toLowerCase().contains("invalid validation rule"));
     }
@@ -86,8 +86,8 @@ public class JsonSchemaTest {
         assertTrue(schema4.hasValidationRule());
         String exptected = new StatementBuilder()
                 .subjectThis()
-                .boundsCheck("private.numberConstraint2", "23" ,null)
-                .boundsCheck("private.numberConstraint1", null ,"15")
+                .greaterThan("private.numberConstraint2", "23", false)
+                .lessThan("private.numberConstraint1", "15", false)
                 .build();
         assertEquals(exptected, schema4.getValidationRule());
     }
@@ -95,7 +95,7 @@ public class JsonSchemaTest {
     @Test
     void Invalid_Number_Constraint_Value() {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-            this.schema3.getValidationRule()
+                this.schema3.getValidationRule()
         );
         assertTrue(exception.getMessage().toLowerCase().contains("invalid value for validation keyword"));
     }

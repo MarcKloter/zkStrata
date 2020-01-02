@@ -146,9 +146,9 @@ public class JsonSchema extends AbstractSchema {
                     break;
                 case "number":
                     if (validationKeywords.contains(MAXIMUM))
-                        statementBuilder.boundsCheck(witness, null, getNumberConstraint(MAXIMUM, propertySelector));
+                        statementBuilder.lessThan(witness, getNumberConstraint(MAXIMUM, propertySelector), false);
                     if (validationKeywords.contains(MINIMUM))
-                        statementBuilder.boundsCheck(witness, getNumberConstraint(MINIMUM, propertySelector), null);
+                        statementBuilder.greaterThan(witness, getNumberConstraint(MINIMUM, propertySelector), false);
                     break;
                 case "string":
                     // TODO: implement string validation keywords

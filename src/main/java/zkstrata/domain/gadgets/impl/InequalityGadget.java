@@ -63,10 +63,12 @@ public class InequalityGadget extends AbstractGadget {
 
     @Substitution(target = {InequalityGadget.class}, context = {BoundsCheckGadget.class})
     public static Optional<Proposition> removeInequalityOutsideOfBounds(InequalityGadget iq, BoundsCheckGadget bc) {
-        Optional<Variable> disparity = getDisparityToWitness(iq, bc.getValue());
+        if (isWitnessVariable(bc.getValue())) {
+            Optional<Variable> disparity = getDisparityToWitness(iq, (WitnessVariable) bc.getValue());
 
-        if (disparity.isPresent() && !isContainedInBounds(disparity.get(), bc))
-            return Optional.of(Proposition.trueProposition());
+            if (disparity.isPresent() && !isContainedInBounds(disparity.get(), bc))
+                return Optional.of(Proposition.trueProposition());
+        }
 
         return Optional.empty();
     }

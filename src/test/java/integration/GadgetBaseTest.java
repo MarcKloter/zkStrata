@@ -36,6 +36,7 @@ public class GadgetBaseTest {
             Arguments args = new ArgumentsBuilder(GadgetBaseTest.class)
                     .withStatement("boundscheck")
                     .withInstance("pass", "passport.metadata")
+                    .withInstance("pass2", "passport2.metadata")
                     .build();
             new Compiler(args).compile();
         });
@@ -69,6 +70,8 @@ public class GadgetBaseTest {
             Arguments args = new ArgumentsBuilder(GadgetBaseTest.class)
                     .withStatement("lessthan")
                     .withInstance("pass", "passport.metadata")
+                    .withInstance("pass2", "passport2")
+                    .withInstance("pass3", "passport2")
                     .build();
             new Compiler(args).compile();
         });

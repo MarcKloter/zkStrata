@@ -12,7 +12,7 @@ import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.parser.ast.Node;
 import zkstrata.parser.ast.Subject;
 import zkstrata.parser.ast.connectives.Connective;
-import zkstrata.parser.ast.predicates.BoundsCheck;
+import zkstrata.parser.ast.predicates.LessThan;
 import zkstrata.parser.ast.predicates.Predicate;
 import zkstrata.parser.ast.types.Constant;
 import zkstrata.parser.ast.types.Identifier;
@@ -73,8 +73,8 @@ public class ASTVisitorTest {
     @Test
     void Invalid_Constant_Should_Throw() {
         Constant constant = new Constant("_INVALID_CONSTANT", getAbsPosition());
-        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, constant);
-        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
+        LessThan lessThan = new LessThan(IDENTIFIER, constant, false);
+        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), lessThan);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
 
@@ -83,8 +83,8 @@ public class ASTVisitorTest {
 
     @Test
     void Number_Negative_Should_Throw() {
-        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_NEG, INT_13);
-        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
+        LessThan lessThan = new LessThan(IDENTIFIER, INT_NEG, false);
+        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), lessThan);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
 
@@ -93,8 +93,8 @@ public class ASTVisitorTest {
 
     @Test
     void Number_Too_Large_Should_Throw() {
-        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, INT_LARGE);
-        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
+        LessThan lessThan = new LessThan(IDENTIFIER, INT_LARGE, false);
+        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), lessThan);
 
         CompileTimeException exception = assertThrows(CompileTimeException.class, () -> visitor.visit(ast));
 
@@ -103,8 +103,8 @@ public class ASTVisitorTest {
 
     @Test
     void Missing_Conjunction_Implementation_Should_Throw() {
-        BoundsCheck left = new BoundsCheck(IDENTIFIER, INT_13, INT_LARGE);
-        BoundsCheck right = new BoundsCheck(IDENTIFIER, INT_13, INT_LARGE);
+        LessThan left = new LessThan(IDENTIFIER, INT_13, false);
+        LessThan right = new LessThan(IDENTIFIER, INT_13, false);
         MissingConjunctionImplementation connective = new MissingConjunctionImplementation(left, right, getAbsPosition());
         AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), connective);
 
@@ -116,8 +116,8 @@ public class ASTVisitorTest {
     @Test
     void Unimplemented_Type_Should_Throw() {
         UnimplementedType unimplementedType = new UnimplementedType(getAbsPosition());
-        BoundsCheck boundsCheckGadget = new BoundsCheck(IDENTIFIER, INT_13, unimplementedType);
-        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), boundsCheckGadget);
+        LessThan lessThan = new LessThan(IDENTIFIER, unimplementedType, false);
+        AbstractSyntaxTree ast = new AbstractSyntaxTree(SOURCE, STATEMENT, List.of(SUBJECT), lessThan);
 
         InternalCompilerException exception = assertThrows(InternalCompilerException.class, () -> visitor.visit(ast));
 

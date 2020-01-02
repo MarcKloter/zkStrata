@@ -30,6 +30,7 @@ import zkstrata.parser.ast.Subject;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.lang.String.format;
 import static zkstrata.utils.ReflectionHelper.*;
@@ -158,24 +159,22 @@ public class ASTVisitor {
     }
 
     private Proposition visitPredicate(Predicate predicate) {
-        Set<Class<? extends Gadget>> gadgets = getAllGadgets();
+        Set<Class<? extends Gadget>> gadgets = filterAstElementAnnotation(getAllGadgets());
 
         for (Class<? extends Gadget> gadget : gadgets) {
             AstElement from = gadget.getAnnotation(AstElement.class);
 
-            if (from == null)
-                throw new InternalCompilerException("Missing @AstElement annotation in %s.", gadget);
-
-            if (from.value() == predicate.getClass()) {
-                Map<String, Object> sourceValues = getSourceValues(predicate);
-
-                Gadget instance = createInstance(gadget);
-                instance.initFrom(sourceValues);
-                return instance;
-            }
+            if (from.value() == predicate.getClass())
+                return createInstance(gadget).initFrom(getSourceValues(predicate));
         }
 
         throw new InternalCompilerException("Missing gadget implementation for predicate: %s", predicate.getClass());
+    }
+
+    private Set<Class<? extends Gadget>> filterAstElementAnnotation(Set<Class<? extends Gadget>> gadgets) {
+        return gadgets.stream()
+                .filter(gadget -> gadget.isAnnotationPresent(AstElement.class))
+                .collect(Collectors.toSet());
     }
 
     private Map<String, Object> getSourceValues(Predicate predicate) {

@@ -9,27 +9,27 @@ import zkstrata.domain.data.types.wrapper.Null;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
 import zkstrata.domain.gadgets.AbstractGadget;
-import zkstrata.domain.visitor.AstElement;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.gadgets.Type;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.optimizer.Substitution;
-import zkstrata.parser.ast.predicates.BoundsCheck;
 import zkstrata.utils.Constants;
 import zkstrata.utils.GadgetUtils;
 
 import java.math.BigInteger;
 import java.util.*;
 
+import static zkstrata.domain.Proposition.trueProposition;
+import static zkstrata.domain.gadgets.impl.EqualityGadget.getEqualityToWitness;
+import static zkstrata.domain.gadgets.impl.InequalityGadget.getDisparityToWitness;
 import static zkstrata.utils.GadgetUtils.*;
 
-@AstElement(BoundsCheck.class)
 public class BoundsCheckGadget extends AbstractGadget {
     private static final BigInteger MIN_VALUE = BigInteger.ZERO;
     private static final BigInteger MAX_VALUE = Constants.UNSIGNED_64BIT_MAX;
 
     @Type({BigInteger.class})
-    private WitnessVariable value;
+    private Variable value;
 
     @Type({Null.class, BigInteger.class})
     private InstanceVariable min;
@@ -39,10 +39,7 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     private Boolean strictComparison;
 
-    public BoundsCheckGadget() {
-    }
-
-    public BoundsCheckGadget(WitnessVariable value, InstanceVariable min, InstanceVariable max, boolean strictComparison) {
+    public BoundsCheckGadget(Variable value, InstanceVariable min, InstanceVariable max, boolean strictComparison) {
         this.value = value;
         this.min = min;
         this.max = max;
@@ -51,16 +48,18 @@ public class BoundsCheckGadget extends AbstractGadget {
         this.initialize();
     }
 
-    public BoundsCheckGadget(WitnessVariable value, InstanceVariable min, InstanceVariable max) {
+    public BoundsCheckGadget(Variable value, InstanceVariable min, InstanceVariable max) {
         this(value, min, max, false);
     }
 
     @Implication
     public static Optional<Gadget> implyBounds(EqualityGadget eq, BoundsCheckGadget bc) {
-        Optional<Variable> equal = EqualityGadget.getEqualityToWitness(eq, bc.getValue());
+        if (isWitnessVariable(bc.getValue())) {
+            Optional<Variable> equal = getEqualityToWitness(eq, (WitnessVariable) bc.getValue());
 
-        if (equal.isPresent() && isWitnessVariable(equal.get()))
-            return Optional.of(new BoundsCheckGadget((WitnessVariable) equal.get(), bc.getMin(), bc.getMax()));
+            if (equal.isPresent() && isWitnessVariable(equal.get()))
+                return Optional.of(new BoundsCheckGadget((WitnessVariable) equal.get(), bc.getMin(), bc.getMax()));
+        }
 
         return Optional.empty();
     }
@@ -93,36 +92,56 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Contradiction
     public static void checkEqualityBoundsContradiction(EqualityGadget eq, BoundsCheckGadget bc) {
-        Optional<Variable> equal = EqualityGadget.getEqualityToWitness(eq, bc.getValue());
+        if (isWitnessVariable(bc.getValue())) {
+            Optional<Variable> equal = getEqualityToWitness(eq, (WitnessVariable) bc.getValue());
 
-        if (equal.isPresent() && isInstanceVariable(equal.get())) {
-            BigInteger value = (BigInteger) (((InstanceVariable) equal.get()).getValue()).getValue();
-            if (value.compareTo(bc.getMinValue()) < 0)
-                throw new CompileTimeException("Contradiction.", List.of(eq.getRight(), bc.getMin()));
-            if (value.compareTo(bc.getMaxValue()) > 0)
-                throw new CompileTimeException("Contradiction.", List.of(eq.getRight(), bc.getMax()));
+            if (equal.isPresent() && isInstanceVariable(equal.get())) {
+                BigInteger value = (BigInteger) (((InstanceVariable) equal.get()).getValue()).getValue();
+                if (value.compareTo(bc.getMinValue()) < 0)
+                    throw new CompileTimeException("Contradiction.", List.of(eq.getRight(), bc.getMin()));
+                if (value.compareTo(bc.getMaxValue()) > 0)
+                    throw new CompileTimeException("Contradiction.", List.of(eq.getRight(), bc.getMax()));
+            }
         }
+    }
+
+    @Contradiction
+    public static void checkInstanceContradiction(BoundsCheckGadget bc) {
+        if (isInstanceVariable(bc.getValue()) && !isContainedInBounds(bc.getValue(), bc))
+            throw new CompileTimeException("Contradiction.", List.of(bc.getValue(), bc.getMin(), bc.getMax()));
+    }
+
+    @Substitution(target = {BoundsCheckGadget.class})
+    public static Optional<Proposition> removeInstanceComparison(BoundsCheckGadget bc) {
+        if (isInstanceVariable(bc.getValue()) && isContainedInBounds(bc.getValue(), bc))
+            return Optional.of(Proposition.trueProposition());
+
+        return Optional.empty();
     }
 
     @Substitution(target = {BoundsCheckGadget.class}, context = {InequalityGadget.class})
     public static Optional<Proposition> replaceUnequalBounds(BoundsCheckGadget bc, InequalityGadget iq) {
-        Optional<Variable> disparity = InequalityGadget.getDisparityToWitness(iq, bc.getValue());
+        if (isWitnessVariable(bc.getValue())) {
+            Optional<Variable> disparity = getDisparityToWitness(iq, (WitnessVariable) bc.getValue());
 
-        if (disparity.isPresent() && isVariableEqualToBigInteger(disparity.get(), bc.getMaxValue()))
-            return Optional.of(new BoundsCheckGadget(bc.getValue(), bc.getMin(), subtractOne(bc.getMax())));
+            if (disparity.isPresent() && isVariableEqualToBigInteger(disparity.get(), bc.getMaxValue()))
+                return Optional.of(new BoundsCheckGadget(bc.getValue(), bc.getMin(), subtractOne(bc.getMax())));
 
-        if (disparity.isPresent() && isVariableEqualToBigInteger(disparity.get(), bc.getMinValue()))
-            return Optional.of(new BoundsCheckGadget(bc.getValue(), addOne(bc.getMin()), bc.getMax()));
+            if (disparity.isPresent() && isVariableEqualToBigInteger(disparity.get(), bc.getMinValue()))
+                return Optional.of(new BoundsCheckGadget(bc.getValue(), addOne(bc.getMin()), bc.getMax()));
+        }
 
         return Optional.empty();
     }
 
     @Substitution(target = {BoundsCheckGadget.class}, context = {EqualityGadget.class})
     public static Optional<Proposition> removeValueEquality(BoundsCheckGadget bc, EqualityGadget eq) {
-        Optional<Variable> equal = EqualityGadget.getEqualityToWitness(eq, bc.getValue());
+        if (isWitnessVariable(bc.getValue())) {
+            Optional<Variable> equal = getEqualityToWitness(eq, (WitnessVariable) bc.getValue());
 
-        if (equal.isPresent() && isContainedInBounds(equal.get(), bc))
-            return Optional.of(Proposition.trueProposition());
+            if (equal.isPresent() && isContainedInBounds(equal.get(), bc))
+                return Optional.of(trueProposition());
+        }
 
         return Optional.empty();
     }
@@ -153,7 +172,7 @@ public class BoundsCheckGadget extends AbstractGadget {
         if (haveSameValue(target, context)
                 && target.getMinValue().compareTo(context.getMinValue()) <= 0
                 && target.getMaxValue().compareTo(context.getMaxValue()) >= 0)
-            return Optional.of(Proposition.trueProposition());
+            return Optional.of(trueProposition());
 
         return Optional.empty();
     }
@@ -250,7 +269,7 @@ public class BoundsCheckGadget extends AbstractGadget {
         return List.of(new TargetFormat("BOUND %(value) %(min) %(max)", args));
     }
 
-    public WitnessVariable getValue() {
+    public Variable getValue() {
         return value;
     }
 

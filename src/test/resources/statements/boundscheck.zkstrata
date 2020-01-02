@@ -1,18 +1,18 @@
 PROOF FOR
     passport_ch AS pass
 THAT
-    pass.dateOfBirth.year IS GREATER THAN 1900
+    pass.dateOfBirth.year IS GREATER THAN OR EQUAL TO 1900
 AND
-    pass.dateOfBirth.month IS GREATER THAN OR EQUAL TO 1 AND LESS THAN OR EQUAL TO 12
+    pass.dateOfBirth.day IS LESS THAN OR EQUAL TO 15
 AND
-    pass.dateOfBirth.month IS LESS THAN OR EQUAL TO 12 AND GREATER THAN OR EQUAL TO 1
+    pass.dateOfBirth.year >= 1900
 AND
-    pass.dateOfBirth.day IS LESS THAN 15
+    pass.dateOfBirth.day <= 15
 AND
-    pass.dateOfBirth.year > 1900
+    15 IS GREATER THAN OR EQUAL TO pass.dateOfBirth.day
 AND
-    pass.dateOfBirth.month >= 1 AND <= 12
+    1900 IS LESS THAN OR EQUAL TO pass.dateOfBirth.year
 AND
-    pass.dateOfBirth.month <= 12 AND >= 1
+    1900 <= pass.dateOfBirth.year
 AND
-    pass.dateOfBirth.day < 15
+    15 >= pass.dateOfBirth.day
