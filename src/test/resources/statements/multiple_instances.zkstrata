@@ -1,0 +1,8 @@
+PROOF FOR
+    INSTANCE pass1 COMPLIANT TO passport_ch
+AND
+    INSTANCE pass2 COMPLIANT TO passport_ch
+THAT
+    pass1.firstName IS EQUAL TO 'John'
+AND
+    pass2.firstName IS EQUAL TO 'Jane'

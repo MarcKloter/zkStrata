@@ -319,6 +319,19 @@ public class IntegrationTest {
     }
 
     @Test
+    void Multiple_Instances_Remove_Validation_Rules_Should_Succeed() {
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("multiple_instances")
+                    .withInstance("pass1", "passport")
+                    .withInstance("pass2", "passport2")
+                    .build();
+            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            assertEquals(0, statement.getGadgets().size());
+        });
+    }
+
+    @Test
     void Boolean_Base_Test_Should_Succeed() {
         assertDoesNotThrow(() -> {
             Arguments args = new ArgumentsBuilder(PremisesTest.class)
