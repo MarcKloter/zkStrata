@@ -20,6 +20,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static zkstrata.domain.Proposition.trueProposition;
 import static zkstrata.utils.CombinatoricsUtils.getCombinations;
 
 public class Optimizer {
@@ -59,6 +60,8 @@ public class Optimizer {
 
         logExitInformation(optimizedStatement.toDebugString());
 
+        checkTautology(optimizedStatement);
+
         return optimizedStatement;
     }
 
@@ -80,6 +83,11 @@ public class Optimizer {
 
             LOGGER.debug("Combined statement after optimization:{}{}", System.lineSeparator(), optimizedClaim);
         }
+    }
+
+    private void checkTautology(Proposition optimizedStatement) {
+        if (optimizedStatement.equals(trueProposition()))
+            LOGGER.warn("The statement was reduced to a tautology.");
     }
 
     private Proposition combineStatement(Proposition optimizedClaim) {
