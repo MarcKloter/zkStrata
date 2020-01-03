@@ -17,8 +17,7 @@ import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static zkstrata.domain.Proposition.trueProposition;
 import static zkstrata.domain.gadgets.impl.BoundsCheckGadget.*;
-import static zkstrata.utils.GadgetUtils.addOne;
-import static zkstrata.utils.GadgetUtils.subtractOne;
+import static zkstrata.utils.GadgetUtils.*;
 import static zkstrata.utils.TestHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
 
