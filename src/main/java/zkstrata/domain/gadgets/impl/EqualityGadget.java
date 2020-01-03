@@ -16,6 +16,7 @@ import zkstrata.utils.Constants;
 
 import java.util.*;
 
+import static java.lang.String.format;
 import static zkstrata.utils.CombinatoricsUtils.getParity;
 import static zkstrata.utils.GadgetUtils.*;
 
@@ -83,7 +84,8 @@ public class EqualityGadget extends AbstractGadget {
     @Override
     public void initialize() {
         if (left.getType() != right.getType())
-            throw new CompileTimeException("Type mismatch.", List.of(this.left, this.right));
+            throw new CompileTimeException(format("Type mismatch: %s cannot be equal to %s.",
+                    left.getType().getSimpleName(), right.getType().getSimpleName()), List.of(left, right));
     }
 
     @Override
