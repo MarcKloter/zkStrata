@@ -97,12 +97,12 @@ public class ASTVisitor {
         Schema schema = schemas.getOrDefault(schemaName, SchemaHelper.resolve(schemaName));
 
         if (schema == null)
-            throw new CompileTimeException(format("Undefined schema %s.", schemaName),
+            throw new CompileTimeException(format("Undefined schema `%s`.", schemaName),
                     pinPosition(subject.getSchema()));
 
         if (subject.isWitness()) {
             if (!witnessData.isEmpty() && !witnessData.containsKey(alias))
-                throw new CompileTimeException(format("Missing witness data for subject %s.", alias),
+                throw new CompileTimeException(format("Missing witness data for subject `%s`.", alias),
                         pinPosition(subject.getAlias()));
 
             ValueAccessor accessor = witnessData.getOrDefault(alias, new ReferenceAccessor(alias, schema));
