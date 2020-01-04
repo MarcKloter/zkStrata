@@ -40,8 +40,6 @@ public class MerkleTreeGadget extends AbstractGadget {
     @Override
     public void initialize() {
         checkRootHashImage();
-
-        // TODO: All instance variables warning (we don't know whether this fails or succeeds)
     }
 
     private void checkRootHashImage() {
