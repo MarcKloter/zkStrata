@@ -110,6 +110,25 @@ public class DataTypesTest {
     }
 
     @Test
+    void Literal_Equals_1() {
+        Literal literal = new Literal("string");
+        assertFalse(literal.equals(null));
+    }
+
+    @Test
+    void Literal_Equals_2() {
+        Literal literal = new Literal(new Object());
+        assertFalse(literal.equals(new Object()));
+    }
+
+    @Test
+    void Literal_Equals_3() {
+        Literal literal1 = new Literal("string");
+        Literal literal2 = new Literal("string");
+        assertEquals(literal1, literal2);
+    }
+
+    @Test
     void InstanceVariable_Equals_1() {
         Literal literal = new Literal("string");
         InstanceVariable instanceVariable = new InstanceVariable(literal, null, getAbsPosition());
