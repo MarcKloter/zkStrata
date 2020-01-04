@@ -44,14 +44,4 @@ public class MapListener<K, V> extends AbstractMap<K, V> {
         unused.remove(key);
         return delegatee.get(key);
     }
-
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
 }
