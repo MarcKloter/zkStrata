@@ -1,6 +1,6 @@
 package zkstrata.domain.conjunctions;
 
-import zkstrata.codegen.TargetFormat;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.visitor.AstElement;
@@ -93,9 +93,9 @@ public class AndConjunction extends AbstractConjunction {
     }
 
     @Override
-    public List<TargetFormat> toTargetFormat() {
+    public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
         return getParts().stream()
-                .map(Proposition::toTargetFormat)
+                .map(Proposition::toBulletproofsGadgets)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
     }

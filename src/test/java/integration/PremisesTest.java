@@ -1,7 +1,7 @@
 package integration;
 
 import org.junit.jupiter.api.Test;
-import zkstrata.codegen.representations.BulletproofsGadgets;
+import zkstrata.codegen.representations.BulletproofsGadgetsStructure;
 import zkstrata.compiler.Arguments;
 import zkstrata.compiler.Compiler;
 import zkstrata.exceptions.CompileTimeException;
@@ -65,7 +65,7 @@ public class PremisesTest {
                     .withWitness("pass", "passport")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            BulletproofsGadgetsStructure statement = (BulletproofsGadgetsStructure) new Compiler(args).compile();
             assertEquals(0, statement.getGadgets().size());
         });
     }
@@ -79,7 +79,7 @@ public class PremisesTest {
                     .withWitness("pass", "passport")
                     .withInstance("pass", "passport.metadata")
                     .build();
-            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            BulletproofsGadgetsStructure statement = (BulletproofsGadgetsStructure) new Compiler(args).compile();
             assertEquals(2, statement.getGadgets().size());
         });
     }

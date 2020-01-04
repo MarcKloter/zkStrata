@@ -4,8 +4,6 @@ import org.apache.commons.text.StringSubstitutor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zkstrata.codegen.CodeGenerator;
-import zkstrata.codegen.TargetFormat;
-import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
@@ -14,7 +12,7 @@ import zkstrata.exceptions.InternalCompilerException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class BulletproofsGadgetsCodeGenerator implements CodeGenerator<BulletproofsGadgets> {
+public class BulletproofsGadgetsCodeGenerator implements CodeGenerator<BulletproofsGadgets, BulletproofsGadgetsStructure> {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
     private String name;
@@ -27,32 +25,32 @@ public class BulletproofsGadgetsCodeGenerator implements CodeGenerator<Bulletpro
     }
 
     @Override
-    public BulletproofsGadgets generateProverTargetRepresentation(Proposition proposition) {
+    public BulletproofsGadgetsStructure generateProverTargetStructure(BulletproofsGadgets sourceRepresentation) {
         LOGGER.debug("Starting prover target code generation");
 
-        List<String> gadgets = generateGadgets(proposition);
+        List<String> gadgets = generateGadgets(sourceRepresentation);
         List<String> instances = generateInstances(instanceVariables);
         List<String> witnesses = generateWitnesses(witnessVariables);
 
-        return new BulletproofsGadgets(name, gadgets, instances, witnesses);
+        return new BulletproofsGadgetsStructure(name, gadgets, instances, witnesses);
     }
 
 
     @Override
-    public BulletproofsGadgets generateVerifierTargetRepresentation(Proposition proposition) {
+    public BulletproofsGadgetsStructure generateVerifierTargetStructure(BulletproofsGadgets sourceRepresentation) {
         LOGGER.debug("Starting verifier target code generation");
 
-        List<String> gadgets = generateGadgets(proposition);
+        List<String> gadgets = generateGadgets(sourceRepresentation);
         List<String> instances = generateInstances(instanceVariables);
 
-        return new BulletproofsGadgets(name, gadgets, instances, Collections.emptyList());
+        return new BulletproofsGadgetsStructure(name, gadgets, instances, Collections.emptyList());
     }
 
-    private List<String> generateGadgets(Proposition proposition) {
+    private List<String> generateGadgets(BulletproofsGadgets sourceRepresentation) {
         List<String> gadgets = new ArrayList<>();
 
-        for (TargetFormat targetFormat : proposition.toTargetFormat()) {
-            Map<String, String> args = process(targetFormat.getArgs());
+        for (BulletproofsGadgetsCodeLine targetFormat : sourceRepresentation.toBulletproofsGadgets()) {
+            Map<String, String> args = process(targetFormat.getVariables());
             StringSubstitutor substitutor = new StringSubstitutor(args, "%(", ")");
             String gadget = substitutor.replace(targetFormat.getFormat());
 

@@ -1,6 +1,6 @@
 package zkstrata.domain.conjunctions;
 
-import zkstrata.codegen.TargetFormat;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.visitor.AstElement;
@@ -118,16 +118,16 @@ public class OrConjunction extends AbstractConjunction {
     }
 
     @Override
-    public List<TargetFormat> toTargetFormat() {
-        List<TargetFormat> result = new ArrayList<>();
-        result.add(new TargetFormat("OR", Collections.emptyMap()));
-        result.add(new TargetFormat("[", Collections.emptyMap()));
+    public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
+        List<BulletproofsGadgetsCodeLine> result = new ArrayList<>();
+        result.add(new BulletproofsGadgetsCodeLine("OR", Collections.emptyMap()));
+        result.add(new BulletproofsGadgetsCodeLine("[", Collections.emptyMap()));
         getParts().forEach(proposition -> {
-            result.add(new TargetFormat("{", Collections.emptyMap()));
-            result.addAll(proposition.toTargetFormat());
-            result.add(new TargetFormat("}", Collections.emptyMap()));
+            result.add(new BulletproofsGadgetsCodeLine("{", Collections.emptyMap()));
+            result.addAll(proposition.toBulletproofsGadgets());
+            result.add(new BulletproofsGadgetsCodeLine("}", Collections.emptyMap()));
         });
-        result.add(new TargetFormat("]", Collections.emptyMap()));
+        result.add(new BulletproofsGadgetsCodeLine("]", Collections.emptyMap()));
         return result;
     }
 

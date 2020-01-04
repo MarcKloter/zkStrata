@@ -19,7 +19,7 @@ public class AbstractMapperTest {
 
     @Test
     void Assert_ToTargetFormat_Throws() {
-        assertThrows(InternalCompilerException.class, () -> new LessThanMapper().toTargetFormat());
+        assertThrows(InternalCompilerException.class, () -> new LessThanMapper().toBulletproofsGadgets());
     }
 
     @Test

@@ -2,7 +2,7 @@ package zkstrata.domain.gadgets.impl;
 
 import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
-import zkstrata.codegen.TargetFormat;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
@@ -127,12 +127,12 @@ public class LessThanGadget extends AbstractGadget {
     }
 
     @Override
-    public List<TargetFormat> toTargetFormat() {
+    public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
         Map<String, Variable> args = Map.ofEntries(
                 Map.entry("left", left),
                 Map.entry("right", right)
         );
-        return List.of(new TargetFormat("LESS_THAN %(left) %(right)", args));
+        return List.of(new BulletproofsGadgetsCodeLine("LESS_THAN %(left) %(right)", args));
     }
 
     public WitnessVariable getLeft() {

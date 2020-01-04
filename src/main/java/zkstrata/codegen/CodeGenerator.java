@@ -1,9 +1,7 @@
 package zkstrata.codegen;
 
-import zkstrata.domain.Proposition;
+public interface CodeGenerator<S extends TargetFormat, T extends TargetStructure> {
+    T generateProverTargetStructure(S source);
 
-public interface CodeGenerator<T extends TargetRepresentation> {
-    T generateProverTargetRepresentation(Proposition proposition);
-
-    T generateVerifierTargetRepresentation(Proposition proposition);
+    T generateVerifierTargetStructure(S source);
 }

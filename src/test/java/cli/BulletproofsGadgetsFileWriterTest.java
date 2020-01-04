@@ -2,7 +2,7 @@ package cli;
 
 import org.junit.jupiter.api.Test;
 import zkstrata.api.representations.BulletproofsGadgetsFileWriter;
-import zkstrata.codegen.representations.BulletproofsGadgets;
+import zkstrata.codegen.representations.BulletproofsGadgetsStructure;
 
 import java.io.StringWriter;
 import java.io.Writer;
@@ -20,7 +20,7 @@ public class BulletproofsGadgetsFileWriterTest {
         List<String> instances = List.of("instance1", "instance2", "instance3");
         List<String> witnesses = List.of("witness1");
 
-        BulletproofsGadgets bulletproofsGadgets = new BulletproofsGadgets("name", gadgets, instances, witnesses);
+        BulletproofsGadgetsStructure bulletproofsGadgets = new BulletproofsGadgetsStructure("name", gadgets, instances, witnesses);
         MockBulletproofsGadgetFileWriter fileWriter = new MockBulletproofsGadgetFileWriter();
         fileWriter.write(bulletproofsGadgets);
 

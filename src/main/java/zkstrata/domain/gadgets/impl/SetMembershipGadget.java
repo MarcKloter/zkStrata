@@ -1,7 +1,7 @@
 package zkstrata.domain.gadgets.impl;
 
 import zkstrata.analysis.Contradiction;
-import zkstrata.codegen.TargetFormat;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Variable;
@@ -104,7 +104,7 @@ public class SetMembershipGadget extends AbstractGadget {
     }
 
     @Override
-    public List<TargetFormat> toTargetFormat() {
+    public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
         Map<String, Variable> args = new HashMap<>();
         args.put("member", member);
 
@@ -114,7 +114,7 @@ public class SetMembershipGadget extends AbstractGadget {
             return String.format("%%(%s)", key);
         }).collect(Collectors.joining(" "));
 
-        return List.of(new TargetFormat(String.format("SET_MEMBER %%(member) %s", setString), args));
+        return List.of(new BulletproofsGadgetsCodeLine(String.format("SET_MEMBER %%(member) %s", setString), args));
     }
 
     public Variable getMember() {

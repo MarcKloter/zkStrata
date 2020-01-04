@@ -2,7 +2,6 @@ package optimizer;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import zkstrata.codegen.TargetFormat;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
 import zkstrata.domain.conjunctions.AndConjunction;
@@ -10,7 +9,6 @@ import zkstrata.domain.conjunctions.OrConjunction;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.WitnessVariable;
-import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.gadgets.impl.*;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.optimizer.Optimizer;

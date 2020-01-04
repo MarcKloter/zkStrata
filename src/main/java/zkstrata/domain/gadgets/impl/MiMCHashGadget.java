@@ -1,7 +1,7 @@
 package zkstrata.domain.gadgets.impl;
 
 import zkstrata.analysis.Contradiction;
-import zkstrata.codegen.TargetFormat;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.custom.HexLiteral;
 import zkstrata.domain.data.types.wrapper.Variable;
@@ -89,12 +89,12 @@ public class MiMCHashGadget extends AbstractGadget {
     }
 
     @Override
-    public List<TargetFormat> toTargetFormat() {
+    public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
         Map<String, Variable> args = Map.ofEntries(
                 Map.entry("preimage", preimage),
                 Map.entry("image", image)
         );
-        return List.of(new TargetFormat("HASH %(image) %(preimage)", args));
+        return List.of(new BulletproofsGadgetsCodeLine("HASH %(image) %(preimage)", args));
     }
 
     public WitnessVariable getPreimage() {

@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import zkstrata.analysis.ExposureAnalyzer;
 import zkstrata.analysis.SemanticAnalyzer;
 import zkstrata.codegen.CodeGenerator;
-import zkstrata.codegen.TargetRepresentation;
+import zkstrata.codegen.TargetStructure;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
 import zkstrata.domain.data.schemas.wrapper.StructuredData;
@@ -25,7 +25,7 @@ public class Compiler {
         this.arguments = arguments;
     }
 
-    public TargetRepresentation compile() {
+    public TargetStructure compile() {
         Statement statement = parseStatement();
         statement.addPremise(parseAllPremises());
         statement.setValidationRule(parseAllValidationRules(statement.getSubjects()));
@@ -40,9 +40,9 @@ public class Compiler {
         CodeGenerator codeGenerator = arguments.getCodeGenerator();
 
         if (arguments.hasWitnessData())
-            return codeGenerator.generateProverTargetRepresentation(statement.getClaim());
+            return codeGenerator.generateProverTargetStructure(statement.getClaim());
         else
-            return codeGenerator.generateVerifierTargetRepresentation(statement.getClaim());
+            return codeGenerator.generateVerifierTargetStructure(statement.getClaim());
     }
 
     private Statement parseStatement() {

@@ -1,6 +1,6 @@
 package zkstrata.domain.gadgets.impl;
 
-import zkstrata.codegen.TargetFormat;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.data.types.custom.HexLiteral;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
 import zkstrata.domain.data.types.wrapper.Variable;
@@ -69,12 +69,12 @@ public class MerkleTreeGadget extends AbstractGadget {
     }
 
     @Override
-    public List<TargetFormat> toTargetFormat() {
+    public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
         Map<String, Variable> args = new HashMap<>();
         args.put("root", root);
         StringBuilder stringBuilder = new StringBuilder("MERKLE %(root) ");
         visitTree(tree.getRoot(), stringBuilder, args);
-        return List.of(new TargetFormat(stringBuilder.toString(), args));
+        return List.of(new BulletproofsGadgetsCodeLine(stringBuilder.toString(), args));
     }
 
     private void visitTree(BinaryTree.Node<Variable> node, StringBuilder stringBuilder, Map<String, Variable> args) {

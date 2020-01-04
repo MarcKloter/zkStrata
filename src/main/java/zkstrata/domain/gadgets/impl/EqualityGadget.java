@@ -2,7 +2,7 @@ package zkstrata.domain.gadgets.impl;
 
 import zkstrata.analysis.Contradiction;
 import zkstrata.analysis.Implication;
-import zkstrata.codegen.TargetFormat;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.data.types.Any;
 import zkstrata.domain.data.types.wrapper.Variable;
@@ -112,12 +112,12 @@ public class EqualityGadget extends AbstractGadget {
     }
 
     @Override
-    public List<TargetFormat> toTargetFormat() {
+    public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
         Map<String, Variable> args = Map.ofEntries(
                 Map.entry("left", left),
                 Map.entry("right", right)
         );
-        return List.of(new TargetFormat("EQUALS %(left) %(right)", args));
+        return List.of(new BulletproofsGadgetsCodeLine("EQUALS %(left) %(right)", args));
     }
 
     public Variable getLeft() {

@@ -2,7 +2,7 @@ package domain;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import zkstrata.codegen.TargetFormat;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.compiler.Arguments;
 import zkstrata.domain.data.types.Literal;
 import zkstrata.domain.data.types.wrapper.InstanceVariable;
@@ -121,7 +121,7 @@ public class AbstractGadgetTest {
         }
 
         @Override
-        public List<TargetFormat> toTargetFormat() {
+        public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
             return null;
         }
 

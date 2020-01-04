@@ -1,6 +1,6 @@
 package zkstrata.optimizer;
 
-import zkstrata.codegen.TargetFormat;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.gadgets.Gadget;
 
@@ -9,7 +9,7 @@ import java.util.List;
 
 public class TrueProposition implements Proposition {
     @Override
-    public List<TargetFormat> toTargetFormat() {
+    public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
         return Collections.emptyList();
     }
 

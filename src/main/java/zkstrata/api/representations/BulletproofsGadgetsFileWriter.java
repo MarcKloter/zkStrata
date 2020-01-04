@@ -3,7 +3,7 @@ package zkstrata.api.representations;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import zkstrata.api.TargetRepresentationFileWriter;
-import zkstrata.codegen.representations.BulletproofsGadgets;
+import zkstrata.codegen.representations.BulletproofsGadgetsStructure;
 import zkstrata.exceptions.InternalCompilerException;
 
 import java.io.BufferedWriter;
@@ -12,17 +12,17 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-public class BulletproofsGadgetsFileWriter implements TargetRepresentationFileWriter<BulletproofsGadgets> {
+public class BulletproofsGadgetsFileWriter implements TargetRepresentationFileWriter<BulletproofsGadgetsStructure> {
     private static final Logger LOGGER = LogManager.getRootLogger();
 
     private static final String GADGETS_FILE_EXT = ".gadgets";
     private static final String INSTANCE_FILE_EXT = ".inst";
     private static final String WITNESS_FILE_EXT = ".wtns";
 
-    private BulletproofsGadgets bulletproofsGadgets;
+    private BulletproofsGadgetsStructure bulletproofsGadgets;
 
     @Override
-    public void write(BulletproofsGadgets bulletproofsGadgets) {
+    public void write(BulletproofsGadgetsStructure bulletproofsGadgets) {
         this.bulletproofsGadgets = bulletproofsGadgets;
 
         writeGadgets();

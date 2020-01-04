@@ -1,10 +1,8 @@
 package zkstrata.domain.gadgets.mapper;
 
-import zkstrata.codegen.TargetFormat;
+import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.gadgets.AbstractGadget;
 import zkstrata.exceptions.InternalCompilerException;
-
-import java.util.List;
 
 public abstract class AbstractMapper extends AbstractGadget {
     private static final String ERROR = "Illegal call to method %s of mapper %s.";
@@ -20,8 +18,8 @@ public abstract class AbstractMapper extends AbstractGadget {
     }
 
     @Override
-    public List<TargetFormat> toTargetFormat() {
-        throw new InternalCompilerException(ERROR, "toTargetFormat", getClass());
+    public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
+        throw new InternalCompilerException(ERROR, "toBulletproofsGadgets", getClass());
     }
 
     @Override

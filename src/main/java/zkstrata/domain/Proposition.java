@@ -1,7 +1,7 @@
 package zkstrata.domain;
 
 import org.apache.commons.text.TextStringBuilder;
-import zkstrata.codegen.TargetFormat;
+import zkstrata.codegen.representations.BulletproofsGadgets;
 import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.conjunctions.Conjunction;
 import zkstrata.domain.gadgets.Gadget;
@@ -11,7 +11,7 @@ import zkstrata.optimizer.TrueProposition;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public interface Proposition {
+public interface Proposition extends BulletproofsGadgets {
     /**
      * Returns a {@link TrueProposition}, which can be used as a neutral element (no effect on a statement).
      *
@@ -60,11 +60,6 @@ public interface Proposition {
 
         throw new InternalCompilerException("Unhandled instance %s found.", this.getClass());
     }
-
-    /**
-     * Transforms this proposition into the target format.
-     */
-    List<TargetFormat> toTargetFormat();
 
     /**
      * Returns a list of gadget-combinations accessible through this proposition.

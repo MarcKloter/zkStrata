@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.Test;
-import zkstrata.codegen.representations.BulletproofsGadgets;
+import zkstrata.codegen.representations.BulletproofsGadgetsStructure;
 import zkstrata.compiler.Arguments;
 import zkstrata.compiler.Compiler;
 import zkstrata.exceptions.CompileTimeException;
@@ -286,7 +286,7 @@ public class IntegrationTest {
                     .withStatement("default_instance")
                     .withInstance("pass_i", "passport")
                     .build();
-            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            BulletproofsGadgetsStructure statement = (BulletproofsGadgetsStructure) new Compiler(args).compile();
             assertEquals(0, statement.getGadgets().size());
         });
     }
@@ -298,7 +298,7 @@ public class IntegrationTest {
                     .withStatement("default")
                     .withSchema("passport_ch", "tautology_validation_rule")
                     .build();
-            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            BulletproofsGadgetsStructure statement = (BulletproofsGadgetsStructure) new Compiler(args).compile();
             assertEquals(1, statement.getGadgets().size());
         });
     }
@@ -313,7 +313,7 @@ public class IntegrationTest {
                     .withInstance("pass1", "passport.metadata")
                     .withInstance("pass2", "passport2.metadata")
                     .build();
-            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            BulletproofsGadgetsStructure statement = (BulletproofsGadgetsStructure) new Compiler(args).compile();
             assertEquals(4, statement.getGadgets().size());
         });
     }
@@ -326,7 +326,7 @@ public class IntegrationTest {
                     .withInstance("pass1", "passport")
                     .withInstance("pass2", "passport2")
                     .build();
-            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            BulletproofsGadgetsStructure statement = (BulletproofsGadgetsStructure) new Compiler(args).compile();
             assertEquals(0, statement.getGadgets().size());
         });
     }
@@ -385,7 +385,7 @@ public class IntegrationTest {
                     .withStatement("complex_optimization")
                     .withSchema("schema", "basic")
                     .build();
-            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            BulletproofsGadgetsStructure statement = (BulletproofsGadgetsStructure) new Compiler(args).compile();
             assertEquals(1, statement.getGadgets().size());
         });
     }
@@ -398,7 +398,7 @@ public class IntegrationTest {
                     .withInstance("pass", "passport.metadata")
                     .withInstance("date", "date")
                     .build();
-            BulletproofsGadgets statement = (BulletproofsGadgets) new Compiler(args).compile();
+            BulletproofsGadgetsStructure statement = (BulletproofsGadgetsStructure) new Compiler(args).compile();
             assertEquals(13, statement.getGadgets().size());
         });
     }
