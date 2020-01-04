@@ -150,9 +150,6 @@ public class JsonSchema extends AbstractSchema {
                     if (validationKeywords.contains(MINIMUM))
                         statementBuilder.greaterThan(witness, getNumberConstraint(MINIMUM, propertySelector), false);
                     break;
-                case "string":
-                    // TODO: implement string validation keywords
-                    break;
                 default:
                     break;
             }
