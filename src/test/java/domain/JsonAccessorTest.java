@@ -9,7 +9,9 @@ import zkstrata.domain.data.types.Value;
 import zkstrata.domain.data.types.custom.HexLiteral;
 
 import java.math.BigInteger;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -88,5 +90,11 @@ public class JsonAccessorTest {
         assertNotNull(value);
         assertEquals(value.getClass(), HexLiteral.class);
         assertEquals(new BigInteger("abcdef", 16), ((HexLiteral) value).getValue());
+    }
+
+    @Test
+    void Get_Empty_KeySet() {
+        Set<String> keySet = this.accessor.getKeySet(List.of("string"));
+        assertEquals(Collections.emptySet(), keySet);
     }
 }
