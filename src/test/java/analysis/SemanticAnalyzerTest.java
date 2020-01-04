@@ -1,6 +1,7 @@
 package analysis;
 
 import org.junit.jupiter.api.Test;
+import zkstrata.analysis.Inference;
 import zkstrata.analysis.SemanticAnalyzer;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.Statement;
@@ -14,6 +15,7 @@ import zkstrata.exceptions.CompileTimeException;
 
 import java.math.BigInteger;
 import java.util.List;
+import java.util.Set;
 
 import static zkstrata.utils.TestHelper.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,5 +61,51 @@ public class SemanticAnalyzerTest {
                 SemanticAnalyzer.process(new Statement(claim, premises, Proposition.trueProposition()))
         );
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
+    }
+    @Test
+    void Inference_Equals_1() {
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        Inference inference = new Inference(Set.of(equalityGadget), equalityGadget, null);
+        assertFalse(inference.equals(null));
+    }
+
+    @Test
+    void Inference_Equals_2() {
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        Inference inference = new Inference(Set.of(equalityGadget), equalityGadget, null);
+        assertFalse(inference.equals(new Object()));
+    }
+
+    @Test
+    void Inference_Equals_3() {
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        Inference inference1 = new Inference(null, equalityGadget, null);
+        Inference inference2 = new Inference(null, equalityGadget, null);
+        assertNotEquals(inference1, inference2);
+    }
+
+    @Test
+    void Inference_Equals_4() {
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        Inference inference1 = new Inference(Set.of(equalityGadget), null, null);
+        Inference inference2 = new Inference(Set.of(equalityGadget), null, null);
+        assertNotEquals(inference1, inference2);
+    }
+
+    @Test
+    void Inference_Equals_5() {
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        Inference inference1 = new Inference(Set.of(equalityGadget), equalityGadget, null);
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_4, INSTANCE_VAR_29, INSTANCE_VAR_41);
+        Inference inference2 = new Inference(Set.of(boundsCheckGadget), boundsCheckGadget, null);
+        assertNotEquals(inference1, inference2);
+    }
+
+    @Test
+    void Inference_Equals_6() {
+        EqualityGadget equalityGadget = new EqualityGadget(WITNESS_VAR_1, INSTANCE_VAR_17);
+        Inference inference1 = new Inference(Set.of(equalityGadget), equalityGadget, null);
+        Inference inference2 = new Inference(Set.of(equalityGadget), equalityGadget, null);
+        assertEquals(inference1, inference2);
     }
 }
