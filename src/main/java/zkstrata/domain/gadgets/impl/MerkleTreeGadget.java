@@ -18,10 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static zkstrata.utils.GadgetUtils.isInstanceVariable;
+
 @AstElement(MerkleTree.class)
 public class MerkleTreeGadget extends AbstractGadget {
     @Type({HexLiteral.class})
-    private InstanceVariable root;
+    private Variable root;
 
     private BinaryTree<Variable> tree;
 
@@ -37,13 +39,18 @@ public class MerkleTreeGadget extends AbstractGadget {
 
     @Override
     public void initialize() {
-        BigInteger image = (BigInteger) ((this.root.getValue()).getValue());
-        if (image.compareTo(Constants.ED25519_MAX_VALUE) > 0
-                || image.compareTo(BigInteger.ZERO) < 0)
-            throw new CompileTimeException(String.format("Invalid root hash image. Images must be of prime order %s.",
-                    Constants.ED25519_PRIME_ORDER), this.root);
+        checkRootHashImage();
 
         // TODO: All instance variables warning (we don't know whether this fails or succeeds)
+    }
+
+    private void checkRootHashImage() {
+        if (isInstanceVariable(this.root)) {
+            BigInteger image = (BigInteger) ((InstanceVariable) this.root).getValue().getValue();
+            if (image.compareTo(Constants.ED25519_MAX_VALUE) > 0 || image.compareTo(BigInteger.ZERO) < 0)
+                throw new CompileTimeException(String.format("Invalid root hash image. Images must be of prime order %s.",
+                        Constants.ED25519_PRIME_ORDER), this.root);
+        }
     }
 
     @Override
@@ -91,7 +98,7 @@ public class MerkleTreeGadget extends AbstractGadget {
         }
     }
 
-    public InstanceVariable getRoot() {
+    public Variable getRoot() {
         return root;
     }
 

@@ -1,0 +1,15 @@
+{
+  "title": "hex",
+  "type": "object",
+  "properties": {
+    "value1_hex": {
+      "type": "string"
+    },
+    "value2_hex": {
+      "type": "string"
+    },
+    "value3_hex": {
+      "type": "string"
+    }
+  }
+}

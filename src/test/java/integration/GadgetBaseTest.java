@@ -59,6 +59,7 @@ public class GadgetBaseTest {
             Arguments args = new ArgumentsBuilder(GadgetBaseTest.class)
                     .withStatement("merkletree")
                     .withInstance("pass", "passport.metadata")
+                    .withSchema("hex", "hex")
                     .build();
             new Compiler(args).compile();
         });
