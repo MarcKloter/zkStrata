@@ -4,6 +4,8 @@ import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.gadgets.AbstractGadget;
 import zkstrata.exceptions.InternalCompilerException;
 
+import java.util.List;
+
 public abstract class AbstractMapper extends AbstractGadget {
     private static final String ERROR = "Illegal call to method %s of mapper %s.";
 
