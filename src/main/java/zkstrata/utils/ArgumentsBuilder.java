@@ -9,7 +9,6 @@ import zkstrata.domain.data.schemas.Schema;
 import zkstrata.domain.data.schemas.dynamic.JsonSchema;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
