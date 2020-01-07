@@ -1,0 +1,18 @@
+PROOF FOR
+    WITNESS myPassport COMPLIANT TO user_story_s2
+THAT
+    myPassport.firstName = 'Peggy' AND myPassport.lastName = 'Proverson'
+AND
+    (
+        myPassport.dateOfBirth.year < 2002
+    OR
+            myPassport.dateOfBirth.month < 3
+        AND
+            myPassport.dateOfBirth.year = 2002
+    OR
+            myPassport.dateOfBirth.day <= 13
+        AND
+            myPassport.dateOfBirth.month = 3
+        AND
+            myPassport.dateOfBirth.year = 2002
+    )

@@ -1,0 +1,12 @@
+PROOF FOR
+    WITNESS myRecord COMPLIANT TO user_story_s3_record
+AND
+    WITNESS myPrescription COMPLIANT TO user_story_s3_prescription
+THAT
+    myRecord.firstName = 'Peggy' AND myRecord.lastName = 'Proverson'
+AND
+    myRecord.prescription_hex = myPrescription.rootHash_hex
+AND
+    myPrescription.prescribedDrug = '11MEHLDR2V'
+AND
+    myPrescription.authorizationCode = 'LNXV-I0TCDS-9X'

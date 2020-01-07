@@ -1,0 +1,86 @@
+name: "user stories"
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up JDK 1.11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.11
+    - name: Checkout zkStrata compiler 
+      uses: actions/checkout@v2
+    - name: Build zkStrata compiler
+      run: |
+        mvn -B package --file pom.xml
+        cp target/zkstratac.jar zkstratac.jar
+    - name: Install rustc nightly 2019-10-26
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly-2019-10-26
+        override: true
+    - name: Checkout bulletproofs_gadgets
+      uses: actions/checkout@v2
+      with:
+        repository: MarcKloter/bulletproofs_gadgets
+        path: bulletproofs_gadgets
+    - name: Build bulletproofs_gadgets
+      run: |
+        cd bulletproofs_gadgets
+        cargo build --release
+        cp target/release/prover ./../prover
+        cp target/release/verifier ./../verifier
+    - name: Prepare user-stories
+      run: cp src/test/resources/userstories/* .
+    - name: "User Story S1 - Prover: Compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s1.zkstrata --schema user_story_s1=user_story_s1.schema.json --witness-data myLicense=user_story_s1.witness.json --instance-data myLicense=user_story_s1.metadata.json 
+    - name: "User Story S1 - Prover: Generate Zero-Knowledge Proof"
+      run: ./prover user_story_s1
+    - name: "User Story S1 - Verifier: compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s1.zkstrata --schema user_story_s1=user_story_s1.schema.json --instance-data myLicense=user_story_s1.metadata.json 
+    - name: "User Story S1 - Verifier: Verify Zero-Knowledge Proof"
+      run: ./verifier user_story_s1
+    - name: "User Story S2 - Prover: Compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s2.zkstrata --schema user_story_s2=user_story_s2.schema.json --witness-data myPassport=user_story_s2.witness.json --instance-data myPassport=user_story_s2.metadata.json 
+    - name: "User Story S2 - Prover: Generate Zero-Knowledge Proof"
+      run: ./prover user_story_s2
+    - name: "User Story S2 - Verifier: compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s2.zkstrata --schema user_story_s2=user_story_s2.schema.json --instance-data myPassport=user_story_s2.metadata.json 
+    - name: "User Story S2 - Verifier: Verify Zero-Knowledge Proof"
+      run: ./verifier user_story_s2
+    - name: "User Story S3 - Prover: Compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s3.zkstrata --schema user_story_s3_record=user_story_s3_record.schema.json user_story_s3_prescription=user_story_s3_prescription.schema.json --witness-data myRecord=user_story_s3_record.witness.json myPrescription=user_story_s3_prescription.witness.json 
+    - name: "User Story S3 - Prover: Generate Zero-Knowledge Proof"
+      run: ./prover user_story_s3
+    - name: "User Story S3 - Verifier: compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s3.zkstrata --schema user_story_s3_record=user_story_s3_record.schema.json user_story_s3_prescription=user_story_s3_prescription.schema.json
+    - name: "User Story S3 - Verifier: Verify Zero-Knowledge Proof"
+      run: ./verifier user_story_s3
+    - name: "User Story S4 - Prover: Compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s4.zkstrata --schema user_story_s4_record=user_story_s4_record.schema.json user_story_s4_icv=user_story_s4_icv.schema.json --witness-data myRecord=user_story_s4_record.witness.json myICV=user_story_s4_icv.witness.json
+    - name: "User Story S4 - Prover: Generate Zero-Knowledge Proof"
+      run: ./prover user_story_s4
+    - name: "User Story S4 - Verifier: compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s4.zkstrata --schema user_story_s4_record=user_story_s4_record.schema.json user_story_s4_icv=user_story_s4_icv.schema.json
+    - name: "User Story S4 - Verifier: Verify Zero-Knowledge Proof"
+      run: ./verifier user_story_s4
+    - name: "User Story S5 - Prover: Compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s5.zkstrata --schema user_story_s5=user_story_s5.schema.json --witness-data myReport=user_story_s5.witness.json --instance-data myReport=user_story_s5.metadata.json
+    - name: "User Story S5 - Prover: Generate Zero-Knowledge Proof"
+      run: ./prover user_story_s5
+    - name: "User Story S5 - Verifier: compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s5.zkstrata --schema user_story_s5=user_story_s5.schema.json --instance-data myReport=user_story_s5.metadata.json
+    - name: "User Story S5 - Verifier: Verify Zero-Knowledge Proof"
+      run: ./verifier user_story_s5
+    - name: "User Story S6 - Prover: Compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s6.zkstrata --schema user_story_s6=user_story_s6.schema.json --witness-data myStatement=user_story_s6.witness.json --instance-data myStatement=user_story_s6.metadata.json
+    - name: "User Story S6 - Prover: Generate Zero-Knowledge Proof"
+      run: ./prover user_story_s6
+    - name: "User Story S6 - Verifier: compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement user_story_s6.zkstrata --schema user_story_s6=user_story_s6.schema.json --instance-data myStatement=user_story_s6.metadata.json 
+    - name: "User Story S6 - Verifier: Verify Zero-Knowledge Proof"
+      run: ./verifier user_story_s6

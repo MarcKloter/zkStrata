@@ -1,0 +1,18 @@
+{
+  "title": "user_story_s5",
+  "type": "object",
+  "properties": {
+    "results": {
+      "type": "object",
+      "properties": {
+        "aircraft": { "type": "string" },
+        "tailNumber": { "type": "string" },
+        "date": { "type": "number" },
+        "servicedBy": { "type": "string" },
+        "isFitToFly": { "type": "boolean" }
+      }
+    },
+    "resultHash_hex": { "type": "string" }
+  },
+  "validationRule": "PROOF FOR THIS THAT public.resultHash_hex IS MERKLE ROOT OF (((private.results.aircraft, private.results.tailNumber), (private.results.date, private.results.servicedBy)), private.results.isFitToFly)"
+}

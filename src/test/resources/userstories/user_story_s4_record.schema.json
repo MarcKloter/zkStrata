@@ -1,0 +1,9 @@
+{
+  "title": "user_story_s4_record",
+  "type": "object",
+  "properties": {
+    "firstName": { "type": "string" },
+    "lastName": { "type": "string" },
+    "icv_hex": { "type": "string" }
+  }
+}

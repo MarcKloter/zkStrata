@@ -1,0 +1,10 @@
+{
+  "title": "user_story_s3_prescription",
+  "type": "object",
+  "properties": {
+    "prescribedDrug": { "type": "string" },
+    "authorizationCode": { "type": "string" },
+    "rootHash_hex": { "type": "string" }
+  },
+  "validationRule": "PROOF FOR THIS THAT private.rootHash_hex IS MERKLE ROOT OF (private.prescribedDrug, private.authorizationCode)"
+}

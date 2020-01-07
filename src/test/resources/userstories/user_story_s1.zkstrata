@@ -1,0 +1,6 @@
+PROOF FOR
+    WITNESS myLicense COMPLIANT TO user_story_s1
+THAT
+    myLicense.firstName = 'Peggy' AND myLicense.lastName = 'Proverson'
+AND
+    myLicense.categoryC IS MEMBER OF ('C', 'C1', 'C1E')

@@ -1,0 +1,9 @@
+{
+  "title": "user_story_s3_record",
+  "type": "object",
+  "properties": {
+    "firstName": { "type": "string" },
+    "lastName": { "type": "string" },
+    "prescription_hex": { "type": "string" }
+  }
+}

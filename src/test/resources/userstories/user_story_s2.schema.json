@@ -1,0 +1,19 @@
+{
+  "title": "user_story_s2",
+  "type": "object",
+  "properties": {
+    "firstName": { "type": "string" },
+    "lastName": { "type": "string" },
+    "dateOfBirth": {
+      "type": "object",
+      "properties": {
+        "day": { "type": "number", "minimum": 1, "maximum": 31 },
+        "month": { "type": "number", "minimum": 1, "maximum": 12 },
+        "year": { "type": "number" }
+      }
+    },
+    "expiresOn": { "type": "number" },
+    "rootHash_hex": { "type": "string" }
+  },
+  "validationRule": "PROOF FOR THIS THAT public.rootHash_hex IS MERKLE ROOT OF (((private.firstName, private.lastName), (private.dateOfBirth.day, private.dateOfBirth.month)), (private.dateOfBirth.year, private.expiresOn)) AND private.expiresOn > 20200313"
+}

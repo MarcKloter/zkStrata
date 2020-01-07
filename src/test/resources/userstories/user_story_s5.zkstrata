@@ -1,0 +1,12 @@
+PROOF FOR
+    WITNESS myReport COMPLIANT TO user_story_s5
+THAT
+    myReport.results.aircraft = 'A380-841'
+AND
+    myReport.results.tailNumber = 'G-XLEJ'
+AND
+    myReport.results.servicedBy = 'SR Technics'
+AND
+    myReport.results.date > 20191214
+AND
+    myReport.results.isFitToFly = TRUE

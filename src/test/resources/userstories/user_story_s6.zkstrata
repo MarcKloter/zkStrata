@@ -1,0 +1,8 @@
+PROOF FOR
+    WITNESS myStatement COMPLIANT TO user_story_s6
+THAT
+    myStatement.firstName = 'Peggy' AND myStatement.lastName = 'Proverson'
+AND
+    myStatement.balance > 39267
+AND
+    myStatement.date > 20191214

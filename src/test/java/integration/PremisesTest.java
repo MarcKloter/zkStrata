@@ -19,8 +19,8 @@ public class PremisesTest {
                     .withPremise("boundscheck")
                     .withPremise("mimchash")
                     .withPremise("merkletree")
-                    .withWitness("pass", "passport")
                     .withInstance("pass", "passport.metadata")
+                    .withSchema("hex", "hex")
                     .build();
             new Compiler(args).compile();
         });

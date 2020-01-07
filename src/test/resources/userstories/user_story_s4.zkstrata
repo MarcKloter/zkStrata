@@ -1,0 +1,16 @@
+PROOF FOR
+    WITNESS myRecord COMPLIANT TO user_story_s4_record
+AND
+    WITNESS myICV COMPLIANT TO user_story_s4_icv
+THAT
+    myRecord.firstName = 'Peggy' AND myRecord.lastName = 'Proverson'
+AND
+    myRecord.icv_hex = myICV.rootHash_hex
+AND
+    myICV.prophylaxis = 'Yellow Fever'
+AND
+    myICV.date <= 20200223
+AND
+    myICV.validUntil = 0
+AND
+    myICV.certificate = 'NJ0O-TKE3-K2C0-SOB7-Y852'

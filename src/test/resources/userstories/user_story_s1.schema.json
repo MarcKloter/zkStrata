@@ -1,0 +1,12 @@
+{
+  "title": "user_story_s1",
+  "type": "object",
+  "properties": {
+    "firstName": { "type": "string" },
+    "lastName": { "type": "string" },
+    "categoryC": { "type": "string" },
+    "dateOfExpiry": { "type": "number" },
+    "rootHash_hex": { "type": "string" }
+  },
+  "validationRule": "PROOF FOR THIS THAT public.rootHash_hex IS MERKLE ROOT OF ((private.firstName, private.lastName), (private.categoryC, private.dateOfExpiry)) AND (private.dateOfExpiry > _CURRENT_DATE OR private.dateOfExpiry = 0)"
+}

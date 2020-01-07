@@ -1,0 +1,14 @@
+{
+  "title": "user_story_s4_icv",
+  "type": "object",
+  "properties": {
+    "prophylaxis": { "type": "string" },
+    "batchNumberOfProphylaxis": { "type": "number" },
+    "date": { "type": "number" },
+    "validUntil": { "type": "number" },
+    "authority": { "type": "string" },
+    "certificate": { "type": "string" },
+    "rootHash_hex": { "type": "string" }
+  },
+  "validationRule": "PROOF FOR THIS THAT private.rootHash_hex IS MERKLE ROOT OF (((private.prophylaxis, private.batchNumberOfProphylaxis), (private.date, private.validUntil)), (private.authority, private.certificate))"
+}
