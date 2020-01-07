@@ -113,10 +113,9 @@ public class EqualityGadget extends AbstractGadget {
 
     @Override
     public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
-        Map<String, Variable> args = Map.ofEntries(
-                Map.entry("left", left),
-                Map.entry("right", right)
-        );
+        LinkedHashMap<String, Variable> args = new LinkedHashMap<>();
+        args.put("left", left);
+        args.put("right", right);
         return List.of(new BulletproofsGadgetsCodeLine("EQUALS %(left) %(right)", args));
     }
 

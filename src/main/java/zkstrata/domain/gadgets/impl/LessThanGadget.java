@@ -128,10 +128,9 @@ public class LessThanGadget extends AbstractGadget {
 
     @Override
     public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
-        Map<String, Variable> args = Map.ofEntries(
-                Map.entry("left", left),
-                Map.entry("right", right)
-        );
+        LinkedHashMap<String, Variable> args = new LinkedHashMap<>();
+        args.put("left", left);
+        args.put("right", right);
         return List.of(new BulletproofsGadgetsCodeLine("LESS_THAN %(left) %(right)", args));
     }
 

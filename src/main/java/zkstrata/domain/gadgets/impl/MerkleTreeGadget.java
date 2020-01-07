@@ -13,10 +13,7 @@ import zkstrata.utils.BinaryTree;
 import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 import static zkstrata.utils.GadgetUtils.isInstanceVariable;
 
@@ -75,7 +72,7 @@ public class MerkleTreeGadget extends AbstractGadget {
 
     @Override
     public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
-        Map<String, Variable> args = new HashMap<>();
+        LinkedHashMap<String, Variable> args = new LinkedHashMap<>();
         args.put("root", root);
         StringBuilder stringBuilder = new StringBuilder("MERKLE %(root) ");
         visitTree(tree.getRoot(), stringBuilder, args);

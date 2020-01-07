@@ -14,6 +14,7 @@ import zkstrata.parser.ast.predicates.MiMCHash;
 import zkstrata.utils.Constants;
 
 import java.math.BigInteger;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -90,10 +91,9 @@ public class MiMCHashGadget extends AbstractGadget {
 
     @Override
     public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
-        Map<String, Variable> args = Map.ofEntries(
-                Map.entry("preimage", preimage),
-                Map.entry("image", image)
-        );
+        LinkedHashMap<String, Variable> args = new LinkedHashMap<>();
+        args.put("preimage", preimage);
+        args.put("image", image);
         return List.of(new BulletproofsGadgetsCodeLine("HASH %(image) %(preimage)", args));
     }
 

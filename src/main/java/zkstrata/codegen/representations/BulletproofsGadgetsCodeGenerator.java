@@ -35,7 +35,6 @@ public class BulletproofsGadgetsCodeGenerator implements CodeGenerator<Bulletpro
         return new BulletproofsGadgetsStructure(name, gadgets, instances, witnesses);
     }
 
-
     @Override
     public BulletproofsGadgetsStructure generateVerifierTargetStructure(BulletproofsGadgets sourceRepresentation) {
         LOGGER.debug("Starting verifier target code generation");

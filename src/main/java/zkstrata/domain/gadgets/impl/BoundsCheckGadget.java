@@ -261,11 +261,10 @@ public class BoundsCheckGadget extends AbstractGadget {
 
     @Override
     public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
-        Map<String, Variable> args = Map.ofEntries(
-                Map.entry("value", value),
-                Map.entry("min", min),
-                Map.entry("max", max)
-        );
+        LinkedHashMap<String, Variable> args = new LinkedHashMap<>();
+        args.put("value", value);
+        args.put("min", min);
+        args.put("max", max);
         return List.of(new BulletproofsGadgetsCodeLine("BOUND %(value) %(min) %(max)", args));
     }
 

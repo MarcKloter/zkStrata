@@ -105,7 +105,7 @@ public class SetMembershipGadget extends AbstractGadget {
 
     @Override
     public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
-        Map<String, Variable> args = new HashMap<>();
+        LinkedHashMap<String, Variable> args = new LinkedHashMap<>();
         args.put("member", member);
 
         String setString = set.stream().map(variable -> {
