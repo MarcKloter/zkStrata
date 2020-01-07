@@ -46,6 +46,9 @@ public class Compiler {
     }
 
     private Statement parseStatement() {
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("Starting parsing of statement `{}`", arguments.getStatement().getSource());
+
         ParseTreeVisitor parseTreeVisitor = new ParseTreeVisitor(arguments.getStatement().getSource());
         AbstractSyntaxTree ast = parseTreeVisitor.visit(arguments.getStatement().getValue());
 
