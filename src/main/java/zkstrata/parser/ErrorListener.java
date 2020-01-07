@@ -33,17 +33,17 @@ public class ErrorListener extends BaseErrorListener {
     private void unexpectedSymbol(Recognizer<?, ?> recognizer, int absolutePosition, int line, int relativePosition) {
         CharStream charStream = (CharStream) recognizer.getInputStream();
         String symbol = charStream.getText(Interval.of(absolutePosition, absolutePosition));
-        String message = String.format("Unexpected symbol %s.", symbol);
+        String message = String.format("Unexpected symbol `%s`.", symbol);
         throw new ParserException(message, new Position.Relative(symbol, line, relativePosition));
     }
 
     private void unexpectedToken(Token token, int line, int position) {
-        String message = String.format("Unexpected token %s.", token.getText());
+        String message = String.format("Unexpected token `%s`.", token.getText());
         throw new ParserException(message, new Position.Relative(token.getText(), line, position));
     }
 
     private void unexpectedInput(Token token, int line, int position) {
-        String message = String.format("Unexpected input %s.", token.getText());
+        String message = String.format("Unexpected input `%s`.", token.getText());
         throw new ParserException(message, new Position.Relative(token.getText(), line, position));
     }
 }
