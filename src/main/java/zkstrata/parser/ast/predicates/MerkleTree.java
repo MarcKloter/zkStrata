@@ -46,7 +46,7 @@ public class MerkleTree extends Predicate {
     @ParserRule(name = "merkle_tree")
     public static MerkleTree parse(zkStrata.Merkle_treeContext ctx) {
         ParseTreeVisitor.TypeVisitor typeVisitor = new ParseTreeVisitor.TypeVisitor();
-        Value root = ctx.instance_var().accept(typeVisitor);
+        Value root = ctx.instance_var() == null ? ctx.witness_var().accept(typeVisitor) : ctx.instance_var().accept(typeVisitor);
 
         BinaryTree<Value> tree = new BinaryTree<>(visitSubtree(ctx.subtree()));
 
