@@ -7,6 +7,7 @@ import zkstrata.exceptions.InternalCompilerException;
 
 import java.lang.reflect.Method;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 
 public class HexEncoder {
     private static final Logger LOGGER = LogManager.getRootLogger();
@@ -43,7 +44,7 @@ public class HexEncoder {
     }
 
     public static String encode(String string) {
-        return Hex.encodeHexString(string.getBytes());
+        return Hex.encodeHexString(string.getBytes(StandardCharsets.UTF_8));
     }
 
     private static String pad(String string) {

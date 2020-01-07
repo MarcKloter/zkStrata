@@ -4,6 +4,8 @@ import org.apache.commons.codec.binary.Hex;
 import org.junit.jupiter.api.Test;
 import zkstrata.utils.HexEncoder;
 
+import java.nio.charset.StandardCharsets;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class HexEncoderTest {
@@ -11,7 +13,7 @@ public class HexEncoderTest {
     void Encode_Unknown_Object() {
         String value = "StringValue";
         UnknownEncodeable unknownEncodeable = new UnknownEncodeable(value);
-        String expected = Hex.encodeHexString(value.getBytes());
+        String expected = Hex.encodeHexString(value.getBytes(StandardCharsets.UTF_8));
         assertEquals(expected, HexEncoder.encode(unknownEncodeable));
     }
 
