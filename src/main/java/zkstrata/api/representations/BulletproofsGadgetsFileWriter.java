@@ -27,7 +27,13 @@ public class BulletproofsGadgetsFileWriter implements TargetRepresentationFileWr
 
         writeGadgets();
         writeInstances();
-        writeWitnesses();
+
+        if(witnessesArePresent())
+            writeWitnesses();
+    }
+
+    private boolean witnessesArePresent() {
+        return !this.bulletproofsGadgets.getWitnesses().isEmpty();
     }
 
     private void writeGadgets() {
