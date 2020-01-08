@@ -11,10 +11,7 @@ import zkstrata.parser.ast.AbstractSyntaxTree;
 import zkstrata.utils.StatementBuilder;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class JsonSchema extends AbstractSchema {
     private static final String PROPERTIES = "properties";
@@ -90,31 +87,42 @@ public class JsonSchema extends AbstractSchema {
 
     @Override
     public boolean hasValidationRule() {
-        return getExplicitValidationRule() != null || hasImplicitValidationRules();
+        return hasExplicitValidationRule() || hasImplicitValidationRules();
+    }
+
+    private boolean hasExplicitValidationRule() {
+        return getExplicitValidationRule() != null;
     }
 
     @Override
     public String getValidationRule() {
-        AbstractSyntaxTree explicit = getExplicitValidationRule();
-
-        StatementBuilder rule = explicit == null ? new StatementBuilder().subjectThis() : new StatementBuilder(explicit);
+        StatementBuilder rule = parseExplicitValidationRule();
         parseValidationKeywords(Collections.emptyList(), rule);
 
         return rule.getNumberOfPredicates() == 0 ? null : rule.build();
     }
 
-    private AbstractSyntaxTree getExplicitValidationRule() {
+    private StatementBuilder parseExplicitValidationRule() {
+        if (hasExplicitValidationRule()) {
+            ParseTreeVisitor parseTreeVisitor = new ParseTreeVisitor(accessor.getSource(), "THIS");
+            AbstractSyntaxTree ast = parseTreeVisitor.visit(getExplicitValidationRule());
+            return new StatementBuilder(ast);
+        }
+
+        return new StatementBuilder().subjectThis();
+    }
+
+    private String getExplicitValidationRule() {
         Value validationRule = accessor.getValue(new Selector("validationRule"));
 
         if (validationRule == null)
             return null;
 
-        if (validationRule.getType() != String.class) {
-            throw new IllegalArgumentException(String.format("Invalid validation rule in schema %s. " +
-                    "The statement must be a string.", accessor.getSource()));
-        }
+        if (validationRule.getType() != String.class)
+            throw new IllegalArgumentException(String.format("Invalid field validationRule in schema %s. " +
+                    "The validation rule must be a string.", accessor.getSource()));
 
-        return new ParseTreeVisitor(accessor.getSource(), "THIS").visit(validationRule.toString());
+        return validationRule.toString();
     }
 
     private boolean hasImplicitValidationRules() {

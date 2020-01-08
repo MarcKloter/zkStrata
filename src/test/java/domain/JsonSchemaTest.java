@@ -72,7 +72,7 @@ public class JsonSchemaTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 this.schema1.getValidationRule()
         );
-        assertTrue(exception.getMessage().toLowerCase().contains("invalid validation rule"));
+        assertTrue(exception.getMessage().toLowerCase().contains("invalid field validationrule"));
     }
 
     @Test
