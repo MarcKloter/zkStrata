@@ -47,10 +47,10 @@ public class Statement {
     }
 
     public void setValidationRule(Proposition validationRule) {
-        this.validationRule = this.validationRule == null ? validationRule : this.validationRule.combine(validationRule);
+        this.validationRule = this.validationRule.combine(validationRule);
     }
 
     public void addPremise(Proposition premise) {
-        this.premise = this.premise == null ? premise : this.premise.combine(premise);
+        this.premise = this.premise.combine(premise);
     }
 }
