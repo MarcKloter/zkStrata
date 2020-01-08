@@ -3,6 +3,8 @@ package zkstrata.parser;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.exceptions.ParserException;
@@ -35,8 +37,11 @@ import static zkstrata.utils.ParserUtils.getPosition;
  * Then visits this visit tree to form an abstract syntax tree ({@link AbstractSyntaxTree}).
  */
 public class ParseTreeVisitor {
+    private static final Logger LOGGER = LogManager.getRootLogger();
+
     private String source;
     private String parentSchema;
+    private String statement;
 
     public ParseTreeVisitor(String source) {
         this(source, null);
@@ -52,26 +57,43 @@ public class ParseTreeVisitor {
     }
 
     public AbstractSyntaxTree visit(String statement) {
-        ANTLRErrorListener errorListener = new ErrorListener();
+        this.statement = statement;
 
-        zkStrataLexer lexer = new zkStrataLexer(CharStreams.fromString(statement));
-        lexer.removeErrorListeners();
-        lexer.addErrorListener(errorListener);
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("Creating parse tree from statement `{}` using ANTLR", this.source);
 
-        zkStrata parser = new zkStrata(new CommonTokenStream(lexer));
-        parser.removeErrorListeners();
-        parser.addErrorListener(errorListener);
-        parser.setErrorHandler(new ErrorStrategy());
+        zkStrataLexer lexer = setupLexer();
+        zkStrata parser = setupParser(lexer);
+        ParseTree tree = createParseTree(parser);
 
-        ParseTree tree;
-        try {
-            tree = parser.statement();
-        } catch (ParserException e) {
-            throw new CompileTimeException(source, statement, e);
-        }
+        if (LOGGER.isDebugEnabled())
+            LOGGER.debug("Visiting ANTLR parse tree to create AST");
 
         StatementVisitor visitor = new StatementVisitor(statement, parser.getRuleNames());
         return visitor.visit(tree);
+    }
+
+    private zkStrataLexer setupLexer() {
+        zkStrataLexer lexer = new zkStrataLexer(CharStreams.fromString(this.statement));
+        lexer.removeErrorListeners();
+        lexer.addErrorListener(new ErrorListener());
+        return lexer;
+    }
+
+    private zkStrata setupParser(zkStrataLexer lexer) {
+        zkStrata parser = new zkStrata(new CommonTokenStream(lexer));
+        parser.removeErrorListeners();
+        parser.addErrorListener(new ErrorListener());
+        parser.setErrorHandler(new ErrorStrategy());
+        return parser;
+    }
+
+    private ParseTree createParseTree(zkStrata parser) {
+        try {
+            return parser.statement();
+        } catch (ParserException e) {
+            throw new CompileTimeException(this.source, this.statement, e);
+        }
     }
 
     private static class ClauseVisitor extends zkStrataBaseVisitor<Node> {
@@ -131,12 +153,7 @@ public class ParseTreeVisitor {
 
         @Override
         public Predicate visitPredicate_clause(zkStrata.Predicate_clauseContext ctx) {
-            if (ctx.getChildCount() != 1)
-                throw new InternalCompilerException("Expected 1 predicate in clause, found %d.", ctx.getChildCount());
-
             ParseTree child = ctx.getChild(0);
-            if (!(child instanceof ParserRuleContext))
-                throw new InternalCompilerException("Expected predicate to be a parser rule, found %s.", child.getClass());
 
             ParserRuleContext gadget = (ParserRuleContext) child;
             String name = this.parserRules[gadget.getRuleIndex()];
@@ -154,17 +171,11 @@ public class ParseTreeVisitor {
 
         @Override
         public Value visitWitnessVariable(zkStrata.WitnessVariableContext ctx) {
-            if (ctx.getChildCount() != 1)
-                throw new InternalCompilerException("Expected a single witness variable, found %d.", ctx.getChildCount());
-
             return ctx.getChild(0).accept(new TypeVisitor());
         }
 
         @Override
         public Value visitInstanceVariable(zkStrata.InstanceVariableContext ctx) {
-            if (ctx.getChildCount() != 1)
-                throw new InternalCompilerException("Expected a single instance variable, found %d.", ctx.getChildCount());
-
             return ctx.getChild(0).accept(new TypeVisitor());
         }
 
