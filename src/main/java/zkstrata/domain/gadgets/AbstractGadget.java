@@ -107,7 +107,7 @@ public abstract class AbstractGadget implements Gadget {
     }
 
     private Set<Field> getTypeAnnotatedFields() {
-            Set<Field> fields = new LinkedHashSet<>();
+        Set<Field> fields = new LinkedHashSet<>();
         for (Field field : this.getClass().getDeclaredFields()) {
             Type annotation = field.getAnnotation(Type.class);
 
@@ -115,6 +115,11 @@ public abstract class AbstractGadget implements Gadget {
                 fields.add(field);
         }
         return fields;
+    }
+
+    @Override
+    public List<Gadget> listAllGadgets() {
+        return new ArrayList<>(Arrays.asList((Gadget) this));
     }
 
     /**

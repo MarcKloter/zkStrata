@@ -5,11 +5,9 @@ import zkstrata.codegen.representations.BulletproofsGadgets;
 import zkstrata.domain.conjunctions.AndConjunction;
 import zkstrata.domain.conjunctions.Conjunction;
 import zkstrata.domain.gadgets.Gadget;
-import zkstrata.exceptions.InternalCompilerException;
 import zkstrata.optimizer.TrueProposition;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public interface Proposition extends BulletproofsGadgets {
     /**
@@ -45,21 +43,7 @@ public interface Proposition extends BulletproofsGadgets {
      *
      * @return {@link List} of {@link Gadget} accessible through this proposition
      */
-    default List<Gadget> listAllGadgets() {
-        if (this instanceof Gadget)
-            return new ArrayList<>(Arrays.asList((Gadget) this));
-
-        if (this instanceof Conjunction)
-            return ((Conjunction) this).getParts().stream()
-                    .map(Proposition::listAllGadgets)
-                    .flatMap(Collection::stream)
-                    .collect(Collectors.toList());
-
-        if (this.isTrueProposition())
-            return new ArrayList<>();
-
-        throw new InternalCompilerException("Unhandled instance %s found.", this.getClass());
-    }
+    List<Gadget> listAllGadgets();
 
     /**
      * Returns a list of gadget-combinations accessible through this proposition.

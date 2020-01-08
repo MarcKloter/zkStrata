@@ -4,6 +4,7 @@ import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.Proposition;
 import zkstrata.domain.gadgets.Gadget;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -11,6 +12,11 @@ public class TrueProposition implements Proposition {
     @Override
     public List<BulletproofsGadgetsCodeLine> toBulletproofsGadgets() {
         return Collections.emptyList();
+    }
+
+    @Override
+    public List<Gadget> listAllGadgets() {
+        return new ArrayList<>();
     }
 
     @Override

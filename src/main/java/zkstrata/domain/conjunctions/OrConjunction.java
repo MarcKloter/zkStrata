@@ -2,7 +2,6 @@ package zkstrata.domain.conjunctions;
 
 import zkstrata.codegen.representations.BulletproofsGadgetsCodeLine;
 import zkstrata.domain.Proposition;
-import zkstrata.domain.data.types.wrapper.Variable;
 import zkstrata.domain.gadgets.Gadget;
 import zkstrata.domain.visitor.AstElement;
 import zkstrata.optimizer.Substitution;

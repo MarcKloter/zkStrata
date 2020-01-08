@@ -4,6 +4,8 @@ import zkstrata.domain.data.schemas.wrapper.StructuredData;
 
 import java.util.List;
 
+import static zkstrata.domain.Proposition.trueProposition;
+
 /**
  * Compiler internal representation of a zkStrata statement.
  */
@@ -22,8 +24,8 @@ public class Statement {
     public Statement(List<StructuredData> subjects, Proposition claim) {
         this.subjects = subjects;
         this.claim = claim;
-        this.premise = null;
-        this.validationRule = null;
+        this.premise = trueProposition();
+        this.validationRule = trueProposition();
     }
 
     public List<StructuredData> getSubjects() {

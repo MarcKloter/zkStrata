@@ -1,10 +1,13 @@
 package zkstrata.domain.conjunctions;
 
 import zkstrata.domain.Proposition;
+import zkstrata.domain.gadgets.Gadget;
 import zkstrata.optimizer.Substitution;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public abstract class AbstractConjunction implements Conjunction {
     private List<Proposition> parts;
@@ -24,6 +27,14 @@ public abstract class AbstractConjunction implements Conjunction {
     @Substitution(target = {Conjunction.class, Conjunction.class})
     public static Optional<Proposition> removeDuplicateConjunction(Conjunction first, Conjunction second) {
         return first.equals(second) ? Optional.of(first) : Optional.empty();
+    }
+
+    @Override
+    public List<Gadget> listAllGadgets() {
+        return this.getParts().stream()
+                .map(Proposition::listAllGadgets)
+                .flatMap(Collection::stream)
+                .collect(Collectors.toList());
     }
 
     @Override
