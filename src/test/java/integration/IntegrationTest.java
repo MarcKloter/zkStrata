@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.Test;
+import zkstrata.codegen.TargetStructure;
 import zkstrata.codegen.representations.BulletproofsGadgetsStructure;
 import zkstrata.compiler.Arguments;
 import zkstrata.compiler.Compiler;
@@ -149,8 +150,10 @@ public class IntegrationTest {
                     .withStatement("unused_subject")
                     .withInstance("pass1", "passport.metadata")
                     .withInstance("pass2", "passport.metadata")
+                    .withInstance("pass3", "passport_instance")
                     .build();
-            new Compiler(args).compile();
+            BulletproofsGadgetsStructure statement = (BulletproofsGadgetsStructure) new Compiler(args).compile();
+            assertEquals(3, statement.getGadgets().size());
         });
     }
 

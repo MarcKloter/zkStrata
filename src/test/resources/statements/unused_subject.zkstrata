@@ -1,6 +1,10 @@
 PROOF FOR
-    passport_ch AS pass1
+    WITNESS pass1 COMPLIANT TO passport_ch
 AND
-    passport_ch AS pass2
+    WITNESS pass2 COMPLIANT TO passport_ch
+AND
+    WITNESS license1 COMPLIANT TO drivers_license_ch
+AND
+    INSTANCE pass3 COMPLIANT TO passport_ch
 THAT
     pass1.firstName IS EQUAL TO 'John'

@@ -84,11 +84,9 @@ public class ASTVisitor {
 
         Proposition predicate = visitNode(ast.getRoot());
 
-        this.checkUnusedSubjects();
-
         LOGGER.debug("Finishing visit of AST for {}", ast.getSource());
 
-        return new Statement(new ArrayList<>(subjects.getUsedMap().values()), predicate);
+        return new Statement(getRelevantSubjects(), predicate);
     }
 
     private StructuredData visitSubject(Subject subject) {
@@ -303,11 +301,27 @@ public class ASTVisitor {
         throw new CompileTimeException("Invalid constant.", pinPosition(constant));
     }
 
-    private void checkUnusedSubjects() {
-        for (String alias : subjects.getUnusedKeySet()) {
-            if (!RESERVED_ALIASES.contains(alias))
-                LOGGER.warn("Removing unused subject '{}'", alias);
+    private List<StructuredData> getRelevantSubjects() {
+        List<StructuredData> relevantSubjects = new ArrayList<>(this.subjects.values());
+        for (String subject : this.subjects.getUnusedKeySet()) {
+            if (!isReservedAlias(subject) && (!hasValidationRule(subject) || isFlaggedAsPublic(subject))) {
+                LOGGER.warn("Removing unused subject '{}'", subject);
+                relevantSubjects.remove(this.subjects.get(subject));
+            }
         }
+        return relevantSubjects;
+    }
+
+    private boolean isReservedAlias(String alias) {
+        return RESERVED_ALIASES.contains(alias);
+    }
+
+    private boolean hasValidationRule(String alias) {
+        return subjects.get(alias).getSchema().hasValidationRule();
+    }
+
+    private boolean isFlaggedAsPublic(String alias) {
+        return !subjects.get(alias).isWitness();
     }
 
     private Position.Absolute pinPosition(Traceable traceable) {
