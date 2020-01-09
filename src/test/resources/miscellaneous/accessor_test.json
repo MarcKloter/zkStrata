@@ -1,6 +1,7 @@
 {
   "string": "John",
-  "number": 42,
+  "number1": 42,
+  "number2": 8932614873,
   "hexString": "0xabcdef",
   "array": [
     "element0", "element1", "element2"

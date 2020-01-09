@@ -65,13 +65,23 @@ public class JsonAccessorTest {
     }
 
     @Test
-    void Get_Value_BigInteger() {
-        Value value = this.accessor.getValue(new Selector(List.of("number")));
+    void Get_Value_BigInteger_1() {
+        Value value = this.accessor.getValue(new Selector(List.of("number1")));
         assertNotNull(value);
         assertEquals(value.getClass(), Literal.class);
         Literal literal = (Literal) value;
         assertEquals(BigInteger.class, literal.getType());
         assertEquals(BigInteger.valueOf(42), literal.getValue());
+    }
+
+    @Test
+    void Get_Value_BigInteger_2() {
+        Value value = this.accessor.getValue(new Selector(List.of("number2")));
+        assertNotNull(value);
+        assertEquals(value.getClass(), Literal.class);
+        Literal literal = (Literal) value;
+        assertEquals(BigInteger.class, literal.getType());
+        assertEquals(BigInteger.valueOf(8932614873L), literal.getValue());
     }
 
     @Test

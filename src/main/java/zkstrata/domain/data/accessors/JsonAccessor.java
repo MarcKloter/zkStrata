@@ -68,8 +68,11 @@ public class JsonAccessor implements ValueAccessor {
         if (object instanceof JSONArray)
             object = ((JSONArray) object).toList();
 
-        if (object instanceof Integer)
+        if (object instanceof Integer )
             return new Literal(BigInteger.valueOf((Integer) object));
+
+        if (object instanceof Long)
+            return new Literal(BigInteger.valueOf((Long) object));
 
         if (object instanceof String && ((String) object).startsWith("0x"))
             return new HexLiteral((String) object);
