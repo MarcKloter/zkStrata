@@ -12,7 +12,6 @@ import zkstrata.exceptions.Position;
 import zkstrata.parser.ast.Node;
 import zkstrata.parser.ast.connectives.And;
 import zkstrata.parser.ast.connectives.Or;
-import zkstrata.utils.ReflectionHelper;
 import zkstrata.zkStrataLexer;
 import zkstrata.parser.ast.types.Identifier;
 import zkstrata.parser.ast.AbstractSyntaxTree;
@@ -31,6 +30,7 @@ import java.util.stream.Collectors;
 
 import static zkstrata.parser.ast.Subject.*;
 import static zkstrata.utils.ParserUtils.getPosition;
+import static zkstrata.utils.ReflectionHelper.*;
 
 /**
  * Transforms a zkStrata statement ({@link String}) into a visit tree ({@link ParseTree}) using ANTLR.
@@ -133,16 +133,16 @@ public class ParseTreeVisitor {
     }
 
     private static class PredicateVisitor extends zkStrataBaseVisitor<Predicate> {
+        private static final Set<Method> PARSE_METHODS = getMethodsAnnotatedWith(ParserRule.class);
+
         private String[] parserRules;
-        private Set<Method> parseMethods;
 
         PredicateVisitor(String[] parserRules) {
             this.parserRules = parserRules;
-            this.parseMethods = ReflectionHelper.getMethodsAnnotatedWith(ParserRule.class);
         }
 
         private Method getParser(String name) {
-            for (Method parser : this.parseMethods) {
+            for (Method parser : PARSE_METHODS) {
                 ParserRule annotation = parser.getAnnotation(ParserRule.class);
                 if (annotation.name().equals(name))
                     return parser;
@@ -158,16 +158,12 @@ public class ParseTreeVisitor {
             ParserRuleContext gadget = (ParserRuleContext) child;
             String name = this.parserRules[gadget.getRuleIndex()];
 
-            return (Predicate) ReflectionHelper.invokeStaticMethod(getParser(name), gadget);
+            return (Predicate) invokeStaticMethod(getParser(name), gadget);
         }
     }
 
     public static class TypeVisitor extends zkStrataBaseVisitor<Value> {
-        private Set<Constructor> constructors;
-
-        public TypeVisitor() {
-            this.constructors = ReflectionHelper.getConstructorsAnnotatedWith(TokenType.class);
-        }
+        private static final Set<Constructor> TOKEN_TYPES = getConstructorsAnnotatedWith(TokenType.class);
 
         @Override
         public Value visitWitnessVariable(zkStrata.WitnessVariableContext ctx) {
@@ -204,7 +200,7 @@ public class ParseTreeVisitor {
         }
 
         private Constructor getConstructor(int tokenType) {
-            for (Constructor constructor : this.constructors) {
+            for (Constructor constructor : TOKEN_TYPES) {
                 Annotation annotation = constructor.getAnnotation(TokenType.class);
                 if (annotation instanceof TokenType && ((TokenType) annotation).type() == tokenType)
                     return constructor;

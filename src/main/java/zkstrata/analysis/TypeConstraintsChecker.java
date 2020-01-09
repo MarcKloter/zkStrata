@@ -5,29 +5,31 @@ import zkstrata.exceptions.CompileTimeException;
 import zkstrata.exceptions.Position;
 import zkstrata.exceptions.TypeCheckException;
 import zkstrata.utils.Constants;
-import zkstrata.utils.ReflectionHelper;
 
 import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.Set;
 
+import static zkstrata.utils.ReflectionHelper.getMethodsAnnotatedWith;
+import static zkstrata.utils.ReflectionHelper.invokeStaticMethod;
+
 /**
  * This class enforces constraints placed on types defined by zkStrata.
  */
 public class TypeConstraintsChecker {
+    private static final Set<Method> TYPE_CONSTRAINTS = getMethodsAnnotatedWith(TypeConstraint.class);
+
     private TypeConstraintsChecker() {
         throw new IllegalStateException("Utility class");
     }
 
     public static void process(Literal literal, Position.Absolute position) {
-        Set<Method> typeConstraints = ReflectionHelper.getMethodsAnnotatedWith(TypeConstraint.class);
-
-        for (Method typeConstraint : typeConstraints) {
+        for (Method typeConstraint : TYPE_CONSTRAINTS) {
             Class<?> expectedType = typeConstraint.getAnnotation(TypeConstraint.class).value();
 
             if (literal.getType() == expectedType) {
                 try {
-                    ReflectionHelper.invokeStaticMethod(typeConstraint, literal.getValue());
+                    invokeStaticMethod(typeConstraint, literal.getValue());
                 } catch (TypeCheckException e) {
                     throw new CompileTimeException(e.getMessage(), position);
                 }

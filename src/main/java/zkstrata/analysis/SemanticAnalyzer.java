@@ -18,6 +18,7 @@ import static zkstrata.utils.ReflectionHelper.*;
 
 public class SemanticAnalyzer {
     private static final Logger LOGGER = LogManager.getRootLogger();
+    private static final Set<Method> CONTRADICTION_RULES = getMethodsAnnotatedWith(Contradiction.class);
 
     private SemanticAnalyzer() {
         throw new IllegalStateException("Utility class");
@@ -56,8 +57,7 @@ public class SemanticAnalyzer {
      * @param inferences set of {@link Inference} to check contradictions on
      */
     private static void checkContradictions(Set<Inference> inferences) {
-        Set<Method> contradictionChecks = getMethodsAnnotatedWith(Contradiction.class);
-        for (Method contradictionCheck : contradictionChecks) {
+        for (Method contradictionCheck : CONTRADICTION_RULES) {
             List<Class<? extends Gadget>> context = getGadgetParameterTypes(contradictionCheck);
 
             Set<List<Gadget>> contextCombinations = getCombinations(context,

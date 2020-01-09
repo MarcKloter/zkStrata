@@ -37,7 +37,10 @@ import static zkstrata.utils.ReflectionHelper.*;
 
 public class ASTVisitor {
     private static final Logger LOGGER = LogManager.getRootLogger();
-    private static final List<String> reservedAliases = List.of("private", "public");
+    private static final Set<Method> CONSTANTS = getMethodsAnnotatedWith(zkstrata.domain.data.types.Constant.class);
+    private static final Set<Class<? extends Conjunction>> CONJUNCTION_TYPES = getAllConjunctions();
+    private static final Set<Class<? extends Gadget>> GADGET_TYPES = prepareGadgetTypes();
+    private static final List<String> RESERVED_ALIASES = List.of("private", "public");
 
     private final String parentAlias;
     private final Map<String, ValueAccessor> witnessData;
@@ -57,6 +60,12 @@ public class ASTVisitor {
         this.schemas = subjectData.getSchemas();
         this.subjects = new MapListener<>(new HashMap<>());
         this.parentAlias = parentAlias;
+    }
+
+    private static Set<Class<? extends Gadget>> prepareGadgetTypes() {
+        return getAllGadgets().stream()
+                .filter(gadget -> gadget.isAnnotationPresent(AstElement.class))
+                .collect(Collectors.toSet());
     }
 
     public Statement visit(AbstractSyntaxTree ast) {
@@ -85,7 +94,7 @@ public class ASTVisitor {
     private StructuredData visitSubject(Subject subject) {
         String alias = subject.getAlias().getName();
 
-        if (reservedAliases.contains(alias)) {
+        if (RESERVED_ALIASES.contains(alias)) {
             if (parentAlias == null)
                 throw new CompileTimeException(format("Reserved keyword `%s` used as alias.", alias),
                         pinPosition(subject.getAlias()));
@@ -142,16 +151,14 @@ public class ASTVisitor {
     }
 
     private Class<? extends Conjunction> getConjunctionType(Connective connective) {
-        Set<Class<? extends Conjunction>> conjunctions = getAllConjunctions();
-
-        for (Class<? extends Conjunction> conjunction : conjunctions) {
-            AstElement from = conjunction.getAnnotation(AstElement.class);
+        for (Class<? extends Conjunction> conjunctionType : CONJUNCTION_TYPES) {
+            AstElement from = conjunctionType.getAnnotation(AstElement.class);
 
             if (from == null)
-                throw new InternalCompilerException("Missing @AstElement annotation in %s.", conjunction);
+                throw new InternalCompilerException("Missing @AstElement annotation in %s.", conjunctionType);
 
             if (from.value() == connective.getClass()) {
-                return conjunction;
+                return conjunctionType;
             }
         }
 
@@ -159,22 +166,14 @@ public class ASTVisitor {
     }
 
     private Proposition visitPredicate(Predicate predicate) {
-        Set<Class<? extends Gadget>> gadgets = filterAstElementAnnotation(getAllGadgets());
-
-        for (Class<? extends Gadget> gadget : gadgets) {
-            AstElement from = gadget.getAnnotation(AstElement.class);
+        for (Class<? extends Gadget> gadgetType : GADGET_TYPES) {
+            AstElement from = gadgetType.getAnnotation(AstElement.class);
 
             if (from.value() == predicate.getClass())
-                return createInstance(gadget).initFrom(getSourceValues(predicate));
+                return createInstance(gadgetType).initFrom(getSourceValues(predicate));
         }
 
         throw new InternalCompilerException("Missing gadget implementation for predicate: %s", predicate.getClass());
-    }
-
-    private Set<Class<? extends Gadget>> filterAstElementAnnotation(Set<Class<? extends Gadget>> gadgets) {
-        return gadgets.stream()
-                .filter(gadget -> gadget.isAnnotationPresent(AstElement.class))
-                .collect(Collectors.toSet());
     }
 
     private Map<String, Object> getSourceValues(Predicate predicate) {
@@ -292,9 +291,7 @@ public class ASTVisitor {
     }
 
     private InstanceVariable visitConstant(Constant constant) {
-        Set<Method> constants = getMethodsAnnotatedWith(zkstrata.domain.data.types.Constant.class);
-
-        for (Method method : constants) {
+        for (Method method : CONSTANTS) {
             String constantIdentifier = method.getAnnotation(zkstrata.domain.data.types.Constant.class).value();
 
             if (constantIdentifier.equals(constant.getValue())) {
@@ -308,7 +305,7 @@ public class ASTVisitor {
 
     private void checkUnusedSubjects() {
         for (String alias : subjects.getUnusedKeySet()) {
-            if (!reservedAliases.contains(alias))
+            if (!RESERVED_ALIASES.contains(alias))
                 LOGGER.warn("Removing unused subject '{}'", alias);
         }
     }
