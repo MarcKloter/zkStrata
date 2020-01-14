@@ -1,5 +1,7 @@
 package integration;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.Test;
 import zkstrata.codegen.representations.BulletproofsGadgetsStructure;
 import zkstrata.compiler.Arguments;
@@ -24,6 +26,24 @@ public class PremisesTest {
                     .build();
             new Compiler(args).compile();
         });
+    }
+
+    @Test
+    void Mixed_Verbose_Statement_Should_Succeed() {
+        Configurator.setRootLevel(Level.DEBUG);
+        assertDoesNotThrow(() -> {
+            Arguments args = new ArgumentsBuilder(PremisesTest.class)
+                    .withStatement("default")
+                    .withPremise("equality")
+                    .withPremise("boundscheck")
+                    .withPremise("mimchash")
+                    .withPremise("merkletree")
+                    .withInstance("pass", "passport.metadata")
+                    .withSchema("hex", "hex")
+                    .build();
+            new Compiler(args).compile();
+        });
+        Configurator.setRootLevel(Level.OFF);
     }
 
     @Test
