@@ -152,9 +152,27 @@ public class BoundsCheckGadgetTest {
     }
 
     @Test
-    void Imply_Restriction_None() {
+    void Imply_Restriction_None_1() {
         InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_1, INSTANCE_VAR_53);
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+
+        Optional<Gadget> result = implyRestrictedBounds(inequalityGadget, boundsCheckGadget);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void Imply_Restriction_None_2() {
+        InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_2, INSTANCE_VAR_17);
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+
+        Optional<Gadget> result = implyRestrictedBounds(inequalityGadget, boundsCheckGadget);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void Imply_Restriction_None_3() {
+        InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_2, INSTANCE_VAR_17);
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(INSTANCE_VAR_29, INSTANCE_VAR_17, INSTANCE_VAR_41);
 
         Optional<Gadget> result = implyRestrictedBounds(inequalityGadget, boundsCheckGadget);
         assertTrue(result.isEmpty());
