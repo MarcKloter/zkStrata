@@ -9,7 +9,6 @@ import zkstrata.domain.gadgets.impl.BoundsCheckGadget;
 import zkstrata.domain.gadgets.impl.EqualityGadget;
 import zkstrata.domain.gadgets.impl.InequalityGadget;
 import zkstrata.exceptions.CompileTimeException;
-import zkstrata.parser.ast.predicates.Inequality;
 
 import java.math.BigInteger;
 import java.util.Optional;
