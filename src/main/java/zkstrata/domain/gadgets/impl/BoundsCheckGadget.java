@@ -58,7 +58,22 @@ public class BoundsCheckGadget extends AbstractGadget {
             Optional<Variable> equal = getEqualityToWitness(eq, (WitnessVariable) bc.getValue());
 
             if (equal.isPresent() && isWitnessVariable(equal.get()))
-                return Optional.of(new BoundsCheckGadget((WitnessVariable) equal.get(), bc.getMin(), bc.getMax()));
+                return Optional.of(new BoundsCheckGadget(equal.get(), bc.getMin(), bc.getMax()));
+        }
+
+        return Optional.empty();
+    }
+
+    @Implication
+    public static Optional<Gadget> implyRestrictedBounds(InequalityGadget iq, BoundsCheckGadget bc) {
+        if (isWitnessVariable(bc.getValue())) {
+            Optional<Variable> disparity = getDisparityToWitness(iq, (WitnessVariable) bc.getValue());
+
+            if (disparity.isPresent() && isVariableEqualToBigInteger(disparity.get(), bc.getMaxValue()))
+                return Optional.of(new BoundsCheckGadget(bc.getValue(), bc.getMin(), subtractOne(bc.getMax())));
+
+            if (disparity.isPresent() && isVariableEqualToBigInteger(disparity.get(), bc.getMinValue()))
+                return Optional.of(new BoundsCheckGadget(bc.getValue(), addOne(bc.getMin()), bc.getMax()));
         }
 
         return Optional.empty();

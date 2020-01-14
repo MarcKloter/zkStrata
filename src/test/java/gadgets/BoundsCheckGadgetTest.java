@@ -9,6 +9,7 @@ import zkstrata.domain.gadgets.impl.BoundsCheckGadget;
 import zkstrata.domain.gadgets.impl.EqualityGadget;
 import zkstrata.domain.gadgets.impl.InequalityGadget;
 import zkstrata.exceptions.CompileTimeException;
+import zkstrata.parser.ast.predicates.Inequality;
 
 import java.math.BigInteger;
 import java.util.Optional;
@@ -24,6 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class BoundsCheckGadgetTest {
     private static final InstanceVariable INSTANCE_VAR_17 = createInstanceVariable(new Literal(BigInteger.valueOf(17)));
     private static final InstanceVariable INSTANCE_VAR_29 = createInstanceVariable(new Literal(BigInteger.valueOf(29)));
+    private static final InstanceVariable INSTANCE_VAR_40 = createInstanceVariable(new Literal(BigInteger.valueOf(40)));
     private static final InstanceVariable INSTANCE_VAR_41 = createInstanceVariable(new Literal(BigInteger.valueOf(41)));
     private static final InstanceVariable INSTANCE_VAR_53 = createInstanceVariable(new Literal(BigInteger.valueOf(53)));
     private static final InstanceVariable INSTANCE_VAR_STRING = createInstanceVariable(new Literal("String"));
@@ -123,6 +125,39 @@ public class BoundsCheckGadgetTest {
         BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
 
         Optional<Gadget> result = implyEquality(boundsCheckGadget);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void Imply_Restriction_Upper() {
+        InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_1, INSTANCE_VAR_41);
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+        BoundsCheckGadget implication = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_40);
+
+        Optional<Gadget> result = implyRestrictedBounds(inequalityGadget, boundsCheckGadget);
+        assertTrue(result.isPresent());
+        assertTrue(result.get() instanceof BoundsCheckGadget);
+        assertEquals(implication, result.get());
+    }
+
+    @Test
+    void Imply_Restriction_Lower() {
+        InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_1, INSTANCE_VAR_40);
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_40, INSTANCE_VAR_53);
+        BoundsCheckGadget implication = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_41, INSTANCE_VAR_53);
+
+        Optional<Gadget> result = implyRestrictedBounds(inequalityGadget, boundsCheckGadget);
+        assertTrue(result.isPresent());
+        assertTrue(result.get() instanceof BoundsCheckGadget);
+        assertEquals(implication, result.get());
+    }
+
+    @Test
+    void Imply_Restriction_None() {
+        InequalityGadget inequalityGadget = new InequalityGadget(WITNESS_VAR_1, INSTANCE_VAR_53);
+        BoundsCheckGadget boundsCheckGadget = new BoundsCheckGadget(WITNESS_VAR_1, INSTANCE_VAR_17, INSTANCE_VAR_41);
+
+        Optional<Gadget> result = implyRestrictedBounds(inequalityGadget, boundsCheckGadget);
         assertTrue(result.isEmpty());
     }
 
