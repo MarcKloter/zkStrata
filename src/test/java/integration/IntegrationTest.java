@@ -13,7 +13,7 @@ import zkstrata.utils.ArgumentsBuilder;
 
 public class IntegrationTest {
     @Test
-    void Default_Verbose_Should_Succeed() {
+    void Default_Quiet_Should_Succeed() {
         Configurator.setRootLevel(Level.DEBUG);
         assertDoesNotThrow(() -> {
             Arguments args = new ArgumentsBuilder(IntegrationTest.class)
@@ -22,6 +22,7 @@ public class IntegrationTest {
                     .build();
             new Compiler(args).compile();
         });
+        Configurator.setRootLevel(Level.OFF);
     }
 
     @Test
@@ -34,6 +35,7 @@ public class IntegrationTest {
                     .build();
             new Compiler(args).compile();
         });
+        Configurator.setRootLevel(Level.OFF);
     }
 
     @Test
@@ -46,6 +48,7 @@ public class IntegrationTest {
                     .build();
             new Compiler(args).compile();
         });
+        Configurator.setRootLevel(Level.OFF);
     }
 
     @Test
