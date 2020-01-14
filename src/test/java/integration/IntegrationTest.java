@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.junit.jupiter.api.Test;
-import zkstrata.codegen.TargetStructure;
 import zkstrata.codegen.representations.BulletproofsGadgetsStructure;
 import zkstrata.compiler.Arguments;
 import zkstrata.compiler.Compiler;
@@ -404,5 +403,17 @@ public class IntegrationTest {
             BulletproofsGadgetsStructure statement = (BulletproofsGadgetsStructure) new Compiler(args).compile();
             assertEquals(13, statement.getGadgets().size());
         });
+    }
+
+    @Test
+    void Complex_Contradiction_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("complex_contradiction")
+                    .withSchema("schema", "basic")
+                    .build();
+            new Compiler(args).compile();
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
 }
