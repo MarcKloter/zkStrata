@@ -24,6 +24,7 @@ public class SetMembershipGadgetTest {
     private static final InstanceVariable INSTANCE_VAR_29 = createInstanceVariable(new Literal(BigInteger.valueOf(29)));
     private static final InstanceVariable INSTANCE_VAR_41 = createInstanceVariable(new Literal(BigInteger.valueOf(41)));
     private static final InstanceVariable INSTANCE_VAR_53 = createInstanceVariable(new Literal(BigInteger.valueOf(53)));
+    private static final InstanceVariable INSTANCE_VAR_STRING = createInstanceVariable(new Literal("String"));
 
     private static final WitnessVariable WITNESS_VAR_1 = createWitnessVariable(BigInteger.class, 1);
     private static final WitnessVariable WITNESS_VAR_2 = createWitnessVariable(BigInteger.class, 2);
@@ -32,6 +33,7 @@ public class SetMembershipGadgetTest {
     private static final Set<Variable> SET_1B = Set.of(WITNESS_VAR_2, INSTANCE_VAR_41, INSTANCE_VAR_17);
     private static final Set<Variable> SET_2 = Set.of(INSTANCE_VAR_41, WITNESS_VAR_1, INSTANCE_VAR_29, WITNESS_VAR_2);
     private static final Set<Variable> SET_3 = Set.of(INSTANCE_VAR_41, INSTANCE_VAR_17, INSTANCE_VAR_29);
+    private static final Set<Variable> SET_4 = Set.of(INSTANCE_VAR_41, INSTANCE_VAR_STRING, INSTANCE_VAR_29);
 
     @Test
     void Is_Equal_To_1() {
@@ -145,5 +147,14 @@ public class SetMembershipGadgetTest {
         assertDoesNotThrow(() ->
                 checkInstanceEqualityContradiction(setMembershipGadget, equalityGadget)
         );
+    }
+
+    @Test
+    void Heterogeneous_Set_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () ->
+                new SetMembershipGadget(WITNESS_VAR_1, SET_4)
+        );
+
+        assertTrue(exception.getMessage().toLowerCase().contains("type mismatch"));
     }
 }

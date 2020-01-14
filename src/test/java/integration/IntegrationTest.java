@@ -419,4 +419,17 @@ public class IntegrationTest {
         });
         assertTrue(exception.getMessage().toLowerCase().contains("contradiction"));
     }
+
+    @Test
+    void Heterogeneous_Set_Should_Throw() {
+        CompileTimeException exception = assertThrows(CompileTimeException.class, () -> {
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
+                    .withStatement("heterogeneous_set")
+                    .withInstance("pass1", "passport.metadata")
+                    .withInstance("pass2", "passport.metadata")
+                    .build();
+            new Compiler(args).compile();
+        });
+        assertTrue(exception.getMessage().toLowerCase().contains("type mismatch"));
+    }
 }

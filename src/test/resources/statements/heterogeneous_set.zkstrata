@@ -1,0 +1,6 @@
+PROOF FOR
+    passport_ch AS pass1
+AND
+    passport_ch AS pass2
+THAT
+    12 IS MEMBER OF (pass1.dateOfBirth.month, pass1.dateOfBirth.day, pass2.firstName, pass2.dateOfBirth.day)

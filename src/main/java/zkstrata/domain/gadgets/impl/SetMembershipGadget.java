@@ -18,6 +18,7 @@ import zkstrata.utils.GadgetUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static java.lang.String.format;
 import static zkstrata.domain.gadgets.impl.EqualityGadget.getEqualityToWitness;
 import static zkstrata.utils.GadgetUtils.isWitnessVariable;
 
@@ -79,6 +80,19 @@ public class SetMembershipGadget extends AbstractGadget {
         }
 
         return Optional.empty();
+    }
+
+    @Override
+    public void initialize() {
+        checkSetTypeHomogeneity();
+    }
+
+    private void checkSetTypeHomogeneity() {
+        for (Variable element : this.set) {
+            if (this.member.getType() != element.getType())
+                throw new CompileTimeException(format("Type mismatch: %s cannot be equal to %s.",
+                        member.getType().getSimpleName(), element.getType().getSimpleName()), List.of(member, element));
+        }
     }
 
     @Override
