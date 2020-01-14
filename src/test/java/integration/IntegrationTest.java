@@ -287,7 +287,7 @@ public class IntegrationTest {
     @Test
     void Instance_Subject_Repress_Validation_Rule_Should_Succeed() {
         assertDoesNotThrow(() -> {
-            Arguments args = new ArgumentsBuilder(PremisesTest.class)
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
                     .withStatement("default_instance")
                     .withInstance("pass_i", "passport")
                     .build();
@@ -339,7 +339,7 @@ public class IntegrationTest {
     @Test
     void Boolean_Base_Test_Should_Succeed() {
         assertDoesNotThrow(() -> {
-            Arguments args = new ArgumentsBuilder(PremisesTest.class)
+            Arguments args = new ArgumentsBuilder(IntegrationTest.class)
                     .withStatement("boolean")
                     .withSchema("boolean", "boolean")
                     .build();
