@@ -83,6 +83,10 @@ public class EqualityGadget extends AbstractGadget {
 
     @Override
     public void initialize() {
+        checkTypeMismatch();
+    }
+
+    private void checkTypeMismatch() {
         if (left.getType() != right.getType())
             throw new CompileTimeException(format("Type mismatch: %s cannot be equal to %s.",
                     left.getType().getSimpleName(), right.getType().getSimpleName()), List.of(left, right));
