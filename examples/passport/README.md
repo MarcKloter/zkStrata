@@ -24,9 +24,7 @@ _Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [flatico
 To run this example, you may wish to check that you have all [prerequisites](../) installed.
 
 ## Statement in zkStrata
-For Peggy to prove her claim, she begins with writing her statement into a `.zkstrata` file. First, she declares all subjects that the statement will use. In this case this will be `WITNESS` (confidential data) aliased as `myPassport` which is compliant to the `passport_ch` schema published by the Government (found in [passport_ch.schema.json](passport_ch.schema.json)). Then, she declares her claim as a concatenation of propositions, which express that the field `myPassport.dateOfBirth` is at least 18 years in the past. For simplicity, we will assume that today's date is **January 1, 2020** and that only the owner of a passport is able to construct a proof for such, whereby she only has to show, that one of the following propositions hold:
-   - The `dateOfBirth.year` is before 2002.
-   - The `dateOfBirth.year` is 2002, `dateOfBirth.month` is January and `dateOfBirth.day` is the 1st (today).
+For Peggy to prove her claim, she begins with writing her statement into a `.zkstrata` file. First, she declares all subjects that the statement will use. In this case this will be a `WITNESS` (confidential data) aliased as `myPassport` which is compliant to the `passport_ch` schema published by the Government (found in [passport_ch.schema.json](passport_ch.schema.json)). Then, she declares her claim as a concatenation of propositions, which express that the field `myPassport.dateOfBirth` is at least 18 years in the past. For simplicity, we will assume that today's date is **January 31, 2020** and that only the owner of a passport is able to construct a proof for such, whereby she only has to show, that the birthdate stated on the passport is on or before January 31, 2002.
 
 Which results in the following statement ([passport-example.zkstrata](passport-example.zkstrata)):
 
@@ -34,17 +32,10 @@ Which results in the following statement ([passport-example.zkstrata](passport-e
 PROOF FOR
     WITNESS myPassport COMPLIANT TO passport_ch
 THAT
-    myPassport.dateOfBirth.year < 2002
-OR
-        myPassport.dateOfBirth.day = 1
-    AND
-        myPassport.dateOfBirth.month = 1
-    AND
-        myPassport.dateOfBirth.year = 2002
+    myPassport.dateOfBirth < 20020131
 ```
-_**Note:** In zkStrata AND is granted a higher precedence than OR._
 
-To associate the witness `myPassport` to the Government-issued document, the corresponding _Validation Rule*_ - placed within the `passport_ch` (defined by the swiss Government) - is implicitly being added to the statement:
+To associate the witness `myPassport` to the government-issued document, the corresponding _Validation Rule*_ - placed within the `passport_ch` (defined by the swiss Government) - is implicitly being added to the statement:
 
 ```
 PROOF FOR 
@@ -54,13 +45,15 @@ THAT
     (
         (
             (private.firstName, private.lastName), 
-            (private.dateOfBirth.day, private.dateOfBirth.month)
+            (private.dateOfBirth, private.placeOfOrigin)
         ),
         (
-            (private.dateOfBirth.year, private.expiresOn.day), 
-            (private.expiresOn.month, private.expiresOn.year)
+            (private.dateOfIssue, private.dateOfExpiry), 
+            (private.authority, private.identifier)
         )
     )
+AND
+    private.dateOfExpiry > _CURRENT_DATE
 ```
 _* Validation Rules are optional statements that can be appended to a schema. Whenever a subject is compliant to the given schema ("the schema is used") the compiler will implicitly add the predicates of this statement to the claim._
 
@@ -68,7 +61,7 @@ Using her government-issued passport (witness) [myPassport.json](myPassport.json
 
 ```
 {
-    "rootHash_hex": "0x002766dc7062104d5c90743e5b8b9cc446b559f678bcb429a415d7254d349a01"
+    "rootHash_hex": "0x06b131554e4e50b52e096971533411c7623504f6a56edf1bccdc810672efdd22"
 }
 ```
 
@@ -102,11 +95,11 @@ This will generate a `passport-example.proof` (the Zero-Knowledge Proof) and `pa
 
 | File | Size |
 | ---- | ---- |
-| `passport-example.zkstrata` | 252 bytes |
+| `passport-example.zkstrata` | 103 bytes |
 | `myPassport.metadata.json` | 94 bytes |
-| `passport-example.coms` | 3'208 bytes |
+| `passport-example.coms` | 2'872 bytes |
 | `passport-example.proof` | 1'377 bytes |
-| **Total** | 4'931 bytes |
+| **Total** | 4'446 bytes |
 
 ## Verifying a Proof
 For Victor to verify Peggys statement, he queries the `passport_ch` schema from the swiss Government and compiles the `.zkstrata` claim himself:
@@ -129,7 +122,7 @@ Windows:
 verifier.exe passport-example
 ```
 
-Which results in `true`, whereby Victor is convinced, that the date of the field `dateOfBirth` is in fact at least 18 years in the past and part of a document whose merkle root is `0x002766dc7062104d5c90743e5b8b9cc446b559f678bcb429a415d7254d349a01`. 
+Which results in `true`, whereby Victor is convinced, that the date of the field `dateOfBirth` is in fact at least 18 years in the past and part of a document whose merkle root is `0x06b131554e4e50b52e096971533411c7623504f6a56edf1bccdc810672efdd22`. 
 
 To check whether this document is actually a passport issued by the swiss Government, he queries the Signed Passports and checks the signatures for this root hash. To do this, he knows the public key of the swiss Government [public.pem](public.pem) and receives the signature of Peggys passport [signature.crt](signature.crt) that he verifies using:
 
@@ -137,4 +130,4 @@ To check whether this document is actually a passport issued by the swiss Govern
 openssl rsautl -verify -inkey public.pem -pubin -keyform PEM -in signature.crt
 ```
 
-Which returns the signed message `0x002766dc7062104d5c90743e5b8b9cc446b559f678bcb429a415d7254d349a01` which finally convinces him, that Peggys government-issued passport states that her age is over 18 years.
+Which returns the signed message `0x06b131554e4e50b52e096971533411c7623504f6a56edf1bccdc810672efdd22` which finally convinces him, that Peggys government-issued passport states that her age is over 18 years.

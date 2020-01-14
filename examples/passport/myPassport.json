@@ -1,15 +1,11 @@
 {
   "firstName": "Peggy",
   "lastName": "Proverson",
-  "dateOfBirth": {
-    "year": 1991,
-    "month": 6,
-    "day": 12
-  },
-  "expiresOn": {
-    "year": 2025,
-    "month": 4,
-    "day": 19
-  },
+  "dateOfBirth": 19910612,
+  "placeOfOrigin": "Timbuktu",
+  "dateOfIssue": 20150420,
+  "dateOfExpiry": 20250419,
+  "authority": "Passport Office Zurich",
+  "identifier": 8537102,
   "rootHash_hex": "0x002766dc7062104d5c90743e5b8b9cc446b559f678bcb429a415d7254d349a01"
 }

@@ -1,10 +1,4 @@
 PROOF FOR
     WITNESS myPassport COMPLIANT TO passport_ch
 THAT
-    myPassport.dateOfBirth.year < 2002
-OR
-        myPassport.dateOfBirth.day = 1
-    AND
-        myPassport.dateOfBirth.month = 1
-    AND
-        myPassport.dateOfBirth.year = 2002
+    myPassport.dateOfBirth < 20020131

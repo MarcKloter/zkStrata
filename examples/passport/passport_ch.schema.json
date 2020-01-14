@@ -11,47 +11,39 @@
             "description": "The owner's last name."
         },
         "dateOfBirth": {
-            "description": "The owner's date of birth.",
-            "type": "object",
-            "properties": {
-                "day": {
-                    "type": "number",
-                    "minimum": 1,
-                    "maximum": 31
-                },
-                "month": {
-                    "type": "number",
-                    "minimum": 1,
-                    "maximum": 12
-                },
-                "year": {
-                    "type": "number"
-                }
-            }
+            "type": "number",
+            "minimum": 15830101,
+            "maximum": 99991231,
+            "description": "The owner's date of birth."
         },
-        "expiresOn": {
-          "description": "This passport's date of expiration.",
-          "type": "object",
-          "properties": {
-            "day": {
-              "type": "number",
-              "minimum": 1,
-              "maximum": 31
-            },
-            "month": {
-              "type": "number",
-              "minimum": 1,
-              "maximum": 12
-            },
-            "year": {
-              "type": "number"
-            }
-          }
+        "placeOfOrigin": {
+            "type": "string",
+            "description": "The owner's place of origin."
+        },
+        "dateOfIssue": {
+          "type": "number",
+          "minimum": 15830101,
+          "maximum": 99991231,
+          "description": "This passport's date of expiration."
+        },
+        "dateOfExpiry": {
+          "type": "number",
+          "minimum": 15830101,
+          "maximum": 99991231,
+          "description": "This passport's date of expiration."
+        },
+        "authority": {
+            "type": "string",
+            "description": "This passport's issuing authority."
+        },
+        "identifier": {
+            "type": "number",
+            "description": "This passport's identifier."
         },
         "rootHash_hex": {
             "type": "string",
             "description": "The merkle tree root hash of this passport."
         }
     },
-    "validationRule": "PROOF FOR THIS THAT public.rootHash_hex IS MERKLE ROOT OF (((private.firstName, private.lastName), (private.dateOfBirth.day, private.dateOfBirth.month)), ((private.dateOfBirth.year, private.expiresOn.day), (private.expiresOn.month, private.expiresOn.year)))"
+    "validationRule": "PROOF FOR THIS THAT public.rootHash_hex IS MERKLE ROOT OF (((private.firstName, private.lastName), (private.dateOfBirth, private.placeOfOrigin)), ((private.dateOfIssue, private.dateOfExpiry), (private.authority, private.identifier))) AND private.dateOfExpiry > _CURRENT_DATE"
 }
