@@ -32,7 +32,7 @@ Which results in the following statement ([passport-example.zkstrata](passport-e
 PROOF FOR
     WITNESS myPassport COMPLIANT TO passport_ch
 THAT
-    myPassport.dateOfBirth < 20020131
+    myPassport.dateOfBirth <= 20020131
 ```
 
 To associate the witness `myPassport` to the government-issued document, the corresponding _Validation Rule*_ - placed within the `passport_ch` (defined by the swiss Government) - is implicitly being added to the statement:

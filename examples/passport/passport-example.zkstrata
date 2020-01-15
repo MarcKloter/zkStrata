@@ -1,4 +1,4 @@
 PROOF FOR
     WITNESS myPassport COMPLIANT TO passport_ch
 THAT
-    myPassport.dateOfBirth < 20020131
+    myPassport.dateOfBirth <= 20020131
