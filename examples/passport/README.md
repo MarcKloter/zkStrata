@@ -24,7 +24,7 @@ _Icons made by [Freepik](https://www.flaticon.com/authors/freepik) from [flatico
 To run this example, you may wish to check that you have all [prerequisites](../) installed.
 
 ## Statement in zkStrata
-For Peggy to prove her claim, she begins with writing her statement into a `.zkstrata` file. First, she declares all subjects that the statement will use. In this case this will be a `WITNESS` (confidential data) aliased as `myPassport` which is compliant to the `passport_ch` schema published by the Government (found in [passport_ch.schema.json](passport_ch.schema.json)). Then, she declares her claim as a concatenation of propositions, which express that the field `myPassport.dateOfBirth` is at least 18 years in the past. For simplicity, we will assume that today's date is **January 31, 2020** and that only the owner of a passport is able to construct a proof for such, whereby she only has to show, that the birthdate stated on the passport is on or before January 31, 2002.
+For Peggy to prove her claim, she begins with writing her statement into a `.zkstrata` file. First, she declares all subjects that the statement will use. In this case this will be a `WITNESS` (confidential data) aliased as `myPassport` which is compliant to the `passport_ch` schema published by the Government (found in [passport_ch.schema.json](passport_ch.schema.json)). Then, she declares her claim as a concatenation of propositions, which express that the field `myPassport.dateOfBirth` is at least 18 years in the past. For simplicity, we will assume that today's date is **January 31, 2020** and that only the owner of a passport is able to construct a proof for such, whereby she only has to show, that the birthdate stated on the passport is on or before January 31, 2002. Dates within this example will be encoded as numerals in the format `yyyymmdd` (basic format of [ISO 8601](https://www.iso.org/iso-8601-date-and-time-format.html)).
 
 Which results in the following statement ([passport-example.zkstrata](passport-example.zkstrata)):
 
@@ -91,15 +91,15 @@ Windows:
 prover.exe passport-example
 ```
 
-This will generate a `passport-example.proof` (the Zero-Knowledge Proof) and `passport-example.coms` (witness commitments required by the Verifier) file. She then sends Victor her Zero-Knowledge Proof consisting of the following files:
+The binaries will construct a constraint system containing 43'178 constraints that will be used to generate a `passport-example.proof` (the Zero-Knowledge Proof) and `passport-example.coms` (witness commitments required by the Verifier) file. She then sends Victor her Zero-Knowledge Proof consisting of the following files:
 
 | File | Size |
 | ---- | ---- |
-| `passport-example.zkstrata` | 103 bytes |
+| `passport-example.zkstrata` | 104 bytes |
 | `myPassport.metadata.json` | 94 bytes |
 | `passport-example.coms` | 2'872 bytes |
 | `passport-example.proof` | 1'377 bytes |
-| **Total** | 4'446 bytes |
+| **Total** | 4'447 bytes |
 
 ## Verifying a Proof
 For Victor to verify Peggys statement, he queries the `passport_ch` schema from the swiss Government and compiles the `.zkstrata` claim himself:
