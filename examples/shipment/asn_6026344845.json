@@ -1,0 +1,15 @@
+{
+    "identifier": 6026344845,
+    "date": 20200113,
+    "itemDetails": {
+        "identification": "PT9KTBC5",
+        "numberOfUnitsShipped": 368,
+        "unitOrBasisForMeasurementCode": "LT"
+    },
+    "shipmentDetails": {
+        "recipient": "Peggy Proverson Inc.",
+        "transportationMethod": "ZZ",
+        "expectedDeliveryDate": 20200121
+    },
+    "rootHash_hex": "0x05b6c243593aa6477410a8dad95492f0005762dd09585744eb87459ae139e3b0"
+}

@@ -1,0 +1,14 @@
+PROOF FOR
+    WITNESS asn COMPLIANT TO edi_856_asn
+THAT
+    asn.itemDetails.identification = 'PT9KTBC5'
+AND
+    asn.itemDetails.numberOfUnitsShipped >= 320
+AND
+    asn.itemDetails.unitOrBasisForMeasurementCode = 'LT'
+AND
+    asn.shipmentDetails.recipient = 'Peggy Proverson Inc.'
+AND
+    asn.shipmentDetails.expectedDeliveryDate <= 20200128
+AND
+    asn.shipmentDetails.expectedDeliveryDate >= 20200121

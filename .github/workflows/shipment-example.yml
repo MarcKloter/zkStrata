@@ -1,0 +1,48 @@
+name: "example: shipment"
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Set up JDK 1.11
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.11
+    - name: Checkout zkStrata compiler 
+      uses: actions/checkout@v2
+    - name: Build zkStrata compiler
+      run: |
+        mvn -B package --file pom.xml
+        cp target/zkstratac.jar zkstratac.jar
+    - name: Install rustc nightly 2019-10-26
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly-2019-10-26
+        override: true
+    - name: Checkout bulletproofs_gadgets
+      uses: actions/checkout@v2
+      with:
+        repository: MarcKloter/bulletproofs_gadgets
+        path: bulletproofs_gadgets
+    - name: Build bulletproofs_gadgets
+      run: |
+        cd bulletproofs_gadgets
+        cargo build --release
+        cp target/release/prover ./../prover
+        cp target/release/verifier ./../verifier
+    - name: Prepare example
+      run: cp examples/shipment/* .
+    - name: "Prover: Compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement shipment-example.zkstrata --schema edi_856_asn=edi_856_asn.schema.json --witness-data asn=asn_6026344845.json --instance-data asn=asn.metadata.json 
+    - name: "Prover: Generate Zero-Knowledge Proof"
+      run: ./prover shipment-example
+    - name: "Verifier: compile zkStrata statement"
+      run: java -jar zkstratac.jar --statement shipment-example.zkstrata --schema edi_856_asn=edi_856_asn.schema.json --instance-data asn=asn.metadata.json
+    - name: "Verifier: Verify Zero-Knowledge Proof"
+      run: ./verifier shipment-example
+    - name: Check signature
+      run: openssl rsautl -verify -inkey public.pem -pubin -keyform PEM -in signature.crt

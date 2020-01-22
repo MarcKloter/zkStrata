@@ -1,0 +1,55 @@
+{
+    "title": "edi_856_asn",
+    "type": "object",
+    "properties": {
+        "identifier": {
+            "type": "number",
+            "description": "Unique control number assigned by the shipper to identify a specific shipment."
+        },
+        "date": {
+            "type": "number",
+            "minimum": 15830101,
+            "maximum": 99991231,
+            "description": "ASN issuing date expressed as YYYYMMDD."
+        },
+        "itemDetails": {
+            "type": "object",
+            "properties": {
+                "identification": {
+                    "type": "string",
+                    "description": "Alphanumeric identifier of the shipped items."
+                },
+                "numberOfUnitsShipped": {
+                    "type": "number",
+                    "description": "Number of units shipped to date."
+                },
+                "unitOrBasisForMeasurementCode": {
+                    "type": "string",
+                    "description": "Code specifying the unit in which a value is being expressed. Such as KG for kilogram or LT for liter."
+                }
+            }
+        },
+        "shipmentDetails": {
+            "type": "object",
+            "properties": {
+                "recipient": {
+                    "type": "string",
+                    "description": "The recipient of this shipment."
+                },
+                "transportationMethod": {
+                    "type": "string",
+                    "description": "Code specifying the method or type of transportation for the shipment. Such as A for air or ZZ for mutually defined."
+                },
+                "expectedDeliveryDate": {
+                    "type": "number",
+                    "description": "Expected date of delivery expressed as YYYYMMDD."
+                }
+            }
+        },
+        "rootHash_hex": {
+            "type": "string",
+            "description": "The merkle tree root hash of this ASN."
+        }
+    },
+    "validationRule": "PROOF FOR THIS THAT public.rootHash_hex IS MERKLE ROOT OF (((private.identifier, private.date), (private.itemDetails.identification, private.itemDetails.numberOfUnitsShipped)), ((private.itemDetails.unitOrBasisForMeasurementCode, private.shipmentDetails.recipient), (private.shipmentDetails.transportationMethod, private.shipmentDetails.expectedDeliveryDate)))"
+}
