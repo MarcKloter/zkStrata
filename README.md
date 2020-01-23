@@ -3,7 +3,7 @@
 [![codecov](https://codecov.io/gh/MarcKloter/zkStrata/branch/master/graph/badge.svg)](https://codecov.io/gh/MarcKloter/zkStrata)
 [![build](https://github.com/MarcKloter/zkStrata/workflows/user%20stories/badge.svg)](https://github.com/MarcKloter/zkStrata/actions?query=workflow:"user+stories")
 
-zkStrata (**z**ero-**k**nowledge for **st**ructured d**ata**) is a declarative language for expressing zero-knowledge proofs over structured data. We denote data as structured, if there can be a specification provided describing available fields along with their data types (such as JSON, XML or SQL schemas). zkStrata aims to provide a tool that gets out of your way to let you work productively by providing type safety, improved readability through predominant use of elements from natural language and proving system independence.
+zkStrata (**z**ero-**k**nowledge for **st**ructured d**ata**) is a declarative language for expressing zero-knowledge proofs over structured data. We denote a collection of data as structured, if there can be a specification provided describing available fields along with their data types (such as JSON, XML or SQL schemas). zkStrata provides type safety, improved readability through predominant use of elements from natural language and proving system independence of specified statements.
 
 ## Examples
 There are the following examples with detailed walkthroughs available, make sure to have a look at the `README.md` files within the respective directories:
@@ -17,6 +17,9 @@ There are the following examples with detailed walkthroughs available, make sure
 For a quick hands-on of zkStrata, there is the [zkStrata Playground](https://github.com/MarcKloter/zkStrata-playground) available, which can be launched as a docker container to get a web interface that provides access to a limited set of the core features of zkStrata.
 
 ![zkStrata-playground](https://github.com/MarcKloter/zkStrata-playground/blob/master/zkstrata-playground.png?raw=true)
+
+## Executing statements written in zkStrata
+To generate and verify zero-knowledge proofs from statements written in zkStrata, we compile source code into an intermediate representation of R1CS gadgets (called [bulletproofs_gadgets](https://github.com/MarcKloter/bulletproofs_gadgets)). This representation can be executed using the experimental R1CS API of [dalek-cryptography's implementation of Bulletproofs](https://github.com/dalek-cryptography/bulletproofs).
 
 ## Command-Line Interface
 We provide a command-line interface to compile statements written in zkStrata into an executable representation of R1CS gadgets.
@@ -37,7 +40,7 @@ Or have a look at the execution instructions within our [examples](https://githu
 
 ## Language Reference
 ### Statement Syntax
-A statement consists of two groups of expressions: a list of subjects and a concatenation of pedicates providing information about them:
+A statement consists of a list of subjects along with a concatenation of predicates expressing claims about them:
 
 ```
 PROOF FOR subjects THAT predicates
@@ -46,7 +49,7 @@ PROOF FOR subjects THAT predicates
 **Note:** Keywords in zkStrata are case-insensitive (e.g. `pRoOf FoR` ).
 
 ### Subjects Syntax
-Subjects are defined as a tuple of an alias for use within predicates and an identifier of a schema describing the data structure of the subject flagged either as `WITNESS` or `INSTANCE` to indicate data confidentiality (private/public). Multiple subject definitions can be linked using `AND`:
+Subjects are defined as a tuple consisting of an alias for use within predicates and an identifier of a schema describing the data structure of the subject flagged either as `WITNESS` or `INSTANCE` to indicate data confidentiality (private/public). Multiple subject definitions can be linked using `AND`:
 
 ```
     WITNESS alias_name COMPLIANT TO schema_name
@@ -65,17 +68,16 @@ THAT
 ```
 
 **Note:**
-- `alias_name` and `schema_name` are case-sensitive identifiers (e.g. `myPassport`) matching the pattern `[a-zA-Z]([a-zA-Z0-9_])*`.
+- `alias_name` and `schema_name` are case-sensitive identifiers (e.g. `myPassport`) matching `[a-zA-Z]([a-zA-Z0-9_])*`.
 
 - Excess newlines and spaces are being ignored and only serve for the purpose of formatting.
 
 ### Schemas
-A `schema_name` (e.g. `passport_ch`) used as part of a subject declaration will be resolved by the compiler using schemas provided to the CLI and well-known schemas embedded within the compiler. Schemas can be dynamically defined as [JSON Schema](https://json-schema.org/) and passed to the compiler (`--schemas` option), see our [examples](https://github.com/MarcKloter/zkStrata#examples). Available well-known schemas can be found within [schemas.predefined](https://github.com/MarcKloter/zkStrata/tree/master/src/main/java/zkstrata/domain/data/schemas/predefined) as `@Schema` annotated classes
+A `schema_name` (e.g. `passport_ch`) used as part of a subject declaration will be resolved by the compiler using schemas provided to the CLI and well-known schemas embedded within the compiler. Schemas can be dynamically defined as [JSON Schema](https://json-schema.org/) and passed to the compiler (using the `--schemas` option), see our [examples](https://github.com/MarcKloter/zkStrata#examples). Available well-known schemas can be found within [schemas.predefined](https://github.com/MarcKloter/zkStrata/tree/master/src/main/java/zkstrata/domain/data/schemas/predefined) as `@Schema` annotated classes
 
 Apart from declaring the fields along with data types available to a subject, schemas are allowed to define what we call _validation rules_. A validation rule is a statement expressed in zkStrata relative to subjects compliant to the schema it is defined. Validation rules can be used to declare logic that applies to any subjects of the same structure. We could utilize the validation rule of a passport schema to specify the steps necessary to validate such which is then added to every statement involving a passport. 
 
 **Example:**
-
 ```
 PROOF FOR
     THIS
@@ -95,7 +97,7 @@ Predicates express claims about values of subjects linked using conjunctions. Av
   <tr>
     <th rowspan="2">Equality</th>
     <th>Description</th>
-    <td>Denotes equality between two values.</td>
+    <td>Claims equality between two values.</td>
   </tr>
   <tr>
     <th>Syntax</th>
@@ -104,7 +106,7 @@ Predicates express claims about values of subjects linked using conjunctions. Av
   <tr>
     <th rowspan="2">Inequality</th>
     <th>Description</th>
-    <td>Denotes inequality between two values.</td>
+    <td>Claims inequality between two values.</td>
   </tr>
   <tr>
     <th>Syntax</th>
@@ -113,7 +115,7 @@ Predicates express claims about values of subjects linked using conjunctions. Av
   <tr>
     <th rowspan="2">Comparison</th>
     <th>Description</th>
-    <td>Signals that the first number is less than the second number.</td>
+    <td>Claims that the first number is less or greater than the second number.</td>
   </tr>
   <tr>
     <th>Syntax</th>
@@ -122,7 +124,7 @@ Predicates express claims about values of subjects linked using conjunctions. Av
   <tr>
     <th rowspan="2">Preimage</th>
     <th>Description</th>
-    <td>Denotes that a witness value is the preimage of a <a href="https://eprint.iacr.org/2016/492.pdf">MiMCHash-256b</a>.</td>
+    <td>Claims that a witness value is the preimage of a <a href="https://eprint.iacr.org/2016/492.pdf">MiMCHash-256b</a>.</td>
   </tr>
   <tr>
     <th>Syntax</th>
@@ -131,7 +133,7 @@ Predicates express claims about values of subjects linked using conjunctions. Av
   <tr>
     <th rowspan="3">Merkle Tree</th>
     <th>Description</th>
-    <td>Denotes that the given variable is the root hash of a specified merkle tree.</td>
+    <td>Claims that the given variable is the root hash of a specified merkle tree.</td>
   </tr>
   <tr>
     <th>Syntax</th>
@@ -147,7 +149,7 @@ Predicates express claims about values of subjects linked using conjunctions. Av
   <tr>
     <th rowspan="3">Set Membership</th>
     <th>Description</th>
-    <td>Denotes that the given variable is member of the specified set.</td>
+    <td>Claims that the given variable is member of the specified set.</td>
   </tr>
   <tr>
     <th>Syntax</th>
@@ -179,7 +181,7 @@ The grammar of predicates declares keywords and constraints on variable confiden
 | `instance_variable` | Only public values through references to `INSTANCE` flagged subjects and literals accepted. |
 
 ### Constants
-Alternative to using literals as instance data, zkStrata provides constants that will be resolved to a public values at compile time.
+Alternative to using literals as instance data, zkStrata provides constants that are resolved to public values at compile time:
 
 | Name | Description 
 | ---- | --------- | 
