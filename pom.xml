@@ -14,7 +14,7 @@
         <maven.compiler.target>11</maven.compiler.target>
         <antlr4.visitor>true</antlr4.visitor>
         <antlr4.listener>false</antlr4.listener>
-        <log4j.version>2.11.1</log4j.version>
+        <log4j.version>2.16.0</log4j.version>
     </properties>
 
     <build>
